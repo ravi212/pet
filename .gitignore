@@ -1,15 +1,15 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+web/dist
+web/tmp
+web/out-tsc
+web/bazel-out
 
 # Node
-/node_modules
-npm-debug.log
-yarn-error.log
+web/node_modules
+web/npm-debug.log
+web/yarn-error.log
 
 # IDEs and editors
 .idea/
@@ -21,17 +21,17 @@ yarn-error.log
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
+web/.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.history/*
+web/.history/*
 
 # Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
+web/.angular/cache
+web/.sass-cache/
+web/connect.lock
 /coverage
 /libpeerconnection.log
 testem.log
@@ -41,3 +41,66 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+
+
+# BACKEND
+
+# compiled output
+backend/dist
+backend/node_modules
+backend/build
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+/backend/.DS_Store
+
+# Tests
+/coverage
+/.nyc_output
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+/backend/.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# dotenv environment variable files
+/backend/.env
+/backend/.env.development.local
+/backend/.env.test.local
+/backend/.env.production.local
+/backend/.env.local
+
+# temp directory
+/backend/.temp
+/backend/.tmp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+backend/generated

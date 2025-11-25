@@ -1,6 +1,7 @@
 {
   "name": "pet",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "The app that cares for your projects expenses",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
