@@ -7,6 +7,7 @@
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
+  moduleFormat    = "cjs"
 }
 
 datasource db {
@@ -53,7 +54,8 @@ model User {
   id         String   @id @default(uuid()) @db.Uuid
   email      String   @unique
   password   String?  // maps to password_hash; nullable for OAuth users
-  name       String?
+  firstName  String?
+  lastName   String?
   avatarUrl  String?  @db.Text
   timezone   String   @default("Asia/Kolkata")
   locale     String   @default("en-IN")
@@ -61,6 +63,16 @@ model User {
   aiOptIn    Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  // Email verification fields
+  emailVerified         Boolean   @default(false)
+  emailVerificationToken String?  @unique
+  emailVerificationExpiresAt DateTime?
+
+  // 2FA fields
+  twoFactorEnabled      Boolean   @default(false)
+  twoFactorSecret       String?
+  twoFactorBackupCodes  String[]  @default([])
 
   // relations
   projectsOwned        Project[]          @relation("owner_projects")

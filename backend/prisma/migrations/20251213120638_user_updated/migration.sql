@@ -21,7 +21,8 @@ CREATE TABLE "User" (
     "id" UUID NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT,
-    "name" TEXT,
+    "firstName" TEXT,
+    "lastName" TEXT,
     "avatarUrl" TEXT,
     "timezone" TEXT NOT NULL DEFAULT 'Asia/Kolkata',
     "locale" TEXT NOT NULL DEFAULT 'en-IN',
@@ -29,6 +30,12 @@ CREATE TABLE "User" (
     "aiOptIn" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "emailVerified" BOOLEAN NOT NULL DEFAULT false,
+    "emailVerificationToken" TEXT,
+    "emailVerificationExpiresAt" TIMESTAMP(3),
+    "twoFactorEnabled" BOOLEAN NOT NULL DEFAULT false,
+    "twoFactorSecret" TEXT,
+    "twoFactorBackupCodes" TEXT[] DEFAULT ARRAY[]::TEXT[],
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -145,6 +152,9 @@ CREATE TABLE "Expense" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_emailVerificationToken_key" ON "User"("emailVerificationToken");
 
 -- CreateIndex
 CREATE INDEX "idx_projects_owner" ON "Project"("ownerId");
