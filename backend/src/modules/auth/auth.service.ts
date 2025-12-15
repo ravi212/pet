@@ -79,7 +79,7 @@ export class AuthService {
         firstName: newUser.firstName,
         lastName: newUser.lastName,
         message: 'Signup successful. Please verify your email.',
-        verificationEmailSent: true,
+        verificationEmailSent,
       };
     } catch (error) {
       if (error instanceof ConflictException) {
@@ -133,7 +133,6 @@ export class AuthService {
         user: updatedUser,
       };
     } catch (error) {
-      console.log(error)
       if (error instanceof BadRequestException) {
         throw error;
       }
@@ -236,13 +235,23 @@ export class AuthService {
         },
       });
 
+      let verificationEmailSent = false;
+      try {
+        await this.emailService.sendVerificationEmail(
+          email,
+          emailVerificationToken,
+        );
+        verificationEmailSent = true;
+      } catch (error) {
+        // Log but DO NOT fail signup
+        console.error('Verification email failed:', error);
+      }
       // Return success response
-      // Note: In production, you would send an email here with the verification link
       return {
-        success: true,
+        success: verificationEmailSent,
         message: 'Verification email has been resent',
-        verificationToken: emailVerificationToken, // Remove in production (send via email only)
-        expiresIn: '24 hours',
+        // verificationToken: emailVerificationToken, // Remove in production (send via email only)
+        // expiresIn: '24 hours',
       };
     } catch (error) {
       if (error instanceof BadRequestException) {

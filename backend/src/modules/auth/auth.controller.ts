@@ -23,8 +23,7 @@ export class AuthController {
 
   @Post('resend-verification-email')
   async resendVerificationEmail(@Body() resendDto: ResendVerificationEmailDto) {
-    // TODO: Call this.authService.resendVerificationEmail(resendDto.email)
-    // TODO: Return success message { message: "Verification email sent" }
+    return this.authService.resendVerificationEmail(resendDto.email)
   }
 
   @Post('enable-2fa')
