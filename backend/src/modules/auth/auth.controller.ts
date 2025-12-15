@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get } from '@nestjs/common';
+import { Body, Controller, Post, Get, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto, LoginDto, VerifyEmailDto, ResendVerificationEmailDto } from './dto';
 
@@ -16,14 +16,15 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
-  @Post('verify-email')
-  async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
-    return this.authService.verifyEmail(verifyEmailDto.token);
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token);
   }
 
   @Post('resend-verification-email')
   async resendVerificationEmail(@Body() resendDto: ResendVerificationEmailDto) {
-    return this.authService.resendVerificationEmail(resendDto.email);
+    // TODO: Call this.authService.resendVerificationEmail(resendDto.email)
+    // TODO: Return success message { message: "Verification email sent" }
   }
 
   @Post('enable-2fa')
