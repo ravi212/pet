@@ -11,7 +11,18 @@ import * as crypto from 'crypto';
 import { LoginDto, SignUpDto } from './dto';
 import { EmailService } from '../email/email.service';
 import { JwtService } from '@nestjs/jwt';
+import { randomBytes, createHash } from 'crypto';
+import { DeviceType } from 'generated/prisma/enums';
 
+function hashToken(token: string) {
+  return createHash('sha256').update(token).digest('hex');
+}
+
+interface LoginMetaType {
+  userAgent?: string;
+  ipAddress?: string;
+  deviceType?: string;
+}
 @Injectable()
 export class AuthService {
   constructor(
@@ -142,7 +153,7 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, meta: LoginMetaType) {
     try {
       // Find user by email
       const user = await this.prisma.user.findUnique({
@@ -172,9 +183,25 @@ export class AuthService {
         );
       }
 
+      // 1️⃣ Create refresh token
+      const refreshToken = randomBytes(64).toString('hex');
+      const refreshTokenHash = hashToken(refreshToken);
+
+      // 2️⃣ Create session
+      const session = await this.prisma.session.create({
+        data: {
+          userId: user.id,
+          refreshTokenHash,
+          deviceType: (meta.deviceType as DeviceType) ?? 'web',
+          userAgent: meta.userAgent,
+          ipAddress: meta.ipAddress,
+        },
+      });
+
       const payload = {
         sub: user.id,
         email: user.email,
+        sessionId: session.id,
       };
 
       const accessToken = await this.jwtService.signAsync(payload);
@@ -182,16 +209,17 @@ export class AuthService {
       // Return user data (without sensitive fields)
       return {
         accessToken,
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          timezone: user.timezone,
-          locale: user.locale,
-          twoFactorEnabled: user.twoFactorEnabled,
-        },
+        refreshToken,
         message: 'Login successful',
+        // user: {
+        //   id: user.id,
+        //   email: user.email,
+        //   firstName: user.firstName,
+        //   lastName: user.lastName,
+        //   timezone: user.timezone,
+        //   locale: user.locale,
+        //   twoFactorEnabled: user.twoFactorEnabled,
+        // },
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {
@@ -199,6 +227,44 @@ export class AuthService {
       }
       throw new InternalServerErrorException('Login failed');
     }
+  }
+
+  async refreshToken(refreshToken: string) {
+    const refreshTokenHash = hashToken(refreshToken);
+
+    const session = await this.prisma.session.findFirst({
+      where: {
+        refreshTokenHash,
+        revokedAt: null,
+      },
+      include: { user: true },
+    });
+
+    if (!session) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    // Rotate refresh token (IMPORTANT)
+    const newRefreshToken = randomBytes(64).toString('hex');
+
+    await this.prisma.session.update({
+      where: { id: session.id },
+      data: {
+        refreshTokenHash: hashToken(newRefreshToken),
+        lastActiveAt: new Date(),
+      },
+    });
+
+    const accessToken = await this.jwtService.signAsync({
+      sub: session.userId,
+      email: session.user.email,
+      sessionId: session.id,
+    });
+
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+    };
   }
 
   async resendVerificationEmail(email: string) {
@@ -274,6 +340,54 @@ export class AuthService {
       );
     }
   }
+
+  async getSessions(userId: string) {
+  return this.prisma.session.findMany({
+    where: {
+      userId,
+      revokedAt: null,
+    },
+    select: {
+      id: true,
+      deviceType: true,
+      deviceName: true,
+      lastActiveAt: true,
+      createdAt: true,
+    },
+    orderBy: { lastActiveAt: 'desc' },
+  });
+}
+
+  async revokeSession(userId: string, sessionId: string) {
+  const session = await this.prisma.session.findFirst({
+    where: { id: sessionId, userId },
+  });
+
+  if (!session) {
+    throw new BadRequestException('Session not found');
+  }
+
+  await this.prisma.session.update({
+    where: { id: sessionId },
+    data: { revokedAt: new Date() },
+  });
+
+  return { success: true };
+}
+
+  async revokeAllSessions(userId: string) {
+  await this.prisma.session.updateMany({
+    where: {
+      userId,
+      revokedAt: null,
+    },
+    data: {
+      revokedAt: new Date(),
+    },
+  });
+
+  return { success: true };
+}
 
   async enableTwoFactorAuth(userId: string) {
     // Step 1: Get user by id
