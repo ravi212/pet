@@ -5,6 +5,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ProjectModule } from './modules/project/project.module';
 @Module({
   imports: [PrismaModule, AuthModule, UserModule,
     MailerModule.forRoot({
@@ -15,7 +16,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
           pass: process.env.EMAIL_PASSWORD,
         },
       },
-    })
+    }),
+    ProjectModule
   ],
   controllers: [AppController],
   providers: [AppService],

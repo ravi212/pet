@@ -8,14 +8,16 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { SignUpDto } from './dto';
+import { LoginDto, SignUpDto } from './dto';
 import { EmailService } from '../email/email.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async signup(signupDto: SignUpDto) {
@@ -140,7 +142,7 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: any) {
+  async login(loginDto: LoginDto) {
     try {
       // Find user by email
       const user = await this.prisma.user.findUnique({
@@ -170,15 +172,25 @@ export class AuthService {
         );
       }
 
+      const payload = {
+        sub: user.id,
+        email: user.email,
+      };
+
+      const accessToken = await this.jwtService.signAsync(payload);
+
       // Return user data (without sensitive fields)
       return {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        timezone: user.timezone,
-        locale: user.locale,
-        twoFactorEnabled: user.twoFactorEnabled,
+        accessToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          timezone: user.timezone,
+          locale: user.locale,
+          twoFactorEnabled: user.twoFactorEnabled,
+        },
         message: 'Login successful',
       };
     } catch (error) {
@@ -250,7 +262,7 @@ export class AuthService {
       return {
         success: verificationEmailSent,
         message: 'Verification email has been resent',
-        // verificationToken: emailVerificationToken, // Remove in production (send via email only)
+        // verificationToken: emailVerificationToken
         // expiresIn: '24 hours',
       };
     } catch (error) {

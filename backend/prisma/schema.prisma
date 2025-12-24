@@ -5,9 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-  moduleFormat    = "cjs"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -17,7 +17,6 @@ datasource db {
 enum Provider {
   local
   google
-  apple
 }
 
 enum ProjectType {
@@ -42,7 +41,7 @@ enum OCRStatus {
   pending
   done
   failed
-}
+} 
 
 enum TaskStatus {
   todo
@@ -50,50 +49,92 @@ enum TaskStatus {
   done
 }
 
+enum DeviceType {
+  web
+  mobile
+}
+
 model User {
-  id         String   @id @default(uuid()) @db.Uuid
-  email      String   @unique
-  password   String?  // maps to password_hash; nullable for OAuth users
-  firstName  String?
-  lastName   String?
-  avatarUrl  String?  @db.Text
-  timezone   String   @default("Asia/Kolkata")
-  locale     String   @default("en-IN")
-  provider   Provider @default(local)
-  aiOptIn    Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  password  String? // maps to password_hash; nullable for OAuth users
+  firstName String?
+  lastName  String?
+  avatarUrl String?  @db.Text
+  timezone  String   @default("Asia/Kolkata")
+  locale    String   @default("en-IN")
+  provider  Provider @default(local)
+  aiOptIn   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  oauthProviderId   String?
+  oauthAccessToken  String?
+  oauthRefreshToken String?
 
   // Email verification fields
-  emailVerified         Boolean   @default(false)
-  emailVerificationToken String?  @unique
+  emailVerified              Boolean   @default(false)
+  emailVerificationToken     String?   @unique
   emailVerificationExpiresAt DateTime?
 
   // 2FA fields
-  twoFactorEnabled      Boolean   @default(false)
-  twoFactorSecret       String?
-  twoFactorBackupCodes  String[]  @default([])
+  twoFactorEnabled     Boolean  @default(false)
+  twoFactorSecret      String?
+  twoFactorBackupCodes String[] @default([])
 
   // relations
-  projectsOwned        Project[]          @relation("owner_projects")
-  collaborators        ProjectCollaborator[]
-  tasksAssigned        Task[]             @relation("task_assignee")
-  receipts             Receipt[]
-  expensesCreated      Expense[]          @relation("expense_creator")
+  projectsOwned   Project[]             @relation("owner_projects")
+  collaborators   ProjectCollaborator[]
+  tasksAssigned   Task[]                @relation("task_assignee")
+  receipts        Receipt[]
+  expensesCreated Expense[]             @relation("expense_creator")
+  sessions        Session[]
+  qrLoginTokens   QrLoginToken[]
+}
+
+model Session {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  refreshTokenHash String
+  deviceType       DeviceType
+  deviceName       String?
+  userAgent        String?
+  ipAddress        String?
+
+  lastActiveAt DateTime  @default(now())
+  createdAt    DateTime  @default(now())
+  revokedAt    DateTime?
+
+  @@index([userId], name: "idx_sessions_user")
+}
+
+model QrLoginToken {
+  id     String @id @default(uuid()) @db.Uuid
+  token  String @unique
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId], name: "idx_qr_tokens_user")
 }
 
 model Project {
-  id         String   @id @default(uuid()) @db.Uuid
-  ownerId    String   @db.Uuid
-  owner      User     @relation("owner_projects", fields: [ownerId], references: [id])
-  title      String
-  description String? 
-  type       ProjectType
-  currency   String   @default("INR") @db.Char(3)
-  timezone   String   @default("Asia/Kolkata")
-  isArchived Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String      @id @default(uuid()) @db.Uuid
+  ownerId     String      @db.Uuid
+  owner       User        @relation("owner_projects", fields: [ownerId], references: [id])
+  title       String
+  description String?
+  type        ProjectType
+  currency    String      @default("INR") @db.Char(3)
+  timezone    String      @default("Asia/Kolkata")
+  isArchived  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   // relations
   collaborators ProjectCollaborator[]
@@ -107,114 +148,115 @@ model Project {
 }
 
 model ProjectCollaborator {
-  id        String   @id @default(uuid()) @db.Uuid
-  projectId String   @db.Uuid
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String           @id @default(uuid()) @db.Uuid
+  projectId String           @db.Uuid
+  project   Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String           @db.Uuid
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   role      CollaboratorRole @default(viewer)
-  createdAt DateTime @default(now())
+  createdAt DateTime         @default(now())
 
   @@unique([projectId, userId], name: "ux_project_user")
 }
 
 model Category {
-  id        String   @id @default(uuid()) @db.Uuid
-  projectId String   @db.Uuid
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        String     @id @default(uuid()) @db.Uuid
+  projectId String     @db.Uuid
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
   name      String
   color     String?
-  parentId  String?  @db.Uuid
-  parent    Category? @relation("category_parent", fields: [parentId], references: [id], onDelete: SetNull)
+  parentId  String?    @db.Uuid
+  parent    Category?  @relation("category_parent", fields: [parentId], references: [id], onDelete: SetNull)
   children  Category[] @relation("category_parent")
-  createdAt DateTime @default(now())
+  createdAt DateTime   @default(now())
 
-  expenses    Expense[]
+  expenses Expense[]
 
   @@unique([projectId, name], name: "ux_categories_project_name")
   @@index([projectId], name: "idx_categories_project")
 }
 
 model Task {
-  id          String   @id @default(uuid()) @db.Uuid
-  projectId   String   @db.Uuid
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  title       String
-  description String?
-  assignedTo  String?  @db.Uuid
-  assignee    User?    @relation("task_assignee", fields: [assignedTo], references: [id], onDelete: SetNull)
-  budgetAmount BigInt? @db.BigInt
-  status      TaskStatus @default(todo)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String     @id @default(uuid()) @db.Uuid
+  projectId    String     @db.Uuid
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  assignedTo   String?    @db.Uuid
+  assignee     User?      @relation("task_assignee", fields: [assignedTo], references: [id], onDelete: SetNull)
+  budgetAmount BigInt?    @db.BigInt
+  status       TaskStatus @default(todo)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  expenses    Expense[]
+  expenses Expense[]
 
   @@index([projectId], name: "idx_tasks_project")
 }
 
 model ProjectCycle {
-  id          String   @id @default(uuid()) @db.Uuid
-  projectId   String   @db.Uuid
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  cycleStart  DateTime @db.Date
-  cycleEnd    DateTime @db.Date
-  budgetAmount BigInt  @default(0) @db.BigInt
+  id           String       @id @default(uuid()) @db.Uuid
+  projectId    String       @db.Uuid
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  cycleStart   DateTime     @db.Date
+  cycleEnd     DateTime     @db.Date
+  budgetAmount BigInt       @default(0) @db.BigInt
   rolloverMode RolloverMode @default(none)
-  isLocked    Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  isLocked     Boolean      @default(false)
+  createdAt    DateTime     @default(now())
 
-  expenses    Expense[]
+  expenses Expense[]
 
   @@unique([projectId, cycleStart], name: "ux_project_cycle_start")
   @@index([projectId], name: "idx_project_cycles_project")
 }
 
 model Receipt {
-  id          String   @id @default(uuid()) @db.Uuid
-  userId      String   @db.Uuid
-  user        User     @relation(fields: [userId], references: [id])
-  projectId   String   @db.Uuid
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  fileUrl     String   @db.Text
-  fileType    String? 
-  fileSize    BigInt?  @db.BigInt
-  ocrResult   Json?
-  ocrStatus   OCRStatus @default(pending)
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @db.Uuid
+  user          User      @relation(fields: [userId], references: [id])
+  projectId     String    @db.Uuid
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fileUrl       String    @db.Text
+  fileType      String?
+  fileSize      BigInt?   @db.BigInt
+  ocrResult     Json?
+  ocrStatus     OCRStatus @default(pending)
   ocrConfidence Float?
-  uploadedAt  DateTime @default(now())
+  uploadedAt    DateTime  @default(now())
 
-  expenses    Expense[]
+  expenses Expense[]
+
   @@index([projectId], name: "idx_receipts_project")
   @@index([userId], name: "idx_receipts_user")
 }
 
 model Expense {
-  id                     String   @id @default(uuid()) @db.Uuid
-  projectId              String   @db.Uuid
-  project                Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  cycleId                String?  @db.Uuid
+  id                     String        @id @default(uuid()) @db.Uuid
+  projectId              String        @db.Uuid
+  project                Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  cycleId                String?       @db.Uuid
   cycle                  ProjectCycle? @relation(fields: [cycleId], references: [id], onDelete: SetNull)
-  createdBy              String   @db.Uuid
-  creator                User     @relation("expense_creator", fields: [createdBy], references: [id])
-  amount                 BigInt   @db.BigInt
-  currency               String   @default("INR") @db.Char(3)
+  createdBy              String        @db.Uuid
+  creator                User          @relation("expense_creator", fields: [createdBy], references: [id])
+  amount                 BigInt        @db.BigInt
+  currency               String        @default("INR") @db.Char(3)
   incurredAt             DateTime
-  categoryId             String?  @db.Uuid
-  category               Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  taskId                 String?  @db.Uuid
-  task                   Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  categoryId             String?       @db.Uuid
+  category               Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  taskId                 String?       @db.Uuid
+  task                   Task?         @relation(fields: [taskId], references: [id], onDelete: SetNull)
   vendor                 String?
   note                   String?
-  receiptId              String?  @db.Uuid
-  receipt                Receipt? @relation(fields: [receiptId], references: [id], onDelete: SetNull)
-  metadata               Json     @default("{}")
+  receiptId              String?       @db.Uuid
+  receipt                Receipt?      @relation(fields: [receiptId], references: [id], onDelete: SetNull)
+  metadata               Json          @default("{}")
   modelSuggestedCategory String?
   suggestionConfidence   Float?
-  isReimbursable         Boolean  @default(false)
-  reimbursedAmount       BigInt   @default(0) @db.BigInt
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  isReimbursable         Boolean       @default(false)
+  reimbursedAmount       BigInt        @default(0) @db.BigInt
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
   deletedAt              DateTime?
 
   @@index([projectId], name: "idx_expenses_project")

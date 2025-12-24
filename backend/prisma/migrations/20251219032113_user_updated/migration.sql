@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Provider" AS ENUM ('local', 'google', 'apple');
+CREATE TYPE "Provider" AS ENUM ('local', 'google');
 
 -- CreateEnum
 CREATE TYPE "ProjectType" AS ENUM ('one_time', 'recurring');
@@ -16,6 +16,9 @@ CREATE TYPE "OCRStatus" AS ENUM ('pending', 'done', 'failed');
 -- CreateEnum
 CREATE TYPE "TaskStatus" AS ENUM ('todo', 'in_progress', 'done');
 
+-- CreateEnum
+CREATE TYPE "DeviceType" AS ENUM ('web', 'mobile');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" UUID NOT NULL,
@@ -30,6 +33,9 @@ CREATE TABLE "User" (
     "aiOptIn" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "oauthProviderId" TEXT,
+    "oauthAccessToken" TEXT,
+    "oauthRefreshToken" TEXT,
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
     "emailVerificationToken" TEXT,
     "emailVerificationExpiresAt" TIMESTAMP(3),
@@ -38,6 +44,34 @@ CREATE TABLE "User" (
     "twoFactorBackupCodes" TEXT[] DEFAULT ARRAY[]::TEXT[],
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Session" (
+    "id" UUID NOT NULL,
+    "userId" UUID NOT NULL,
+    "refreshTokenHash" TEXT NOT NULL,
+    "deviceType" "DeviceType" NOT NULL,
+    "deviceName" TEXT,
+    "userAgent" TEXT,
+    "ipAddress" TEXT,
+    "lastActiveAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "revokedAt" TIMESTAMP(3),
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "QrLoginToken" (
+    "id" UUID NOT NULL,
+    "token" TEXT NOT NULL,
+    "userId" UUID NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "usedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "QrLoginToken_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -157,6 +191,15 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "User_emailVerificationToken_key" ON "User"("emailVerificationToken");
 
 -- CreateIndex
+CREATE INDEX "idx_sessions_user" ON "Session"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "QrLoginToken_token_key" ON "QrLoginToken"("token");
+
+-- CreateIndex
+CREATE INDEX "idx_qr_tokens_user" ON "QrLoginToken"("userId");
+
+-- CreateIndex
 CREATE INDEX "idx_projects_owner" ON "Project"("ownerId");
 
 -- CreateIndex
@@ -191,6 +234,12 @@ CREATE INDEX "idx_expenses_project_incurred" ON "Expense"("projectId", "incurred
 
 -- CreateIndex
 CREATE INDEX "idx_expenses_user" ON "Expense"("createdBy");
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "QrLoginToken" ADD CONSTRAINT "QrLoginToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Project" ADD CONSTRAINT "Project_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
