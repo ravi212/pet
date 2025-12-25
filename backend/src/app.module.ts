@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ProjectModule } from './modules/project/project.module';
+import { CategoryModule } from './modules/category/category.module';
 @Module({
   imports: [PrismaModule, AuthModule, UserModule,
     MailerModule.forRoot({
@@ -17,7 +18,8 @@ import { ProjectModule } from './modules/project/project.module';
         },
       },
     }),
-    ProjectModule
+    ProjectModule,
+    CategoryModule
   ],
   controllers: [AppController],
   providers: [AppService],
