@@ -217,6 +217,7 @@ model Receipt {
   user          User      @relation(fields: [userId], references: [id])
   projectId     String    @db.Uuid
   project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  expenseId     String?   @db.Uuid
   fileUrl       String    @db.Text
   fileType      String?
   fileSize      BigInt?   @db.BigInt
@@ -224,11 +225,21 @@ model Receipt {
   ocrStatus     OCRStatus @default(pending)
   ocrConfidence Float?
   uploadedAt    DateTime  @default(now())
-
+  description   String?   @db.Text
+  
   expenses Expense[]
-
-  @@index([projectId], name: "idx_receipts_project")
-  @@index([userId], name: "idx_receipts_user")
+  
+  originalFileName String?      
+  storagePath      String       
+  processingError  String?      
+  processedAt      DateTime?    
+  expiresAt        DateTime?
+  createdAt        DateTime  @default(now())
+  
+  @@index([projectId])
+  @@index([userId])
+  @@index([ocrStatus])
+  @@index([uploadedAt])
 }
 
 model Expense {

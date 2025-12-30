@@ -53,7 +53,7 @@ backend/dist
 backend/node_modules
 backend/build
 backend/generated
-
+backend/google-vision.json
 # Logs
 logs
 *.log

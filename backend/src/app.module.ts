@@ -10,6 +10,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { ExpenseModule } from './modules/expense/expense.module';
 import { TaskModule } from './modules/task/task.module';
 import { CycleModule } from './modules/cycle/cycle.module';
+import { ReceiptModule } from './modules/receipt/receipt.module';
 @Module({
   imports: [PrismaModule, AuthModule, UserModule,
     MailerModule.forRoot({
@@ -25,7 +26,8 @@ import { CycleModule } from './modules/cycle/cycle.module';
     CategoryModule,
     ExpenseModule,
     TaskModule,
-    CycleModule
+    CycleModule,
+    ReceiptModule
   ],
   controllers: [AppController],
   providers: [AppService],
