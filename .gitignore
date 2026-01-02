@@ -8,6 +8,8 @@ web/bazel-out
 
 # Node
 web/node_modules
+web/.vscode
+web/.angular
 web/npm-debug.log
 web/yarn-error.log
 
@@ -50,7 +52,8 @@ Thumbs.db
 backend/dist
 backend/node_modules
 backend/build
-
+backend/generated
+backend/google-vision.json
 # Logs
 logs
 *.log
