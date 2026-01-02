@@ -1,1 +1,40 @@
-/* You can add global styles to this file, and also import other style files */
+/* Tailwind Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Styles */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 transition-colors duration-base;
+  }
+
+  html.dark body {
+    @apply bg-gray-900 text-gray-50;
+  }
+}
+
+/* Utility Classes */
+@layer components {
+  /* Focus Ring */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-base;
+  }
+
+  html.dark .focus-ring {
+    @apply focus:ring-offset-gray-900;
+  }
+
+  /* Disabled State */
+  .disabled-state {
+    @apply opacity-50 cursor-not-allowed;
+  }
+}
