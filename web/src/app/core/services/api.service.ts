@@ -1,0 +1,61 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+export type ApiOptions = {
+  params?: Record<string, any>;
+  headers?: HttpHeaders;
+};
+
+@Injectable({ providedIn: 'root' })
+export class ApiService {
+  private http = inject(HttpClient);
+
+  get<T>(url: string, options?: ApiOptions): Observable<T> {
+    return this.http.get<T>(url, {
+      params: this.buildParams(options?.params),
+      headers: options?.headers,
+    });
+  }
+
+  post<T>(url: string, body?: unknown, options?: ApiOptions): Observable<T> {
+    return this.http.post<T>(url, body, {
+      params: this.buildParams(options?.params),
+      headers: options?.headers,
+    });
+  }
+
+  put<T>(url: string, body?: unknown, options?: ApiOptions): Observable<T> {
+    return this.http.put<T>(url, body, {
+      params: this.buildParams(options?.params),
+      headers: options?.headers,
+    });
+  }
+
+  patch<T>(url: string, body?: unknown, options?: ApiOptions): Observable<T> {
+    return this.http.patch<T>(url, body, {
+      params: this.buildParams(options?.params),
+      headers: options?.headers,
+    });
+  }
+
+  delete<T>(url: string, options?: ApiOptions): Observable<T> {
+    return this.http.delete<T>(url, {
+      params: this.buildParams(options?.params),
+      headers: options?.headers,
+    });
+  }
+
+  private buildParams(params?: Record<string, any>) {
+    if (!params) return undefined;
+
+    let httpParams = new HttpParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== null && value !== undefined) {
+        httpParams = httpParams.set(key, value);
+      }
+    }
+
+    return httpParams;
+  }
+}

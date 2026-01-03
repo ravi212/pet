@@ -15,12 +15,14 @@ type ButtonSize = 'sm' | 'md' | 'lg';
       class="inline-flex items-center justify-center font-medium transition-all duration-base focus-ring"
     >
       @if (loading) {
-        <span class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+      <span
+        class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+      ></span>
       }
       <ng-content></ng-content>
     </button>
   `,
-  styles: []
+  styles: [],
 })
 export class ButtonComponent {
   @Input() variant: ButtonVariant = 'primary';
@@ -31,7 +33,15 @@ export class ButtonComponent {
   @Input() fullWidth = false;
 
   getButtonClasses(): string {
-    const baseClasses = `${this.disabled || this.loading && 'disabled-state'}font-medium rounded-sm transition-all duration-base`;
+    const baseClasses = [
+      (this.disabled || this.loading) && 'disabled-state',
+      'font-medium',
+      'rounded-sm',
+      'transition-all',
+      'duration-base',
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     // Size classes
     const sizeClasses: Record<ButtonSize, string> = {
@@ -46,12 +56,15 @@ export class ButtonComponent {
       secondary: 'bg-secondary text-white hover:opacity-90 dark:bg-secondary-dark',
       accent: 'bg-accent text-white hover:opacity-90 dark:bg-accent-dark',
       danger: 'bg-danger text-white hover:opacity-90 dark:bg-danger-dark',
-      outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white dark:border-primary-dark dark:text-primary-dark',
+      outline:
+        'border-2 border-primary text-primary hover:bg-primary hover:text-white dark:border-primary-dark dark:text-primary-dark',
       ghost: 'text-primary hover:bg-gray-100 dark:text-primary-dark dark:hover:bg-gray-800',
     };
 
     const widthClass = this.fullWidth ? 'w-full' : '';
 
-    return `${baseClasses} ${sizeClasses[this.size]} ${variantClasses[this.variant]} ${widthClass}`.trim();
+    return `${baseClasses} ${sizeClasses[this.size]} ${
+      variantClasses[this.variant]
+    } ${widthClass}`.trim();
   }
 }
