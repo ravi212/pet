@@ -11,7 +11,7 @@ type InputState = 'default' | 'error' | 'success';
   template: `
     <div class="w-full">
       @if (label) {
-        <label [for]="id" class="block text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">
+        <label [for]="id" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
           {{ label }}
           @if (required) {
             <span class="text-danger">*</span>
@@ -27,7 +27,15 @@ type InputState = 'default' | 'error' | 'success';
         (input)="onInput($event)"
         (blur)="onBlur()"
         [class]="getInputClasses()"
-        class="w-full px-4 py-2 rounded-md transition-all duration-base focus-ring bg-white dark:bg-gray-800"
+        class="w-full px-4 py-2 rounded-sm transition-all duration-150
+       bg-white dark:bg-gray-800
+       text-gray-900 dark:text-gray-100
+       placeholder-gray-400 dark:placeholder-gray-500
+       outline-none
+       border border-gray-200 dark:border-gray-700
+       focus:border-slate-400 dark:focus:border-slate-300
+       focus:ring-2 focus:ring-slate-400/15
+       dark:focus:ring-slate-300/20y"
       />
       @if (error) {
         <p class="mt-2 text-sm text-danger">{{ error }}</p>
@@ -51,8 +59,8 @@ export class InputComponent implements ControlValueAccessor {
   @Input() label: string | null = null;
   @Input() type: InputType = 'text';
   @Input() placeholder = '';
-  @Input() disabled = false;
-  @Input() required = false;
+  @Input() disabled: boolean | null = false;
+  @Input() required : boolean | null = false;
   @Input() error: string | null = null;
   @Input() hint: string | null = null;
   @Input() value = '';
@@ -90,10 +98,10 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   getInputClasses(): string {
-    const baseClasses = 'border-2 text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500';
+    const baseClasses = 'border text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500';
 
     const stateClasses: Record<InputState, string> = {
-      default: 'border-gray-300 focus:border-primary dark:border-gray-600 dark:focus:border-primary-dark',
+      default: '',
       error: 'border-danger focus:border-danger',
       success: 'border-success focus:border-success',
     };

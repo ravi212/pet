@@ -31,7 +31,7 @@ export class ButtonComponent {
   @Input() fullWidth = false;
 
   getButtonClasses(): string {
-    const baseClasses = 'font-medium rounded-md transition-all duration-base focus-ring disabled-state';
+    const baseClasses = `${this.disabled || this.loading && 'disabled-state'}font-medium rounded-sm transition-all duration-base`;
 
     // Size classes
     const sizeClasses: Record<ButtonSize, string> = {
