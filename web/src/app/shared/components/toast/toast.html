@@ -1,0 +1,20 @@
+<div class="fixed top-5 right-5 z-[9999] flex flex-col gap-3">
+  <div
+    *ngFor="let toast of toasts$ | async; trackBy: trackById"
+    class="flex items-center justify-between gap-4 min-w-[280px] max-w-sm px-4 py-3 rounded-sm shadow-lg text-white animate-slide-in"
+    [ngClass]="{
+      'bg-green-600 opacity-80': toast.type === 'success',
+      'bg-red-600 opacity-80': toast.type === 'error',
+      'bg-blue-600 opacity-80': toast.type === 'info',
+      'bg-orange-500 opacity-80': toast.type === 'warning'
+    }"
+  >
+    <span class="text-sm leading-snug"> {{ toast.message }} </span>
+    <button
+      class="text-white/80 hover:text-white text-lg leading-none"
+      (click)="toastService.remove(toast.id)"
+    >
+      ×
+    </button>
+  </div>
+</div>

@@ -1,12 +1,14 @@
 <div class="max-w-md mx-auto mt-10 px-4">
   <app-card title="Sign Up" [elevated]="true">
-    <form>
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
       <div class="form-group mb-3">
         <app-input
           label="First Name"
           type="text"
           placeholder="Enter your first name"
           [required]="true"
+          formControlName="firstName"
+          [error]="getError('firstName')"
         ></app-input>
       </div>
 
@@ -16,6 +18,8 @@
           type="text"
           placeholder="Enter your last name"
           [required]="true"
+          formControlName="lastName"
+          [error]="getError('lastName')"
         ></app-input>
       </div>
 
@@ -25,6 +29,8 @@
           type="email"
           placeholder="Enter your email"
           [required]="true"
+          formControlName="email"
+          [error]="getError('email')"
         ></app-input>
       </div>
 
@@ -34,6 +40,8 @@
           type="password"
           placeholder="Create a password"
           [required]="true"
+          formControlName="password"
+          [error]="getError('password')"
         ></app-input>
       </div>
 
@@ -43,6 +51,8 @@
           type="password"
           placeholder="Re-enter your password"
           [required]="true"
+          formControlName="confirmPassword"
+          [error]="getConfirmPasswordError()"
         ></app-input>
       </div>
 
@@ -51,6 +61,8 @@
           type="submit"
           [fullWidth]="true"
           label="Sign Up"
+          [disabled]="isSubmitting || signupForm.invalid"
+          [loading]="isSubmitting"
         >
           Create Account
         </app-button>
@@ -59,12 +71,7 @@
 
     <div class="my-4 text-center">
       <span>Already have an account? </span>
-      <a
-        href="/auth/login"
-        class="text-primary hover:underline"
-      >
-        Login
-      </a>
+      <a href="/auth/login" class="text-primary hover:underline"> Login </a>
     </div>
   </app-card>
 </div>

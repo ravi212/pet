@@ -8,12 +8,7 @@
           placeholder="Enter your email"
           [required]="true"
           formControlName="email"
-          [error]="
-            loginForm.controls.email.invalid &&
-            (loginForm.controls.email.dirty || loginForm.controls.email.touched)
-              ? 'Please enter valid email'
-              : null
-          "
+          [error]="getError('email')"
         ></app-input>
       </div>
       <div class="mb-3">
@@ -23,12 +18,7 @@
           placeholder="Enter your password"
           [required]="true"
           formControlName="password"
-          [error]="
-            loginForm.controls.password.invalid &&
-            (loginForm.controls.password.dirty || loginForm.controls.password.touched)
-              ? 'Password must be at least 6 characters'
-              : null
-          "
+          [error]="getError('password')"
         ></app-input>
       </div>
       <div class="my-4">

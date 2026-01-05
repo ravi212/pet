@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { LoginDto } from '../../../../shared/models';
 import { finalize } from 'rxjs';
+import { resolveError } from '../../../../shared/helpers/form-errors.util';
 
 @Component({
   selector: 'app-login',
@@ -22,24 +23,31 @@ export class Login {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
+  getError(name: string) {
+    return resolveError(this.loginForm.get(name));
+  }
+
   onSubmit() {
     console.log('Login form submitted');
     if (this.loginForm.valid) {
       this.isSubmitting = true;
-      this.authService.login(this.loginForm.value as LoginDto).pipe(
-        finalize(() => {
-          this.isSubmitting = false;
-        })
-      ).subscribe({
-        next: (response) => {
-          console.log('Login successful:', response);
-          this.isSubmitting = false;
-        },
-        error: (error) => {
-          console.error('Login failed:', error);
-          this.isSubmitting = false;
-        },
-      });
+      this.authService
+        .login(this.loginForm.value as LoginDto)
+        .pipe(
+          finalize(() => {
+            this.isSubmitting = false;
+          })
+        )
+        .subscribe({
+          next: (response) => {
+            console.log('Login successful:', response);
+            this.isSubmitting = false;
+          },
+          error: (error) => {
+            console.error('Login failed:', error);
+            this.isSubmitting = false;
+          },
+        });
     }
   }
 }

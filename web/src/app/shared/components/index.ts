@@ -18,3 +18,6 @@ export { ModalComponent } from './modal/modal.component';
 
 // Skeleton
 export { SkeletonComponent } from './skeleton/skeleton.component';
+
+// Toast
+export { ToastComponent } from './toast/toast';

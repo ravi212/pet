@@ -10,6 +10,8 @@ export interface AuthResponse {
   accessToken: string;
   user: User;
   refreshToken?: string;
+  verificationEmailSent?: boolean;
+  message: string;
 }
 
 export interface SignupPayload {

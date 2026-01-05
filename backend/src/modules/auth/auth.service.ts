@@ -87,10 +87,12 @@ export class AuthService {
 
       // Return success response (no sensitive data)
       return {
-        id: newUser.id,
-        email: newUser.email,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+        },
         message: 'Signup successful. Please verify your email.',
         verificationEmailSent,
       };
@@ -342,52 +344,52 @@ export class AuthService {
   }
 
   async getSessions(userId: string) {
-  return this.prisma.session.findMany({
-    where: {
-      userId,
-      revokedAt: null,
-    },
-    select: {
-      id: true,
-      deviceType: true,
-      deviceName: true,
-      lastActiveAt: true,
-      createdAt: true,
-    },
-    orderBy: { lastActiveAt: 'desc' },
-  });
-}
-
-  async revokeSession(userId: string, sessionId: string) {
-  const session = await this.prisma.session.findFirst({
-    where: { id: sessionId, userId },
-  });
-
-  if (!session) {
-    throw new BadRequestException('Session not found');
+    return this.prisma.session.findMany({
+      where: {
+        userId,
+        revokedAt: null,
+      },
+      select: {
+        id: true,
+        deviceType: true,
+        deviceName: true,
+        lastActiveAt: true,
+        createdAt: true,
+      },
+      orderBy: { lastActiveAt: 'desc' },
+    });
   }
 
-  await this.prisma.session.update({
-    where: { id: sessionId },
-    data: { revokedAt: new Date() },
-  });
+  async revokeSession(userId: string, sessionId: string) {
+    const session = await this.prisma.session.findFirst({
+      where: { id: sessionId, userId },
+    });
 
-  return { success: true };
-}
+    if (!session) {
+      throw new BadRequestException('Session not found');
+    }
+
+    await this.prisma.session.update({
+      where: { id: sessionId },
+      data: { revokedAt: new Date() },
+    });
+
+    return { success: true };
+  }
 
   async revokeAllSessions(userId: string) {
-  await this.prisma.session.updateMany({
-    where: {
-      userId,
-      revokedAt: null,
-    },
-    data: {
-      revokedAt: new Date(),
-    },
-  });
+    await this.prisma.session.updateMany({
+      where: {
+        userId,
+        revokedAt: null,
+      },
+      data: {
+        revokedAt: new Date(),
+      },
+    });
 
-  return { success: true };
-}
+    return { success: true };
+  }
 
   async enableTwoFactorAuth(userId: string) {
     // Step 1: Get user by id
