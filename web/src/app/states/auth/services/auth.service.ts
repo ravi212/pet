@@ -32,7 +32,7 @@ export class AuthService {
   }
 
   verifyEmail(token: string): Observable<any> {
-    return this.api.get(`${endpoints.auth.verifyEmail}?token=${token}`);
+    return this.api.get(endpoints.auth.verifyEmail(token));
   }
 
   refreshToken(): Observable<{ success: boolean }> {

@@ -185,11 +185,11 @@ export class AuthService {
         );
       }
 
-      // 1️⃣ Create refresh token
+      // Create refresh token
       const refreshToken = randomBytes(64).toString('hex');
       const refreshTokenHash = hashToken(refreshToken);
 
-      // 2️⃣ Create session
+      //  Create session
       const session = await this.prisma.session.create({
         data: {
           userId: user.id,

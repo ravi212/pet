@@ -12,7 +12,7 @@ export class ToastService {
   show(
     message: string,
     type: ToastType = 'info',
-    duration = 5000
+    duration = 3000
   ) {
     const toast: Toast = {
       id: ++this.counter,

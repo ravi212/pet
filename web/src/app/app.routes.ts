@@ -2,18 +2,19 @@ import { Routes } from '@angular/router';
 import { NotFound } from './shared/pages/not-found/not-found';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
+import { AUTH_ROUTES, PROJECTS_ROUTES } from './shared/constants/routes.const';
 
 export const routes: Routes = [
   // 🔓 Auth
   {
-    path: 'auth',
+    path: AUTH_ROUTES.ROOT,
     canActivate: [guestGuard],
     loadComponent: () => import('./layouts/auth-layout/auth.layout').then((m) => m.AuthLayoutComponent),
     loadChildren: () => import('./states/auth/auth.routes').then((m) => m.authRoutes),
   },
 
   {
-    path: 'projects',
+    path: `${PROJECTS_ROUTES.ROOT}/${PROJECTS_ROUTES.LIST}`,
     canActivate: [authGuard],
     loadComponent: () =>
       import('./layouts/projects-layout/projects.layout').then((m) => m.ProjectsLayoutComponent),
@@ -31,7 +32,7 @@ export const routes: Routes = [
   // default
   {
     path: '',
-    redirectTo: 'projects',
+    redirectTo: `${PROJECTS_ROUTES.ROOT}/${PROJECTS_ROUTES.LIST}`,
     pathMatch: 'full',
   },
 

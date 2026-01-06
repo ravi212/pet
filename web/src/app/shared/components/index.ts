@@ -21,3 +21,11 @@ export { SkeletonComponent } from './skeleton/skeleton.component';
 
 // Toast
 export { ToastComponent } from './toast/toast';
+
+// Data Table
+export { DataTableComponent } from './data-table/datatable.component';
+
+export type { DataTableColumn } from './data-table/datatable.component';
+
+// Pagination
+// export { PaginationComponent } from './pagination/pagination.component';

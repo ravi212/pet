@@ -1,0 +1,78 @@
+<div class="flex flex-col gap-4">
+  <div class="flex items-center justify-between gap-2">
+    <app-input
+      type="text"
+      placeholder="Search projects..."
+      [(ngModel)]="search"
+      (ngModelChange)="onSearchChange($event)"
+    />
+    <app-button (click)="openCreateSheet()" variant="primary">Create Project</app-button>
+  </div>
+
+  <!-- DataTable -->
+  <app-datatable
+    [columns]="columns"
+    [data]="projects"
+    [loading]="loading"
+    [actionsTemplate]="actions"
+  ></app-datatable>
+
+  <!-- Pagination -->
+  <app-pagination
+    [page]="page"
+    [total]="total"
+    (pageChange)="onPageChange($event)"
+    (limitChange)="onLimitChange($event)"
+  ></app-pagination>
+</div>
+
+<ng-template #actions let-project>
+  <div class="flex items-center gap-2">
+    <app-button size="md" variant="outline" (click)="edit(project)">
+      <div class="flex gap-1 items-center">
+        <lucide-angular size="16" [img]="editIcon"></lucide-angular>
+        <span>Edit</span>
+      </div>
+    </app-button>
+
+    <app-button size="md" variant="danger" (click)="openConfirm(project)">
+      <div class="flex gap-1 items-center">
+        <lucide-angular size="16" [img]="deleteIcon" class="delete-icon"></lucide-angular>
+        <span>Delete</span>
+      </div>
+    </app-button>
+  </div>
+</ng-template>
+
+<ng-template #updatedAtTpl let-project>
+    {{ project.updatedAt | date: 'mediumDate' }}
+</ng-template>
+
+<ng-template #typeTpl let-project>
+  <span
+    class="p-2 text-sm rounded-sm"
+    [class.bg-blue-100]="project.type === projectType.one_time"
+    [class.bg-green-100]="project.type === projectType.recurring"
+  >
+    {{ project.type == projectType.recurring ? 'Recurring' : 'One Time' }}
+  </span>
+</ng-template>
+
+<app-confirm-dialog
+  [open]="confirmOpen"
+  [title]="'Delete Project?'"
+  [message]="'Are you sure you want to delete ' + selectedProject?.title + '?'"
+  (confirm)="remove(selectedProject)"
+  (cancel)="confirmOpen = false"
+></app-confirm-dialog>
+
+<!-- Side Sheet -->
+
+<app-side-sheet [(open)]="sideSheetOpen" width="500px">
+  <div slot="title">
+    {{ selectedProject ? 'Edit Project' : 'Create Project' }}
+  </div>
+  @if(sideSheetOpen) {
+  <app-project-form [project]="selectedProject" (saved)="onSave()"></app-project-form>
+  }
+</app-side-sheet>

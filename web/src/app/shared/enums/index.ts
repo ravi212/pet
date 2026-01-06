@@ -4,8 +4,8 @@ export enum Provider {
 }
 
 export enum ProjectType {
-  one_time,
-  recurring
+  one_time = 'one_time',
+  recurring = 'recurring'
 }
 
 export enum CollaboratorRole {

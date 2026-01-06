@@ -3,9 +3,10 @@ import { SharedModule } from '../../../../shared/shared.module';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { LoginDto } from '../../../../shared/models';
-import { finalize } from 'rxjs';
+import { finalize, switchMap } from 'rxjs';
 import { resolveError } from '../../../../shared/helpers/form-errors.util';
 import { Router } from '@angular/router';
+import { PROJECTS_ROUTES } from '../../../../shared/constants/routes.const';
 
 @Component({
   selector: 'app-login',
@@ -36,14 +37,16 @@ export class Login {
       this.authService
         .login(this.loginForm.value as LoginDto)
         .pipe(
+          switchMap(() => {
+            return this.authService.checkAuth();
+          }),
           finalize(() => {
             this.isSubmitting = false;
           })
         )
         .subscribe({
-          next: (response) => {
-            console.log('Login successful:', response);
-            this.router.navigate(['/projects']);
+          next: () => {
+            this.router.navigateByUrl(`/${PROJECTS_ROUTES.ROOT}/${PROJECTS_ROUTES.LIST}`);
           },
           error: (error) => {
             console.error('Login failed:', error);

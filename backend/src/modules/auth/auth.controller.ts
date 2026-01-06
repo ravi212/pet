@@ -274,8 +274,7 @@ export class AuthController {
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   async logout(@Req() req, @Res({ passthrough: true }) res) {
-    const sessionId = req.user['sid'];
-
+    const sessionId = req.user.sessionId;
     await this.authService.logout(sessionId);
 
     res.clearCookie('access_token');
@@ -288,8 +287,6 @@ export class AuthController {
   @Get('me')
   getUser(@Req() req) {
     // req.user comes from JwtStrategy's validate()
-    Logger.log('AuthController: Retrieved user info for /me endpoint');
-    Logger.log(req.user);
     return {
       id: req.user.id,
       email: req.user.email,

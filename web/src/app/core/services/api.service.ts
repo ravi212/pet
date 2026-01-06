@@ -4,7 +4,7 @@ import { catchError, Observable, tap, throwError } from 'rxjs';
 import { ToastService } from './toast.service';
 
 export type ApiOptions = {
-  params?: Record<string, any>;
+  params?: HttpParams;
   headers?: HttpHeaders;
   silent?: boolean;
 };
@@ -22,7 +22,7 @@ export class ApiService {
   get<T extends ApiResponse>(url: string, options?: ApiOptions): Observable<T> {
     return this.http
       .get<T>(url, {
-        params: this.buildParams(options?.params),
+        params: options?.params,
         headers: options?.headers,
       })
       .pipe(
@@ -43,7 +43,7 @@ export class ApiService {
   post<T extends ApiResponse>(url: string, body?: unknown, options?: ApiOptions): Observable<T> {
     return this.http
       .post<T>(url, body, {
-        params: this.buildParams(options?.params),
+        params: options?.params,
         headers: options?.headers,
       })
       .pipe(
@@ -64,7 +64,7 @@ export class ApiService {
   put<T extends ApiResponse>(url: string, body?: unknown, options?: ApiOptions): Observable<T> {
     return this.http
       .put<T>(url, body, {
-        params: this.buildParams(options?.params),
+        params: options?.params,
         headers: options?.headers,
       })
       .pipe(
@@ -82,8 +82,8 @@ export class ApiService {
 
   patch<T extends ApiResponse>(url: string, body?: unknown, options?: ApiOptions): Observable<T> {
     return this.http
-      .put<T>(url, body, {
-        params: this.buildParams(options?.params),
+      .patch<T>(url, body, {
+        params: options?.params,
         headers: options?.headers,
       })
       .pipe(
@@ -102,7 +102,7 @@ export class ApiService {
   delete<T extends ApiResponse>(url: string, options?: ApiOptions): Observable<T> {
     return this.http
       .delete<T>(url, {
-        params: this.buildParams(options?.params),
+        params: options?.params,
         headers: options?.headers,
       })
       .pipe(
@@ -118,16 +118,16 @@ export class ApiService {
       );
   }
 
-  private buildParams(params?: Record<string, any>) {
-    if (!params) return undefined;
+  // private buildParams(params?: Record<string, any>) {
+  //   if (!params) return undefined;
 
-    let httpParams = new HttpParams();
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== null && value !== undefined) {
-        httpParams = httpParams.set(key, value);
-      }
-    }
+  //   let httpParams = new HttpParams();
+  //   for (const [key, value] of Object.entries(params)) {
+  //     if (value !== null && value !== undefined) {
+  //       httpParams = httpParams.set(key, value);
+  //     }
+  //   }
 
-    return httpParams;
-  }
+  //   return httpParams;
+  // }
 }
