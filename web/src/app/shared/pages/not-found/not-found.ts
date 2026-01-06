@@ -13,6 +13,7 @@ export class NotFound {
   constructor(private router: Router) {}
 
   goHome() {
-    this.router.navigateByUrl('/');
+    console.log('Going home...');
+    this.router.navigate(['/']);
   }
 }

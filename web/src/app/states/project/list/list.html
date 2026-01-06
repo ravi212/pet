@@ -6,7 +6,10 @@
       [(ngModel)]="search"
       (ngModelChange)="onSearchChange($event)"
     />
-    <app-button (click)="openCreateSheet()" variant="primary">Create Project</app-button>
+    <app-button (click)="openCreateSheet()" variant="primary">
+      <lucide-angular size="16" [img]="plusIcon" class="mr-1"></lucide-angular>
+      Create Project
+    </app-button>
   </div>
 
   <!-- DataTable -->
@@ -75,4 +78,8 @@
   @if(sideSheetOpen) {
   <app-project-form [project]="selectedProject" (saved)="onSave()"></app-project-form>
   }
+  <div slot="footer" class="flex justify-end gap-2 mt-4">
+    <app-button type="button" variant="secondary" (click)="sideSheetOpen = false">Cancel</app-button>
+    <app-button type="submit" variant="primary" (click) = "projectForm.submit()">Save</app-button>
+  </div>
 </app-side-sheet>

@@ -6,7 +6,7 @@ import { LoginDto } from '../../../../shared/models';
 import { finalize, switchMap } from 'rxjs';
 import { resolveError } from '../../../../shared/helpers/form-errors.util';
 import { Router } from '@angular/router';
-import { PROJECTS_ROUTES } from '../../../../shared/constants/routes.const';
+import { PROJECT_ROUTES } from '../../../../shared/constants/routes.const';
 
 @Component({
   selector: 'app-login',
@@ -46,7 +46,7 @@ export class Login {
         )
         .subscribe({
           next: () => {
-            this.router.navigateByUrl(`/${PROJECTS_ROUTES.ROOT}/${PROJECTS_ROUTES.LIST}`);
+            this.router.navigateByUrl(`/${PROJECT_ROUTES.ROOT}/${PROJECT_ROUTES.LIST}`);
           },
           error: (error) => {
             console.error('Login failed:', error);

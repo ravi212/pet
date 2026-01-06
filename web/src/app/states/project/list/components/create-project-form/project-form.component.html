@@ -1,4 +1,4 @@
-<form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
+<form [formGroup]="form" class="flex flex-col gap-4">
   <app-input
     label="Title"
     placeholder="Enter Project Title"
@@ -27,9 +27,4 @@
     [options]="users"
     hint="Hold Ctrl / Cmd to select multiple"
   /> -->
-
-  <div class="flex justify-end gap-2 mt-4">
-    <app-button type="button" variant="secondary" (click)="saved.emit()">Cancel</app-button>
-    <app-button type="submit" variant="primary">Save</app-button>
-  </div>
 </form>

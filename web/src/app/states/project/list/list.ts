@@ -1,14 +1,15 @@
 import { Component, DestroyRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { DataTableColumn } from '../../../../shared/components';
-import { Project, ProjectService } from '../../services/projects.service';
 import { CommonModule } from '@angular/common';
-import { SharedModule } from '../../../../shared/shared.module';
-import { ProjectFormComponent } from '../../components/create-project-form/project-form.component';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Edit, Trash2 } from 'lucide-angular';
-import { debounceTime, distinctUntilChanged, finalize, Subject, takeUntil } from 'rxjs';
+import { LucideAngularModule, Edit, Trash2, Plus } from 'lucide-angular';
+import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ProjectType } from '../../../../shared/enums';
+import { SharedModule } from '../../../shared/shared.module';
+import { ProjectFormComponent } from './components/create-project-form/project-form.component';
+import { Project, ProjectsService } from './services/projects.service';
+import { ProjectType } from '../../../shared/enums';
+import { DataTableColumn } from '../../../shared/components';
+
 
 @Component({
   selector: 'app-project-list',
@@ -23,12 +24,16 @@ export class ProjectListComponent implements OnInit {
   @ViewChild('updatedAtTpl', { static: true })
   updatedAtTpl!: TemplateRef<{ $implicit: Project }>;
 
+  @ViewChild(ProjectFormComponent)
+  projectForm!: ProjectFormComponent;
+
   readonly projectType = ProjectType;
 
-  private projectService = inject(ProjectService);
+  private projectService = inject(ProjectsService);
 
   readonly editIcon = Edit;
   readonly deleteIcon = Trash2;
+  readonly plusIcon = Plus;
 
   loading = false;
   search = '';

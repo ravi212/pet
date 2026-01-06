@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiService } from '../../../core/services/api.service';
-import { endpoints } from '../../../shared/constants/endpoints.const';
+import { ApiService } from '../../../../core/services/api.service';
+import { endpoints } from '../../../../shared/constants/endpoints.const';
 
 export interface Project {
   id: string;
@@ -23,7 +23,7 @@ export interface PaginatedProjects {
 }
 
 @Injectable({ providedIn: 'root' })
-export class ProjectService {
+export class ProjectsService {
   private api = inject(ApiService);
 
   findAll(page = 1, limit = 10, search?: string): Observable<PaginatedProjects> {

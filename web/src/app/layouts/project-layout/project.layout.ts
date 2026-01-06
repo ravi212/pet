@@ -5,11 +5,9 @@ import { RouterOutlet } from '@angular/router';
   standalone: true,
   imports: [RouterOutlet],
   template: `
-  <div class="min-h-screen w-full flex items-center justify-center">
-    <div class="w-full">
+    <div class="w-full max-w-7xl mx-auto px-10 py-8 ">
       <router-outlet />
     </div>
-  </div>
   `,
 })
 export class ProjectLayoutComponent {}
