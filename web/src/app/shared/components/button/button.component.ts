@@ -57,7 +57,7 @@ export class ButtonComponent {
       accent: 'bg-accent text-white hover:opacity-90 dark:bg-accent-dark',
       danger: 'bg-danger text-white hover:opacity-90 dark:bg-danger-dark',
       outline:
-        'border-2 border-primary text-primary hover:bg-primary hover:text-white dark:border-primary-dark dark:text-primary-dark',
+        'w-full border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 dark:border-primary-dark dark:text-primary-dark',
       ghost: 'text-primary hover:bg-gray-100 dark:text-primary-dark dark:hover:bg-gray-800',
     };
 

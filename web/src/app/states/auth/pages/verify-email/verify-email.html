@@ -1,0 +1,74 @@
+<div
+  class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center px-4"
+>
+  <div
+    class="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-[0_10px_30px_rgba(0,0,0,0.04),0_1px_3px_rgba(0,0,0,0.05)] transition-all duration-300 ease-out"
+  >
+    <!-- Status Icon -->
+    <div
+      class="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 text-gray-500 text-xl"
+      [ngClass]="{
+        'bg-emerald-50 text-emerald-600': success,
+        'bg-red-50 text-red-500': error
+      }"
+    >
+      @if (loading) {
+      <span>⏳</span>
+      } @else if (success) {
+      <span>✓</span>
+      } @else {
+      <span>!</span>
+      }
+    </div>
+
+    <!-- Title -->
+    <h1 class="mb-2 text-lg font-semibold text-gray-900">
+      @if (loading) { Verifying your email } @else if (success) { Email verified } @else {
+      Verification failed }
+    </h1>
+
+    <!-- Message -->
+    @if (loading) {
+    <p class="mb-8 text-sm leading-relaxed text-gray-500">
+      Please wait while we confirm your email address.
+    </p>
+    } @if (success) {
+    <p class="mb-8 text-sm leading-relaxed text-emerald-700">
+      Your email has been successfully verified. You can now access your account.
+    </p>
+    } @if (error) {
+    <p class="mb-8 text-sm leading-relaxed text-red-600">
+      {{ error }}
+    </p>
+    }
+
+    <!-- Actions -->
+    @if (success) {
+    <app-button
+      routerLink="/auth"
+      class="mb-3"
+      type="button"
+      [fullWidth]="true"
+      variant="secondary"
+    >
+      Continue to login
+    </app-button>
+
+    } @if (error) {
+
+    <app-button routerLink="/auth" class="mb-3" type="button" [fullWidth]="true" variant="outline">
+      Go back home
+    </app-button>
+
+    }
+
+    <!-- Optional trust hints (using @for) -->
+    @if (success) {
+    <div class="mt-6 flex justify-center gap-4 text-xs text-gray-400">
+      @for (hint of ['Secure link', 'One-time token', 'No spam']; track hint) {
+      <span>• {{ hint }}</span>
+      }
+    </div>
+    }
+  </div>
+</div>

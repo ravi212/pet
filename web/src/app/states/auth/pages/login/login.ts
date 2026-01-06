@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { LoginDto } from '../../../../shared/models';
 import { finalize } from 'rxjs';
 import { resolveError } from '../../../../shared/helpers/form-errors.util';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ import { resolveError } from '../../../../shared/helpers/form-errors.util';
 export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   isSubmitting = false;
 
@@ -41,11 +43,10 @@ export class Login {
         .subscribe({
           next: (response) => {
             console.log('Login successful:', response);
-            this.isSubmitting = false;
+            this.router.navigate(['/projects']);
           },
           error: (error) => {
             console.error('Login failed:', error);
-            this.isSubmitting = false;
           },
         });
     }

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Toast } from '../../models/toast.model';
 import { ToastService } from '../../../core/services/toast.service';
@@ -12,11 +12,8 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
 })
 export class ToastComponent {
-  toasts$: Observable<Toast[]>;
-
-  constructor(public toastService: ToastService) {
-    this.toasts$ = this.toastService.toastStream;
-  }
+  toastService = inject(ToastService);
+  toasts = this.toastService.toasts;
 
   trackById(_: number, toast: Toast) {
     return toast.id;

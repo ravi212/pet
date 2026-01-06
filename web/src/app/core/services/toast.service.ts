@@ -1,17 +1,13 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 import { Toast, ToastType } from '../../shared/models/toast.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ToastService {
-  private toasts$ = new BehaviorSubject<Toast[]>([]);
   private counter = 0;
 
-  get toastStream() {
-    return this.toasts$.asObservable();
-  }
+  toasts = signal<Toast[]>([]);
 
   show(
     message: string,
@@ -25,7 +21,7 @@ export class ToastService {
       duration,
     };
 
-    this.toasts$.next([...this.toasts$.value, toast]);
+    this.toasts.update(list => [...list, toast]);
 
     if (duration > 0) {
       setTimeout(() => this.remove(toast.id), duration);
@@ -33,12 +29,12 @@ export class ToastService {
   }
 
   remove(id: number) {
-    this.toasts$.next(
-      this.toasts$.value.filter(t => t.id !== id)
+    this.toasts.update(list =>
+      list.filter(t => t.id !== id)
     );
   }
 
   clear() {
-    this.toasts$.next([]);
+    this.toasts.set([]);
   }
 }

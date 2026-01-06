@@ -36,7 +36,7 @@ export class EmailService {
     verificationToken: string,
   ): Promise<void> {
     const subject = 'Verify your email';
-    const verificationLink = `${process.env.FRONTEND_URL}/${verificationToken}`;
+    const verificationLink = `${process.env.FRONTEND_URL}/auth/verify-email/${verificationToken}`;
     const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6">
         <h2>Email Verification</h2>

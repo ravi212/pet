@@ -6,6 +6,7 @@ import { ToastService } from './toast.service';
 export type ApiOptions = {
   params?: Record<string, any>;
   headers?: HttpHeaders;
+  silent?: boolean;
 };
 
 interface ApiResponse {
@@ -31,7 +32,9 @@ export class ApiService {
           }
         }),
         catchError((err) => {
-          this.toast.show(err?.error?.message || 'Something went wrong', 'error');
+          if (!options?.silent) {
+            this.toast.show(err?.error?.message || 'Something went wrong', 'error');
+          }
           return throwError(() => err);
         })
       );
@@ -50,7 +53,9 @@ export class ApiService {
           }
         }),
         catchError((err) => {
-          this.toast.show(err?.error?.message || 'Something went wrong', 'error');
+          if (!options?.silent) {
+            this.toast.show(err?.error?.message || 'Something went wrong', 'error');
+          }
           return throwError(() => err);
         })
       );
@@ -67,7 +72,9 @@ export class ApiService {
           if (res.message) this.toast.show(res.message, 'success');
         }),
         catchError((err) => {
-          this.toast.show(err?.error?.message || 'Something went wrong', 'error');
+          if (!options?.silent) {
+            this.toast.show(err?.error?.message || 'Something went wrong', 'error');
+          }
           return throwError(() => err);
         })
       );
@@ -84,7 +91,9 @@ export class ApiService {
           if (res.message) this.toast.show(res.message, 'success');
         }),
         catchError((err) => {
-          this.toast.show(err?.error?.message || 'Something went wrong', 'error');
+          if (!options?.silent) {
+            this.toast.show(err?.error?.message || 'Something went wrong', 'error');
+          }
           return throwError(() => err);
         })
       );
@@ -101,7 +110,9 @@ export class ApiService {
           if (res.message) this.toast.show(res.message, 'success');
         }),
         catchError((err) => {
-          this.toast.show(err?.error?.message || 'Something went wrong', 'error');
+          if (!options?.silent) {
+            this.toast.show(err?.error?.message || 'Something went wrong', 'error');
+          }
           return throwError(() => err);
         })
       );

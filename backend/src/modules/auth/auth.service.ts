@@ -202,8 +202,7 @@ export class AuthService {
 
       const payload = {
         sub: user.id,
-        email: user.email,
-        sessionId: session.id,
+        sid: session.id,
       };
 
       const accessToken = await this.jwtService.signAsync(payload);
@@ -212,7 +211,6 @@ export class AuthService {
       return {
         accessToken,
         refreshToken,
-        message: 'Login successful',
         // user: {
         //   id: user.id,
         //   email: user.email,
@@ -259,8 +257,7 @@ export class AuthService {
 
     const accessToken = await this.jwtService.signAsync({
       sub: session.userId,
-      email: session.user.email,
-      sessionId: session.id,
+      sid: session.id,
     });
 
     return {
@@ -389,6 +386,13 @@ export class AuthService {
     });
 
     return { success: true };
+  }
+
+  async logout(sessionId: string) {
+    await this.prisma.session.update({
+      where: { id: sessionId },
+      data: { revokedAt: new Date() },
+    });
   }
 
   async enableTwoFactorAuth(userId: string) {
