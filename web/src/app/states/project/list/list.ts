@@ -1,14 +1,16 @@
 import { Component, DestroyRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Edit, Trash2, Plus } from 'lucide-angular';
+import { LucideAngularModule, Edit, Trash2, Plus, Eye } from 'lucide-angular';
 import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SharedModule } from '../../../shared/shared.module';
 import { ProjectFormComponent } from './components/create-project-form/project-form.component';
-import { Project, ProjectsService } from './services/projects.service';
 import { ProjectType } from '../../../shared/enums';
 import { DataTableColumn } from '../../../shared/components';
+import { Router } from '@angular/router';
+import { PROJECT_ROUTES } from '../../../shared/constants/routes.const';
+import { Project, ProjectsService } from '../services/projects.service';
 
 
 @Component({
@@ -17,6 +19,8 @@ import { DataTableColumn } from '../../../shared/components';
   imports: [CommonModule, SharedModule, ProjectFormComponent, FormsModule, LucideAngularModule],
 })
 export class ProjectListComponent implements OnInit {
+  router = inject(Router);
+
   projects: Project[] = [];
   @ViewChild('typeTpl', { static: true })
   typeTpl!: TemplateRef<{ $implicit: Project }>;
@@ -34,6 +38,7 @@ export class ProjectListComponent implements OnInit {
   readonly editIcon = Edit;
   readonly deleteIcon = Trash2;
   readonly plusIcon = Plus;
+  readonly eyeIcon = Eye;
 
   loading = false;
   search = '';
@@ -124,6 +129,11 @@ export class ProjectListComponent implements OnInit {
     this.selectedProject = project;
     this.sideSheetOpen = true;
   }
+
+  goToProject(project: Project) {
+    this.router.navigate([PROJECT_ROUTES.ROOT, project.id]);
+  }
+
 
   openCreateSheet() {
     this.selectedProject = null;

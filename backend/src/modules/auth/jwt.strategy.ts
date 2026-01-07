@@ -36,6 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: session.user.email,
       sessionId: session.id,
       twoFactorEnabled: session.user.twoFactorEnabled,
+      displayName: `${session.user.firstName} ${session.user.lastName}`
     };
   }
 

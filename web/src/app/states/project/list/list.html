@@ -1,15 +1,18 @@
 <div class="flex flex-col gap-4">
   <div class="flex items-center justify-between gap-2">
-    <app-input
-      type="text"
-      placeholder="Search projects..."
-      [(ngModel)]="search"
-      (ngModelChange)="onSearchChange($event)"
-    />
-    <app-button (click)="openCreateSheet()" variant="primary">
-      <lucide-angular size="16" [img]="plusIcon" class="mr-1"></lucide-angular>
-      Create Project
-    </app-button>
+    <h2 class="text-xl font-semibold">Project List</h2>
+    <div class="flex items-center gap-2">
+      <app-input
+        type="text"
+        placeholder="Search projects..."
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange($event)"
+      />
+      <app-button (click)="openCreateSheet()" variant="primary">
+        <lucide-angular size="16" [img]="plusIcon" class="mr-1"></lucide-angular>
+        Create Project
+      </app-button>
+    </div>
   </div>
 
   <!-- DataTable -->
@@ -31,24 +34,32 @@
 
 <ng-template #actions let-project>
   <div class="flex items-center gap-2">
-    <app-button size="md" variant="outline" (click)="edit(project)">
+
+        <app-button size="sm" variant="outline" (click)="goToProject(project)">
       <div class="flex gap-1 items-center">
-        <lucide-angular size="16" [img]="editIcon"></lucide-angular>
-        <span>Edit</span>
+        <lucide-angular size="14" [img]="eyeIcon"></lucide-angular>
+        <!-- <span>Edit</span> -->
       </div>
     </app-button>
 
-    <app-button size="md" variant="danger" (click)="openConfirm(project)">
+    <app-button size="sm" variant="accent" (click)="edit(project)">
       <div class="flex gap-1 items-center">
-        <lucide-angular size="16" [img]="deleteIcon" class="delete-icon"></lucide-angular>
-        <span>Delete</span>
+        <lucide-angular size="14" [img]="editIcon"></lucide-angular>
+        <!-- <span>Edit</span> -->
+      </div>
+    </app-button>
+
+    <app-button size="sm" variant="danger" (click)="openConfirm(project)">
+      <div class="flex gap-1 items-center">
+        <lucide-angular size="16" [img]="deleteIcon"></lucide-angular>
+        <!-- <span>Delete</span> -->
       </div>
     </app-button>
   </div>
 </ng-template>
 
 <ng-template #updatedAtTpl let-project>
-    {{ project.updatedAt | date: 'mediumDate' }}
+  {{ project.updatedAt | date : 'mediumDate' }}
 </ng-template>
 
 <ng-template #typeTpl let-project>
@@ -79,7 +90,9 @@
   <app-project-form [project]="selectedProject" (saved)="onSave()"></app-project-form>
   }
   <div slot="footer" class="flex justify-end gap-2 mt-4">
-    <app-button type="button" variant="secondary" (click)="sideSheetOpen = false">Cancel</app-button>
-    <app-button type="submit" variant="primary" (click) = "projectForm.submit()">Save</app-button>
+    <app-button type="button" variant="secondary" (click)="sideSheetOpen = false"
+      >Cancel</app-button
+    >
+    <app-button type="submit" variant="primary" (click)="projectForm.submit()">Save</app-button>
   </div>
 </app-side-sheet>

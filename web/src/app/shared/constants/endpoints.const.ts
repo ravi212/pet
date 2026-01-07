@@ -8,7 +8,7 @@ export const endpoints = {
     signup: `${bseUrl}/auth/signup`,
     verifyEmail: (token: string) => `${bseUrl}/auth/verify-email?token=${token}`,
     resendEmail: `${bseUrl}/auth/verify-email`,
-    refreshToken: `${bseUrl}/auth/refresh-token`,
+    refreshToken: `${bseUrl}/auth/refresh`,
     checkAuth: `${bseUrl}/auth/me`,
     logout: `${bseUrl}/auth/logout`,
     enable2fa: `${bseUrl}/auth/enable-2fa`,

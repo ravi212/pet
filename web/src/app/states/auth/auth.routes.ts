@@ -5,7 +5,7 @@ import { AUTH_ROUTES } from "../../shared/constants/routes.const";
 export const authRoutes: Routes = [
   {
     path: "",
-    loadComponent: () =>  import("../../layouts/auth-layout/auth.layout").then(m => m.AuthLayoutComponent),
+    loadComponent: () =>  import("./auth.layout").then(m => m.AuthLayoutComponent),
     children: [
       {
         path: "",

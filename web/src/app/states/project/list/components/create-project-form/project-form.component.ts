@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Project, ProjectsService } from '../../services/projects.service';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { ProjectType } from '../../../../../shared/enums';
 import { resolveError } from '../../../../../shared/helpers/form-errors.util';
+import { Project, ProjectsService } from '../../../services/projects.service';
 @Component({
   selector: 'app-project-form',
   standalone: true,
@@ -21,7 +21,6 @@ export class ProjectFormComponent implements OnInit {
   constructor(private fb: FormBuilder, private projectService: ProjectsService) {}
 
   ngOnInit() {
-    console.log('Initializing form for project:', this.project);
     this.form = this.fb.group({
       title: [this.project?.title || '', Validators.required],
       description: [this.project?.description || ''],

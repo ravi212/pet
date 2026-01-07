@@ -9,4 +9,9 @@ export const PROJECT_ROUTES = {
   ROOT: 'project',
   LIST: 'list',
   CREATE: 'create',
+  ID: ':projectId',
+  DASHBOARD: 'dashboard',
+  EXPENSES: 'expense',
+  TASKS: 'task',
+  CYCLES: 'cycle',
 } as const;

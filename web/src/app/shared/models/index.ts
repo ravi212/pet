@@ -18,3 +18,6 @@ export * from './task.model';
 
 // Receipt & Documentation models
 export * from './receipt.model';
+
+// Api Response
+export * from './api.model';

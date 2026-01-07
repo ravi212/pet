@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiService } from '../../../../core/services/api.service';
-import { endpoints } from '../../../../shared/constants/endpoints.const';
+import { ApiService } from '../../../core/services/api.service';
+import { endpoints } from '../../../shared/constants/endpoints.const';
+import { ApiResponse } from '../../../shared/models';
 
 export interface Project {
   id: string;
@@ -45,6 +46,6 @@ export class ProjectsService {
   }
 
   findOne(projectId: string) {
-    return this.api.get<Project>(`${endpoints.projects.projectById(projectId)}`);
+    return this.api.get<ApiResponse<Project>>(`${endpoints.projects.projectById(projectId)}`);
   }
 }

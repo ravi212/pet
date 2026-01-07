@@ -230,6 +230,11 @@ export class AuthService {
   }
 
   async refreshToken(refreshToken: string) {
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found');
+    }
+
     const refreshTokenHash = hashToken(refreshToken);
 
     const session = await this.prisma.session.findFirst({

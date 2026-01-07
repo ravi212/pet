@@ -12,7 +12,7 @@ import { ButtonComponent } from '../button/button.component';
       *ngIf="open"
     >
       <div
-        class="bg-white dark:bg-dark-900 rounded-xl shadow-xl max-w-sm w-full p-6 flex flex-col gap-4 transition-all"
+        class="bg-white dark:bg-dark-900 rounded-md shadow-xl max-w-sm w-full p-6 flex flex-col gap-4 transition-all"
       >
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
           {{ title }}

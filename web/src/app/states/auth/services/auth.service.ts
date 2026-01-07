@@ -16,9 +16,13 @@ export class AuthService {
     this.isAuthenticated.set(true);
   }
 
-  private clearAuth() {
+  clearAuth() {
     this.user.set(null);
     this.isAuthenticated.set(false);
+  }
+
+  get userDetails() {
+    return this.user.asReadonly();
   }
 
   constructor(private readonly api: ApiService) {}
@@ -36,7 +40,7 @@ export class AuthService {
   }
 
   refreshToken(): Observable<{ success: boolean }> {
-    return this.api.post(endpoints.auth.refreshToken);
+    return this.api.post(endpoints.auth.refreshToken, {}, {silent: true});
   }
 
   checkAuth(): Observable<Partial<User> | null> {

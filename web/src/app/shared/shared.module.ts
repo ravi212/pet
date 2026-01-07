@@ -16,6 +16,8 @@ import { PaginationComponent } from './components/pagination/pagination.componen
 import { SelectComponent } from './components/select/select.component';
 import { TextareaComponent } from './components/text-area/text-area.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { AppHeaderComponent } from './components/layout/header.component';
+import { AppSidebarComponent } from './components/layout/sidebar.component';
 
 const SHARED_COMPONENTS = [
   ButtonComponent,
@@ -30,7 +32,9 @@ const SHARED_COMPONENTS = [
   PaginationComponent,
   SelectComponent,
   TextareaComponent,
-  ConfirmDialogComponent
+  ConfirmDialogComponent,
+  AppHeaderComponent,
+  AppSidebarComponent
 ];
 
 @NgModule({

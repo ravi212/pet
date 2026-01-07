@@ -5,13 +5,13 @@ export const projectRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('../../layouts/project-layout/project.layout').then((m) => m.ProjectLayoutComponent),
+      import('./project.layout').then((m) => m.ProjectLayoutComponent),
     children: [
       // Redirect root to projects list
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: `${PROJECT_ROUTES.ROOT}/${PROJECT_ROUTES.LIST}`,
+        redirectTo: PROJECT_ROUTES.LIST,
       },
 
       {

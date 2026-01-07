@@ -62,8 +62,19 @@ export default {
           '100%': { transform: 'translateX(0)', opacity: '1' },
         },
       },
+      slideUp: {
+        '0%': {
+          transform: 'translateY(16px)',
+          opacity: '0',
+        },
+        '100%': {
+          transform: 'translateY(0)',
+          opacity: '1',
+        },
+      },
       animation: {
         'slide-in': 'slideIn 0.25s ease-out',
+        'slide-up': 'slideUp 0.25s ease-out',
       },
     },
   },

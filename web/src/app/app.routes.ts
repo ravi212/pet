@@ -9,7 +9,6 @@ export const routes: Routes = [
   {
     path: AUTH_ROUTES.ROOT,
     canActivate: [guestGuard],
-    // loadComponent: () => import('./layouts/auth-layout/auth.layout').then((m) => m.AuthLayoutComponent),
     loadChildren: () => import('./states/auth/auth.routes').then((m) => m.authRoutes),
   },
 
@@ -19,10 +18,17 @@ export const routes: Routes = [
     loadChildren: () => import('./states/project/project.routes').then((m) => m.projectRoutes),
   },
 
+  {
+    path: `${PROJECT_ROUTES.ROOT}/${PROJECT_ROUTES.ID}`,
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./states/project/workspace/workspace.routes').then((m) => m.projectFeatureRoutes),
+  },
+
   // default
   {
     path: '',
-    redirectTo: `${PROJECT_ROUTES.ROOT}/${PROJECT_ROUTES.LIST}`,
+    redirectTo: `${PROJECT_ROUTES.ROOT}`,
     pathMatch: 'full',
   },
 

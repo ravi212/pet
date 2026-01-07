@@ -73,7 +73,7 @@ curl -X POST http://localhost:3000/auth/login \
 Get a new access token using refresh token.
 
 ```bash
-curl -X POST http://localhost:3000/auth/refresh-token \
+curl -X POST http://localhost:3000/auth/refresh \
   -H "Content-Type: application/json" \
   -d '{
     "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."

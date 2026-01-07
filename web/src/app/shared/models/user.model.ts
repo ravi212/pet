@@ -15,6 +15,8 @@ export interface User {
   oauthProviderId?: string;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
+  displayName?: string;
+  sessionId?: string;
 }
 
 export interface CreateUserDto {

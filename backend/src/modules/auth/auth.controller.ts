@@ -120,7 +120,7 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: 'strict',
-        path: '/auth/refresh-token',
+        path: '/auth/refresh',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
@@ -134,7 +134,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Refresh access token',
     description:
-      'curl -X POST http://localhost:3000/auth/refresh-token -H "Content-Type: application/json" -d \'{"refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}\'',
+      'curl -X POST http://localhost:3000/auth/refresh -H "Content-Type: application/json" -d \'{"refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}\'',
   })
   @ApiBody({
     schema: {
@@ -158,7 +158,7 @@ export class AuthController {
     },
   })
   @HttpCode(200)
-  @Post('refresh-token')
+  @Post('refresh')
   async refresh(@Req() req, @Res({ passthrough: true }) res) {
     const refreshToken = req.cookies['refresh_token'];
 
@@ -176,7 +176,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
-      path: '/auth/refresh-token',
+      path: '/auth/refresh',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
@@ -292,6 +292,7 @@ export class AuthController {
       email: req.user.email,
       sessionId: req.user.sessionId,
       twoFactorEnabled: req.user.twoFactorEnabled,
+      displayName: req.user.displayName,
     };
   }
 }

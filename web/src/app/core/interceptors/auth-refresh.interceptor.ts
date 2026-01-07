@@ -1,41 +1,28 @@
 import {
   HttpInterceptorFn,
   HttpErrorResponse,
-  HttpEvent,
   HttpRequest,
   HttpHandlerFn,
 } from '@angular/common/http';
 import { inject } from '@angular/core';
-import {
-  Observable,
-  throwError,
-  BehaviorSubject,
-  filter,
-  take,
-  switchMap,
-  catchError,
-} from 'rxjs';
+import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../../states/auth/services/auth.service';
 import { Router } from '@angular/router';
 
-let isRefreshing = false;
-const refreshDone$ = new BehaviorSubject<boolean | null>(null);
-
 export const authRefreshInterceptor: HttpInterceptorFn = (
-  req: HttpRequest<unknown>,
+  req: HttpRequest<any>,
   next: HttpHandlerFn
-): Observable<HttpEvent<unknown>> => {
+) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const ignoreUrls = [
+  const ignored = [
     '/auth/login',
     '/auth/signup',
-    '/auth/refresh-token',
-    '/auth/me',
+    '/auth/refresh',
   ];
 
-  if (ignoreUrls.some(url => req.url.includes(url))) {
+  if (ignored.some(url => req.url.includes(url))) {
     return next(req);
   }
 
@@ -45,32 +32,24 @@ export const authRefreshInterceptor: HttpInterceptorFn = (
         return throwError(() => error);
       }
 
-      if (isRefreshing) {
-        return refreshDone$.pipe(
-          filter(v => v === true),
-          take(1),
-          switchMap(() => next(req))
-        );
+      // already tried refresh once → logout
+      if ((req as any)._retry) {
+        authService.clearAuth();
+        router.navigate(['/auth/login']);
+        return throwError(() => error);
       }
 
-      isRefreshing = true;
-      refreshDone$.next(null);
+      // mark request as retried
+      const retryReq = req.clone() as any;
+      retryReq._retry = true;
 
       return authService.refreshToken().pipe(
-        switchMap(() => authService.checkAuth()),
-        switchMap(() => {
-          isRefreshing = false;
-          refreshDone$.next(true);
-          return next(req);
-        }),
-        catchError(err => {
-          isRefreshing = false;
-          refreshDone$.next(false);
-
-          authService.logout().subscribe();
+        switchMap(() => next(retryReq)),
+        catchError(refreshErr => {
+          // refresh failed → logout immediately
+          authService.clearAuth();
           router.navigate(['/auth/login']);
-
-          return throwError(() => err);
+          return throwError(() => refreshErr);
         })
       );
     })
