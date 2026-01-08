@@ -19,4 +19,8 @@ export const endpoints = {
     projects: `${bseUrl}/projects`,
     projectById: (id: string) => `${bseUrl}/projects/${id}`,
   },
+  expenses: {
+    expenses: `${bseUrl}/expenses`,
+    expenseById: (id: string) => `${bseUrl}/expenses/${id}`,
+  },
 } as const;

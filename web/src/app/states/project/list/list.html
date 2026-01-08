@@ -90,9 +90,9 @@
   <app-project-form [project]="selectedProject" (saved)="onSave()"></app-project-form>
   }
   <div slot="footer" class="flex justify-end gap-2 mt-4">
-    <app-button type="button" variant="secondary" (click)="sideSheetOpen = false"
+    <app-button type="button" variant="outline" (click)="sideSheetOpen = false"
       >Cancel</app-button
     >
-    <app-button type="submit" variant="primary" (click)="projectForm.submit()">Save</app-button>
+    <app-button type="submit" variant="secondary" (click)="projectForm.submit()">Save</app-button>
   </div>
 </app-side-sheet>

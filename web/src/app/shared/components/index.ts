@@ -28,4 +28,31 @@ export { DataTableComponent } from './data-table/datatable.component';
 export type { DataTableColumn } from './data-table/datatable.component';
 
 // Pagination
-// export { PaginationComponent } from './pagination/pagination.component';
+export { PaginationComponent } from './pagination/pagination.component';
+
+// Select
+export { SelectComponent } from './select/select.component';
+
+// Textarea
+export { TextareaComponent } from './text-area/text-area.component';
+
+// Confirm Dialog
+export { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+
+// Side Sheet
+export { SideSheetComponent } from './side-sheet/sheet.component';
+
+// Header
+export { AppHeaderComponent } from './layout/header.component';
+
+// Sidebar
+export { AppSidebarComponent } from './layout/sidebar.component';
+
+// Checkbox
+export { AppCheckboxComponent } from './checkbox/checkbox.component';
+
+// Radio
+export { AppRadioGroupComponent } from './radio-group/radio-group.component';
+
+//Date Picker
+export { AppDatePickerComponent } from './date-picker/date-picker.component';

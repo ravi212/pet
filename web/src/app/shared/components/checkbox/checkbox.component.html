@@ -1,0 +1,45 @@
+<div class="flex flex-col gap-1">
+  <label
+    class="flex items-center gap-3 cursor-pointer select-none"
+    [class.opacity-50]="disabled"
+  >
+    <input
+      type="checkbox"
+      class="hidden"
+      [checked]="value"
+      [disabled]="disabled"
+      (change)="toggle($event.target.checked)"
+    />
+
+    <!-- Custom checkbox UI -->
+    <span
+      class="h-5 w-5 rounded border flex items-center justify-center transition"
+      [class.border-red-500]="error"
+      [class.border-gray-300]="!error"
+      [class.bg-blue-600]="value"
+      [class.border-blue-600]="value"
+    >
+      <svg
+        *ngIf="value"
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-4 w-4 text-white"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="3"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+    </span>
+
+    <span class="text-sm font-medium">{{ label }}</span>
+  </label>
+
+  <span *ngIf="hint && !error" class="text-xs text-gray-500">
+    {{ hint }}
+  </span>
+
+  <span *ngIf="error" class="text-xs text-red-500">
+    {{ error }}
+  </span>
+</div>

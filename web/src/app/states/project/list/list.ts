@@ -95,8 +95,8 @@ export class ProjectListComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.projects = res.data;
-          this.totalPages = res.meta.totalPages;
-          this.total = res.meta.total;
+          this.totalPages = res.pagination.totalPages;
+          this.total = res.pagination.total;
         },
         error: (err) => console.error('Failed to load projects', err),
       });

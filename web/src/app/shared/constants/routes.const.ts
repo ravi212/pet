@@ -14,4 +14,7 @@ export const PROJECT_ROUTES = {
   EXPENSES: 'expense',
   TASKS: 'task',
   CYCLES: 'cycle',
+  RECEIPTS: 'receipt',
+  SETTINGS: 'settings',
+  CATEGORIES: 'category',
 } as const;

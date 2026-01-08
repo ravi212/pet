@@ -57,7 +57,7 @@ export class ProjectService {
 
       return {
         data: projects,
-        meta: {
+        pagination: {
           total,
           page,
           limit,

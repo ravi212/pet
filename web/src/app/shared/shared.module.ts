@@ -10,14 +10,18 @@ import {
   ModalComponent,
   SkeletonComponent,
   DataTableComponent,
+  SideSheetComponent,
+  PaginationComponent,
+  SelectComponent,
+  TextareaComponent,
+  AppCheckboxComponent,
+  AppHeaderComponent,
+  AppSidebarComponent,
+  AppRadioGroupComponent,
+  AppDatePickerComponent,
+  ConfirmDialogComponent
 } from './components';
-import { SideSheetComponent } from './components/side-sheet/sheet.component';
-import { PaginationComponent } from './components/pagination/pagination.component';
-import { SelectComponent } from './components/select/select.component';
-import { TextareaComponent } from './components/text-area/text-area.component';
-import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { AppHeaderComponent } from './components/layout/header.component';
-import { AppSidebarComponent } from './components/layout/sidebar.component';
+
 
 const SHARED_COMPONENTS = [
   ButtonComponent,
@@ -32,9 +36,12 @@ const SHARED_COMPONENTS = [
   PaginationComponent,
   SelectComponent,
   TextareaComponent,
-  ConfirmDialogComponent,
+  AppCheckboxComponent,
   AppHeaderComponent,
-  AppSidebarComponent
+  AppSidebarComponent,
+  AppRadioGroupComponent,
+  AppDatePickerComponent,
+  ConfirmDialogComponent
 ];
 
 @NgModule({

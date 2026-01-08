@@ -11,6 +11,8 @@ import {
   Receipt,
   CheckSquare,
   Calendar,
+  ScanLine,
+  Settings,
 } from 'lucide-angular';
 import { SharedModule } from '../../../shared/shared.module';
 
@@ -19,10 +21,7 @@ import { SharedModule } from '../../../shared/shared.module';
   imports: [RouterOutlet, LucideAngularModule, SharedModule],
   template: `
     <div class="h-screen flex flex-col">
-      <app-header
-        [title]="project()?.title || 'Loading…'"
-        subtitle="Workspace"
-      >
+      <app-header [title]="project()?.title || 'Loading…'" subtitle="Workspace">
         <!-- Avatar + Dropdown -->
         <div class="relative group">
           <!-- Avatar trigger -->
@@ -73,10 +72,10 @@ import { SharedModule } from '../../../shared/shared.module';
       </app-header>
 
       <div class="flex flex-1 overflow-hidden">
-        <app-sidebar [collapsed]="collapsed()"  (toggle)="toggleSidebar()" [items]="nav" />
+        <app-sidebar [collapsed]="collapsed()" (toggle)="toggleSidebar()" [items]="nav" />
 
         <main class="flex-1 overflow-y-auto bg-gray-50">
-          <div class="p-8 max-w-7xl mx-auto">
+          <div class="px-8 py-6 max-w-7xl mx-auto">
             <router-outlet />
           </div>
         </main>
@@ -99,9 +98,15 @@ export class ProjectFeaturesLayoutComponent implements OnInit {
 
   readonly nav = [
     { label: 'Dashboard', link: PROJECT_ROUTES.DASHBOARD, icon: LayoutDashboard },
-    { label: 'Expense', link: PROJECT_ROUTES.EXPENSES, icon: Receipt },
-    { label: 'Task', link: PROJECT_ROUTES.TASKS, icon: CheckSquare },
-    { label: 'Cycle', link: PROJECT_ROUTES.CYCLES, icon: Calendar },
+    { label: 'Expenses', link: `${PROJECT_ROUTES.EXPENSES}/${PROJECT_ROUTES.LIST}`, icon: Receipt },
+    {
+      label: 'Receipts',
+      link: `${PROJECT_ROUTES.RECEIPTS}/${PROJECT_ROUTES.LIST}`,
+      icon: ScanLine,
+    },
+    { label: 'Tasks', link: `${PROJECT_ROUTES.TASKS}/${PROJECT_ROUTES.LIST}`, icon: CheckSquare },
+    { label: 'Cycles', link: `${PROJECT_ROUTES.CYCLES}/${PROJECT_ROUTES.LIST}`, icon: Calendar },
+    { label: 'Settings', link: `${PROJECT_ROUTES.SETTINGS}`, icon: Settings },
   ];
 
   ngOnInit() {

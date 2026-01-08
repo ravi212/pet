@@ -1,0 +1,102 @@
+<div class="flex flex-col gap-4">
+  <div class="flex items-center justify-between gap-2">
+    <h2 class="text-xl font-semibold">Expense List</h2>
+    <div class="flex items-center gap-2">
+      <app-input
+        type="text"
+        placeholder="Search expenses..."
+        (inputChange)="onSearchChange($event)"
+      />
+      <app-button (click)="openCreateSheet()" variant="primary">
+        <lucide-angular size="16" [img]="plusIcon" class="mr-1"></lucide-angular>
+        Add Expense
+      </app-button>
+    </div>
+  </div>
+
+  <!-- DataTable -->
+  <app-datatable
+    [columns]="columns"
+    [data]="expenses"
+    [loading]="loading"
+    [actionsTemplate]="actions"
+  ></app-datatable>
+
+  <!-- Pagination -->
+  <app-pagination
+    [page]="page"
+    [total]="total"
+    (pageChange)="onPageChange($event)"
+    (limitChange)="onLimitChange($event)"
+  ></app-pagination>
+</div>
+
+<ng-template #actions let-expense>
+  <div class="flex items-center gap-2">
+    <!-- <app-button size="sm" variant="outline">
+      <div class="flex gap-1 items-center">
+        <lucide-angular size="14" [img]="eyeIcon"></lucide-angular>
+      </div>
+    </app-button> -->
+
+    <app-button size="sm" variant="outline" (click)="manage(expense)">
+      <div class="flex gap-1 items-center">
+        <lucide-angular size="14" [img]="settingsIcon"></lucide-angular>
+        <!-- <span>Edit</span> -->
+      </div>
+    </app-button>
+
+    <app-button size="sm" variant="danger" (click)="openConfirm(expense)">
+      <div class="flex gap-1 items-center">
+        <lucide-angular size="16" [img]="deleteIcon"></lucide-angular>
+        <!-- <span>Delete</span> -->
+      </div>
+    </app-button>
+  </div>
+</ng-template>
+
+<ng-template #incurredAtTpl let-expense>
+  {{ expense.incurredAt | date : 'mediumDate' }}
+</ng-template>
+
+<ng-template #amountTpl let-expense>
+    {{ expense.currency }} {{ expense.amount }}
+
+</ng-template>
+
+<app-confirm-dialog
+  [open]="confirmOpen"
+  [title]="'Delete Project?'"
+  message="Are you sure you want to delete ?"
+  (confirm)="remove(selectedExpense)"
+  (cancel)="confirmOpen = false"
+></app-confirm-dialog>
+
+<!-- Side Sheet -->
+
+<app-side-sheet [(open)]="sideSheetOpen" width="500px">
+  <div slot="title">
+    {{ selectedExpense ? 'Edit Expense' : 'Create Expense' }}
+  </div>
+  @if(sideSheetOpen) {
+  <app-expense-form
+    [expense]="selectedExpense"
+    [projectId]="filters.projectId"
+    (saved)="onSave()"
+  ></app-expense-form>
+  }
+  <div slot="footer" class="flex justify-end gap-2 mt-4">
+    <app-button type="button" variant="outline" (click)="sideSheetOpen = false"> Cancel</app-button>
+    <app-button type="submit" variant="secondary" (click)="expenseForm.submit()">Save</app-button>
+  </div>
+</app-side-sheet>
+
+<app-side-sheet [(open)]="openManage" (openChange)="$event == false ? this.fetchExpenses() : ''" width="800px" class="max-w-7xl">
+  <div slot="title">Manage Expense ({{expense && expense.id}})</div>
+  @if(expense) {
+    <app-manage-expense [expense]="expense"></app-manage-expense>
+  }
+  <div slot="footer" class="flex justify-end gap-2">
+    <app-button variant="outline" (click)="openManage=false; fetchExpenses()">Close</app-button>
+  </div>
+</app-side-sheet>

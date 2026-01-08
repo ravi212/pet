@@ -10,9 +10,11 @@ export const projectFeatureRoutes: Routes = [
     children: [
       { path: '', redirectTo: PROJECT_ROUTES.DASHBOARD, pathMatch: 'full' },
       { path: PROJECT_ROUTES.DASHBOARD, loadComponent: () => import('./dashboard/dashboard').then(m => m.Dashboard) },
-      { path: PROJECT_ROUTES.EXPENSES, loadComponent: () => import('./expenses/expenses').then(m => m.Expenses) },
-      { path: PROJECT_ROUTES.CYCLES, loadComponent: () => import('./cycles/cycles').then(m => m.Cycles) },
-      { path: PROJECT_ROUTES.TASKS, loadComponent: () => import('./tasks/tasks').then(m => m.Tasks) },
+      { path: `${PROJECT_ROUTES.EXPENSES}/${PROJECT_ROUTES.LIST}`, loadComponent: () => import('./expenses/list/list').then(m => m.List) },
+      { path: `${PROJECT_ROUTES.RECEIPTS}/${PROJECT_ROUTES.LIST}`, loadComponent: () => import('./receipts/list/list').then(m => m.List) },
+      { path: `${PROJECT_ROUTES.CYCLES}/${PROJECT_ROUTES.LIST}`, loadComponent: () => import('./cycles/cycles').then(m => m.Cycles) },
+      { path: `${PROJECT_ROUTES.TASKS}/${PROJECT_ROUTES.LIST}`, loadComponent: () => import('./tasks/tasks').then(m => m.Tasks) },
+      { path: `${PROJECT_ROUTES.SETTINGS}`, loadComponent: () => import('./settings/settings').then(m => m.SettingsComponent) },
     ],
   },
 ];
