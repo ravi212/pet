@@ -101,7 +101,10 @@ export class TaskService {
         },
       });
 
-      return this.toTaskResponse(task);
+      return {
+        data: this.toTaskResponse(task),
+        message: 'Task created successfully',
+      };
     } catch (err) {
       if (
         err instanceof BadRequestException ||
@@ -124,7 +127,6 @@ export class TaskService {
     pagination?: { page?: number; limit?: number; orderBy?: 'asc' | 'desc' },
   ) {
     try {
-
       const project = await this.prisma.project.findUnique({
         where: { id: projectId },
         include: { collaborators: true },
@@ -195,7 +197,10 @@ export class TaskService {
         pagination: { page, limit, total, totalPages },
       };
     } catch (err) {
-      if (err instanceof BadRequestException || err instanceof ForbiddenException) {
+      if (
+        err instanceof BadRequestException ||
+        err instanceof ForbiddenException
+      ) {
         throw err;
       }
       throw new InternalServerErrorException('Internal Server Error');
@@ -232,7 +237,10 @@ export class TaskService {
         throw new ForbiddenException('You do not have access to this task');
       }
 
-      return this.toTaskResponse(task);
+      return {
+        data: this.toTaskResponse(task),
+        message: 'Task fetched successfully',
+      };
     } catch (err) {
       if (
         err instanceof NotFoundException ||
@@ -287,7 +295,8 @@ export class TaskService {
         }
 
         // Check if assignee has access to project
-        const assigneeIsOwner = task.project.ownerId === updateTaskDto.assignedTo;
+        const assigneeIsOwner =
+          task.project.ownerId === updateTaskDto.assignedTo;
         const assigneeIsCollaborator = task.project.collaborators.some(
           (c) => c.userId === updateTaskDto.assignedTo,
         );
@@ -330,7 +339,10 @@ export class TaskService {
         },
       });
 
-      return this.toTaskResponse(updated);
+      return {
+        data: this.toTaskResponse(updated),
+        message: 'Task updated successfully',
+      };
     } catch (err) {
       if (
         err instanceof NotFoundException ||

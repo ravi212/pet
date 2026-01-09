@@ -45,7 +45,7 @@ export interface Project {
 
 export interface PaginatedProjects {
   data: Project[];
-  meta: {
+  pagination: {
     total: number;
     page: number;
     limit: number;

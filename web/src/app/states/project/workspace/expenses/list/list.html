@@ -61,14 +61,13 @@
 
 <ng-template #amountTpl let-expense>
     {{ expense.currency }} {{ expense.amount }}
-
 </ng-template>
 
 <app-confirm-dialog
   [open]="confirmOpen"
   [title]="'Delete Project?'"
   message="Are you sure you want to delete ?"
-  (confirm)="remove(selectedExpense)"
+  (confirm)="remove(selectedExpense); confirmOpen = false"
   (cancel)="confirmOpen = false"
 ></app-confirm-dialog>
 

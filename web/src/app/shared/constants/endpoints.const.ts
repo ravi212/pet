@@ -1,26 +1,44 @@
-import { environment } from "../../../environments/environment";
+import { environment } from '../../../environments/environment';
 
-const bseUrl = environment.apiBaseUrl;
+export const baseUrl = environment.apiBaseUrl as string;
 
 export const endpoints = {
   auth: {
-    login: `${bseUrl}/auth/login`,
-    signup: `${bseUrl}/auth/signup`,
-    verifyEmail: (token: string) => `${bseUrl}/auth/verify-email?token=${token}`,
-    resendEmail: `${bseUrl}/auth/verify-email`,
-    refreshToken: `${bseUrl}/auth/refresh`,
-    checkAuth: `${bseUrl}/auth/me`,
-    logout: `${bseUrl}/auth/logout`,
-    enable2fa: `${bseUrl}/auth/enable-2fa`,
-    verify2fa: `${bseUrl}/auth/verify-2fa`,
-    disable2fa: `${bseUrl}/auth/disable-2fa`,
+    login: `${baseUrl}/auth/login`,
+    signup: `${baseUrl}/auth/signup`,
+    verifyEmail: (token: string) => `${baseUrl}/auth/verify-email?token=${token}`,
+    resendEmail: `${baseUrl}/auth/verify-email`,
+    refreshToken: `${baseUrl}/auth/refresh`,
+    checkAuth: `${baseUrl}/auth/me`,
+    logout: `${baseUrl}/auth/logout`,
+    enable2fa: `${baseUrl}/auth/enable-2fa`,
+    verify2fa: `${baseUrl}/auth/verify-2fa`,
+    disable2fa: `${baseUrl}/auth/disable-2fa`,
   },
   projects: {
-    projects: `${bseUrl}/projects`,
-    projectById: (id: string) => `${bseUrl}/projects/${id}`,
+    projects: `${baseUrl}/projects`,
+    projectById: (id: string) => `${baseUrl}/projects/${id}`,
   },
   expenses: {
-    expenses: `${bseUrl}/expenses`,
-    expenseById: (id: string) => `${bseUrl}/expenses/${id}`,
+    expenses: `${baseUrl}/expenses`,
+    expenseById: (id: string) => `${baseUrl}/expenses/${id}`,
   },
+  categories: {
+    categories: `${baseUrl}/categories`,
+    categoryById: (id: string) => `${baseUrl}/categories/${id}`,
+  },
+  tasks: {
+    tasks: `${baseUrl}/tasks`,
+    taskById: (id: string) => `${baseUrl}/tasks/${id}`,
+  },
+  cycles: {
+    cycles: `${baseUrl}/cycles`,
+    cycleById: (id: string) => `${baseUrl}/cycles/${id}`,
+    toggleLock: (id: string) => `${baseUrl}/cycles/${id}/toggle-lock`,
+  },
+  receipts: {
+    receipts: `${baseUrl}/receipts`,
+    upload: `${baseUrl}/receipts/upload`,
+    receiptById: (id: string) => `${baseUrl}/receipts/${id}`,
+  }
 } as const;

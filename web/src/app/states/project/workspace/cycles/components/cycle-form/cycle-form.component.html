@@ -1,0 +1,33 @@
+<form [formGroup]="form" class="flex flex-col gap-4">
+  <div class="grid grid-cols-2 gap-4">
+    <app-date-picker
+      label="Cycle Start"
+      formControlName="cycleStart"
+      [required]="true"
+      [error]="getError('cycleStart')"
+    />
+
+    <app-date-picker
+      label="Cycle End"
+      formControlName="cycleEnd"
+      [required]="true"
+      [error]="getError('cycleEnd')"
+    />
+  </div>
+
+  <app-input
+    label="Budget Amount"
+    type="number"
+    placeholder="Enter budget amount"
+    [required]="true"
+    formControlName="budgetAmount"
+    [error]="getError('budgetAmount')"
+  />
+
+  <app-select
+    label="Rollover Mode"
+    formControlName="rolloverMode"
+    [options]="rolloverOptions"
+    placeholder="Select rollover behavior"
+  />
+</form>

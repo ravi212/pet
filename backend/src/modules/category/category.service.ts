@@ -88,7 +88,7 @@ export class CategoryService {
 
       return {
         data: categories,
-        meta: {
+        pagination: {
           total,
           page,
           limit,

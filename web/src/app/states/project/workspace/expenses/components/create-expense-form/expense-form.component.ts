@@ -61,7 +61,7 @@ export class ExpenseFormComponent implements OnInit {
 
     const payload = {
       ...raw,
-      incurredAt: raw.incurredAt.toISOString(),
+      incurredAt: new Date(raw.incurredAt).toISOString(),
       projectId: this.projectId,
     };
 

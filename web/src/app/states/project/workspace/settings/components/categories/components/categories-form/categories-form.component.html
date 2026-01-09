@@ -1,0 +1,21 @@
+<form [formGroup]="form" class="flex flex-col gap-4">
+  <!-- Category Name -->
+  <app-input
+    label="Category Name"
+    placeholder="e.g. Food, Travel, Utilities"
+    formControlName="name"
+    [required]="true"
+    [error]="getError('name')"
+  />
+
+  <!-- Category Color -->
+  <div class="flex flex-col gap-1">
+    <label class="text-sm font-medium text-light-700 dark:text-dark-200"> Color </label>
+
+    <app-color-picker formControlName="color"></app-color-picker>
+
+    <p class="text-xs text-light-500 py-1 text-gray-400">
+      * Used to visually identify this category
+    </p>
+  </div>
+</form>

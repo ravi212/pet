@@ -34,10 +34,9 @@
 
 <ng-template #actions let-project>
   <div class="flex items-center gap-2">
-
-        <app-button size="sm" variant="outline" (click)="goToProject(project)">
+    <app-button size="sm" variant="outline" (click)="goToProject(project)">
       <div class="flex gap-1 items-center">
-        <lucide-angular size="14" [img]="eyeIcon"></lucide-angular>
+        <lucide-angular size="14" [img]="settingsIcon"></lucide-angular>
         <!-- <span>Edit</span> -->
       </div>
     </app-button>
@@ -90,9 +89,7 @@
   <app-project-form [project]="selectedProject" (saved)="onSave()"></app-project-form>
   }
   <div slot="footer" class="flex justify-end gap-2 mt-4">
-    <app-button type="button" variant="outline" (click)="sideSheetOpen = false"
-      >Cancel</app-button
-    >
+    <app-button type="button" variant="outline" (click)="sideSheetOpen = false">Cancel</app-button>
     <app-button type="submit" variant="secondary" (click)="projectForm.submit()">Save</app-button>
   </div>
 </app-side-sheet>

@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Edit, Trash2, Plus, Eye } from 'lucide-angular';
+import { LucideAngularModule, Edit, Trash2, Plus, Settings } from 'lucide-angular';
 import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SharedModule } from '../../../shared/shared.module';
@@ -38,7 +38,7 @@ export class ProjectListComponent implements OnInit {
   readonly editIcon = Edit;
   readonly deleteIcon = Trash2;
   readonly plusIcon = Plus;
-  readonly eyeIcon = Eye;
+  readonly settingsIcon = Settings;
 
   loading = false;
   search = '';

@@ -170,7 +170,10 @@ export class ExpenseService {
         });
       });
 
-      return this.toExpenseResponse(expense);
+      return {
+        data: this.toExpenseResponse(expense),
+        message: 'Expense created successfully',
+      };
     } catch (err) {
       throw new InternalServerErrorException('Internal Server Error');
     }
@@ -299,7 +302,10 @@ export class ExpenseService {
         pagination: { page, limit, total, totalPages },
       };
     } catch (err) {
-      if (err instanceof BadRequestException || err instanceof ForbiddenException) {
+      if (
+        err instanceof BadRequestException ||
+        err instanceof ForbiddenException
+      ) {
         throw err;
       }
       throw new InternalServerErrorException('Internal Server Error');
@@ -359,11 +365,7 @@ export class ExpenseService {
   /**
    * Update an expense
    */
-  async update(
-    id: string,
-    updateExpenseDto: UpdateExpenseDto,
-    userId: string,
-  ) {
+  async update(id: string, updateExpenseDto: UpdateExpenseDto, userId: string) {
     try {
       const expense = await this.prisma.expense.findUnique({
         where: { id, deletedAt: null },
@@ -491,7 +493,10 @@ export class ExpenseService {
         });
       });
 
-      return this.toExpenseResponse(updated);
+      return {
+        data: this.toExpenseResponse(updated),
+        message: 'Expense updated successfully',
+      };
     } catch (err) {
       if (
         err instanceof NotFoundException ||
@@ -552,7 +557,10 @@ export class ExpenseService {
         },
       });
 
-      return this.toExpenseResponse(deleted);
+      return {
+        data: this.toExpenseResponse(deleted),
+        message: 'Expense deleted successfully',
+      };
     } catch (err) {
       if (
         err instanceof NotFoundException ||

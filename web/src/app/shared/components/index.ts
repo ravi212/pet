@@ -56,3 +56,9 @@ export { AppRadioGroupComponent } from './radio-group/radio-group.component';
 
 //Date Picker
 export { AppDatePickerComponent } from './date-picker/date-picker.component';
+
+// Color Picker
+export { ColorPickerComponent } from './color-picker/color-picker.component';
+
+// File Uplaod
+export { FileUploadComponent } from './file-upload/file-upload.component';

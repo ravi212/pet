@@ -22,18 +22,24 @@ export interface PaginatedResponse<T> {
       </div>
 
       <div class="flex gap-2">
-        <app-button [disabled]="page === 1" (click)="changePage(page - 1)" variant="outline"
+        <app-button
+          size="sm"
+          [disabled]="page === 1"
+          (click)="changePage(page - 1)"
+          variant="outline"
           >Prev</app-button
         >
 
         <app-button
           *ngFor="let p of pagesToShow"
           [variant]="p === page ? 'secondary' : 'outline'"
+          size="sm"
           (click)="changePage(p)"
           >{{ p }}</app-button
         >
 
         <app-button
+          size="sm"
           [disabled]="page === totalPages"
           (click)="changePage(page + 1)"
           variant="outline"

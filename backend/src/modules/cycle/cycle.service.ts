@@ -93,7 +93,10 @@ export class CycleService {
         },
       });
 
-      return this.toCycleResponse(cycle);
+      return {
+        data: this.toCycleResponse(cycle),
+        message: 'Cycle created successfully',
+      };
     } catch (err) {
       if (
         err instanceof BadRequestException ||
@@ -186,7 +189,10 @@ export class CycleService {
         throw new ForbiddenException('You do not have access to this cycle');
       }
 
-      return this.toCycleResponse(cycle);
+      return {
+        data: this.toCycleResponse(cycle),
+        message: 'Cycle fetched successfully',
+      };
     } catch (err) {
       if (
         err instanceof NotFoundException ||
@@ -282,7 +288,10 @@ export class CycleService {
         },
       });
 
-      return this.toCycleResponse(updated);
+      return {
+        data: this.toCycleResponse(updated),
+        message: 'Cycle created successfully',
+      };
     } catch (err) {
       if (
         err instanceof NotFoundException ||

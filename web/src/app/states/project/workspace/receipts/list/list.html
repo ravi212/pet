@@ -1,1 +1,100 @@
-<p>list works!</p>
+<div class="flex flex-col gap-4">
+  <div class="flex items-center justify-between">
+    <h2 class="text-xl font-semibold">Receipts</h2>
+
+    <app-button variant="primary" (click)="openCreateSheet()">
+      <lucide-angular size="16" [img]="plusIcon" class="mr-1" />
+      Upload Receipt
+    </app-button>
+  </div>
+
+  <app-datatable
+    [columns]="columns"
+    [data]="receipts"
+    [loading]="loading"
+    [actionsTemplate]="actions"
+  />
+
+  <app-pagination
+    [page]="page"
+    [total]="total"
+    (pageChange)="onPageChange($event)"
+    (limitChange)="onLimitChange($event)"
+  />
+</div>
+
+<ng-template #actions let-receipt>
+  <app-button size="sm" variant="danger" (click)="openConfirm(receipt)">
+    <lucide-angular size="14" [img]="deleteIcon" />
+  </app-button>
+</ng-template>
+
+<ng-template #uploadedAtTpl let-receipt>
+  {{ receipt.uploadedAt | date : 'mediumDate' }}
+</ng-template>
+
+<ng-template #statusTpl let-receipt>
+  <span
+    class="px-2 py-1 rounded text-xs"
+    [class.bg-yellow-100]="receipt.ocrStatus === 'pending'"
+    [class.bg-green-100]="receipt.ocrStatus === 'done'"
+    [class.bg-red-100]="receipt.ocrStatus === 'failed'"
+  >
+    {{ receipt.ocrStatus[0].toUpperCase() + receipt.ocrStatus.slice(1) }}
+  </span>
+</ng-template>
+
+<ng-template #fileTpl let-receipt>
+  <app-button variant="ghost" (click)="openFilePreview(receipt.fileUrl, receipt.originalFileName)">
+    <div class="flex items-center gap-1 underline">
+      <lucide-angular size="14" [img]="fileIcon" />
+      {{ receipt.originalFileName || 'Receipt' }}
+    </div>
+
+  </app-button>
+  <a
+
+    [href]="getUploadedFileUrl(receipt.fileUrl)"
+    [download]="receipt.originalFileName"
+    target="_blank"
+  >
+
+  </a>
+</ng-template>
+
+<app-confirm-dialog
+  [open]="confirmOpen"
+  title="Delete Receipt?"
+  message="This will permanently delete the receipt."
+  (confirm)="remove(selectedReceipt); confirmOpen = false"
+  (cancel)="confirmOpen = false"
+/>
+
+<app-side-sheet [(open)]="sideSheetOpen" width="600px">
+  <div slot="title">Upload Receipt</div>
+
+  @if (sideSheetOpen) {
+    <app-receipt-form
+      [projectId]="projectId"
+      (saved)="onSave()"
+    />
+  }
+    <div slot="footer" class="flex justify-end gap-2">
+    <app-button variant="outline" (click)="sideSheetOpen = false"> Cancel </app-button>
+    <app-button type="submit" variant="secondary" (click)="receiptForm.submit()"
+      >Save</app-button
+    >
+  </div>
+</app-side-sheet>
+
+<app-modal [showFooter]="false" [width]="'800px'" [isOpen]="previewOpen" (close)="previewOpen = false" [title]="previewFileName">
+  <div class="flex justify-center items-center">
+    <ng-container *ngIf="isImage(previewFileUrl); else pdfTemplate">
+      <img [src]="previewFileUrl" class="max-w-full max-h-[70vh] rounded" />
+    </ng-container>
+
+    <ng-template #pdfTemplate>
+      <iframe [src]="previewFileUrl | safeUrl" class="w-full h-[70vh]"></iframe>
+    </ng-template>
+  </div>
+</app-modal>

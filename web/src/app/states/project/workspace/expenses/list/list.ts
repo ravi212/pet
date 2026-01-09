@@ -17,7 +17,6 @@ import { ManageExpenseComponent } from '../components/manage-expense-form/manage
   selector: 'app-list',
   imports: [SharedModule, CommonModule, FormsModule, LucideAngularModule, ExpenseFormComponent, ManageExpenseComponent],
   templateUrl: './list.html',
-  styleUrl: './list.scss',
 })
 export class List {
   router = inject(Router);
@@ -42,6 +41,11 @@ export class List {
   readonly plusIcon = Plus;
   readonly eyeIcon = Eye;
   readonly settingsIcon = Settings;
+
+  categories = [];
+  tasks = [];
+  cycles = [];
+  receipts = [];
 
   loading = false;
   page = 1;

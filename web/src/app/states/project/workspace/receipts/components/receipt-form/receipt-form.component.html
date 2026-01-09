@@ -1,0 +1,28 @@
+<form [formGroup]="form" class="flex flex-col gap-4">
+
+  <app-file-upload
+    formControlName="file"
+    label="Receipt File"
+    accept="image/*,.pdf"
+    [previewUrl]="receipt?.fileUrl"
+    hint="Images or PDF only"
+    [error]="form.get('file')?.touched && !form.get('file')?.value
+      ? 'File is required'
+      : null"
+  />
+
+  <app-textarea
+    label="Description"
+    formControlName="description"
+  />
+
+  <!-- <app-input
+    label="Expense ID"
+    formControlName="expenseId"
+  />
+
+  <app-button type="submit" (click)="submit()">
+    {{ receipt ? 'Update Receipt' : 'Upload Receipt' }}
+  </app-button> -->
+
+</form>

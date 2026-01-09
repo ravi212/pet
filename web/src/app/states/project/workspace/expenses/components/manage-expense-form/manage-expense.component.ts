@@ -5,6 +5,8 @@ import { LucideAngularModule, Check, X, Paperclip, Eye, Edit } from 'lucide-angu
 import { SharedModule } from '../../../../../../shared/shared.module';
 import { Expense, ExpensesService } from '../../services/expense.service';
 import { CURRENCIES } from '../../../../../../shared/constants/common';
+import { baseUrl } from '../../../../../../shared/constants/endpoints.const';
+import { SafeUrlPipe } from '../../../../../../shared/pipes/safeurl.pipe';
 
 type EditableField =
   | 'amount'
@@ -21,11 +23,15 @@ type EditableField =
 @Component({
   selector: 'app-manage-expense',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, SharedModule],
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, SharedModule, SafeUrlPipe],
   templateUrl: './manage-expense.component.html',
 })
 export class ManageExpenseComponent implements OnInit {
   @Input() expense!: Expense;
+
+  previewOpen = false;
+  previewFileUrl: string | null = null;
+  previewFileName: string | null = null;
 
   form!: FormGroup;
   saving = false;
@@ -64,6 +70,10 @@ export class ManageExpenseComponent implements OnInit {
   startEdit(field: EditableField) {
     this.editingField = field;
   }
+
+  fetchCategories() {
+    this.expenseService }
+
 
   cancelEdit() {
     if (!this.editingField) return; // exit if nothing is being edited
@@ -105,4 +115,22 @@ export class ManageExpenseComponent implements OnInit {
   viewReceipt() {
     console.log('View receipt');
   }
+
+    getUploadedFileUrl(fileUrl: string) {
+      return `${baseUrl}${fileUrl}`;
+    }
+
+    openFilePreview() {
+      const fileUrl = this.expense?.receipt?.fileUrl;
+      const fileName = this.expense?.receipt?.originalFileName;
+      if (!fileUrl || !fileName) return;
+      this.previewFileUrl = this.getUploadedFileUrl(fileUrl);
+      this.previewFileName = fileName;
+      this.previewOpen = true;
+    }
+
+    isImage(url: string | null) {
+      if (!url) return false;
+      return url.match(/\.(jpeg|jpg|png|gif)$/i);
+    }
 }

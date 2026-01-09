@@ -1,0 +1,103 @@
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between gap-2">
+  <h2 class="text-xl font-semibold">Cycles</h2>
+
+  <div class="flex items-center gap-2">
+    <app-input
+      type="text"
+      placeholder="Search cycles..."
+      [(ngModel)]="search"
+      (ngModelChange)="onSearchChange($event)"
+    />
+
+    <app-button variant="primary" (click)="openCreateSheet()">
+      <lucide-angular size="16" [img]="plusIcon" class="mr-1" />
+      Create Cycle
+    </app-button>
+  </div>
+</div>
+
+  <app-datatable
+    [columns]="columns"
+    [data]="cycles"
+    [loading]="loading"
+    [actionsTemplate]="actions"
+  />
+
+  <app-pagination
+    [page]="page"
+    [total]="total"
+    (pageChange)="onPageChange($event)"
+    (limitChange)="onLimitChange($event)"
+  />
+</div>
+
+<!-- Actions -->
+<ng-template #actions let-cycle>
+  <div class="flex gap-2">
+    <app-button size="sm" variant="outline" (click)="toggleLock(cycle)">
+      <lucide-angular
+        size="14"
+        [img]="cycle.isLocked ? lockIcon : unlockIcon"
+      />
+    </app-button>
+
+    <app-button size="sm" variant="accent" (click)="edit(cycle)">
+      <lucide-angular size="14" [img]="editIcon" />
+    </app-button>
+
+    <app-button size="sm" variant="danger" (click)="openConfirm(cycle)">
+      <lucide-angular size="14" [img]="deleteIcon" />
+    </app-button>
+  </div>
+</ng-template>
+
+<!-- Date Template -->
+<ng-template #dateTpl let-cycle>
+  {{ cycle.cycleStart | date : 'mediumDate' }} →
+  {{ cycle.cycleEnd | date : 'mediumDate' }}
+</ng-template>
+
+<!-- Lock Status -->
+<ng-template #lockTpl let-cycle>
+  <span
+    class="px-2 py-1 rounded text-xs"
+    [class.bg-red-100]="cycle.isLocked"
+    [class.bg-green-100]="!cycle.isLocked"
+  >
+    {{ cycle.isLocked ? 'Locked' : 'Active' }}
+  </span>
+</ng-template>
+
+<!-- Confirm -->
+<app-confirm-dialog
+  [open]="confirmOpen"
+  title="Delete Cycle?"
+  message="This will permanently delete the cycle."
+  (confirm)="remove(selectedCycle); confirmOpen = false"
+  (cancel)="confirmOpen = false"
+/>
+
+<!-- Side Sheet -->
+<app-side-sheet [(open)]="sideSheetOpen" width="600px">
+  <div slot="title">
+    {{ selectedCycle ? 'Edit Cycle' : 'Create Cycle' }}
+  </div>
+
+  @if (sideSheetOpen) {
+    <app-cycle-form
+      [cycle]="selectedCycle"
+      [projectId]="projectId"
+      (saved)="onSave()"
+    />
+  }
+
+  <div slot="footer" class="flex justify-end gap-2">
+    <app-button variant="outline" (click)="sideSheetOpen = false">
+      Cancel
+    </app-button>
+        <app-button type="submit" variant="secondary" (click)="cycleForm.submit()"
+      >Save</app-button
+    >
+  </div>
+</app-side-sheet>

@@ -3,7 +3,8 @@ import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../../../core/services/api.service';
 import { endpoints } from '../../../../../shared/constants/endpoints.const';
-import { ApiResponse, Category, ProjectCycle, Receipt, Task } from '../../../../../shared/models';
+import { ApiResponse, Category, ProjectCycle, Task } from '../../../../../shared/models';
+import { Receipt } from '../../receipts/services/receipts.service';
 
 /* =======================
    Models / Interfaces
@@ -66,8 +67,8 @@ export interface ExpenseFilters {
 export class ExpensesService {
   private api = inject(ApiService);
 
-  create(expense: Partial<Expense>): Observable<Expense> {
-    return this.api.post<Expense>(
+  create(expense: Partial<Expense>): Observable<ApiResponse<Expense>> {
+    return this.api.post<ApiResponse<Expense>>(
       endpoints.expenses.expenses,
       expense
     );
@@ -104,15 +105,15 @@ export class ExpensesService {
     );
   }
 
-  update(expenseId: string, payload: Partial<Expense>): Observable<Partial<Expense>> {
-    return this.api.patch<Partial<Expense>>(
+  update(expenseId: string, payload: Partial<Expense>): Observable<ApiResponse<Partial<Expense>>> {
+    return this.api.patch<ApiResponse<Partial<Expense>>>(
       endpoints.expenses.expenseById(expenseId),
       payload
     );
   }
 
-  remove(expenseId: string): Observable<ApiResponse<any>> {
-    return this.api.delete<ApiResponse<any>>(
+  remove(expenseId: string): Observable<ApiResponse<Partial<Expense>>> {
+    return this.api.delete<ApiResponse<Partial<Expense>>>(
       endpoints.expenses.expenseById(expenseId)
     );
   }

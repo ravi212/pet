@@ -19,7 +19,9 @@ import {
   AppSidebarComponent,
   AppRadioGroupComponent,
   AppDatePickerComponent,
-  ConfirmDialogComponent
+  ConfirmDialogComponent,
+  ColorPickerComponent,
+  FileUploadComponent
 } from './components';
 
 
@@ -41,7 +43,9 @@ const SHARED_COMPONENTS = [
   AppSidebarComponent,
   AppRadioGroupComponent,
   AppDatePickerComponent,
-  ConfirmDialogComponent
+  ConfirmDialogComponent,
+  ColorPickerComponent,
+  FileUploadComponent
 ];
 
 @NgModule({
