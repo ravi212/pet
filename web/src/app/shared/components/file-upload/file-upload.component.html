@@ -1,0 +1,66 @@
+<label class="text-sm font-medium">{{ label }}</label>
+
+<div
+  class="border-2 border-dashed rounded-lg p-4 transition-all cursor-pointer
+         bg-white hover:bg-gray-50"
+  [class.border-blue-500]="isDragging"
+  (click)="fileInput.click()"
+>
+  <input
+    #fileInput
+    type="file"
+    class="hidden"
+    [accept]="accept"
+    (change)="onInputChange($event)"
+  />
+
+  <div *ngIf="!file && !previewUrl" class="text-center text-sm text-gray-500">
+    Drag & drop file here or click to browse
+  </div>
+
+  <!-- Image Preview -->
+  <div *ngIf="previewUrl" class="flex items-center gap-3">
+    <img
+      [src]="previewUrl"
+      class="w-20 h-20 object-cover rounded border"
+    />
+
+    <div class="flex flex-col gap-1">
+      <!-- <button
+        type="button"
+        class="text-sm text-blue-600"
+        (click)="showPreview = true; $event.stopPropagation()"
+      >
+        Preview
+      </button> -->
+
+      <button
+        type="button"
+        class="text-sm text-red-600"
+        (click)="clear(); $event.stopPropagation()"
+      >
+        Remove
+      </button>
+    </div>
+  </div>
+
+  <!-- Non-image file -->
+  <div *ngIf="file && !previewUrl" class="text-sm">
+    {{ file.name }}
+  </div>
+</div>
+
+<p *ngIf="hint" class="text-xs text-gray-500">{{ hint }}</p>
+<p *ngIf="error" class="text-xs text-red-500">{{ error }}</p>
+
+<!-- Preview Modal -->
+<div
+  *ngIf="showPreview"
+  class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+  (click)="showPreview = false"
+>
+  <img
+    [src]="previewUrl"
+    class="max-h-[90vh] max-w-[90vw] rounded shadow-lg"
+  />
+</div>

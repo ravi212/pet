@@ -1,12 +1,14 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { ButtonComponent } from "../button/button.component";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [],
+  imports: [ButtonComponent, CommonModule],
   template: `
     @if (isOpen) {
-      <div class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
         <!-- Backdrop -->
         <div
           class="fixed inset-0 bg-black/50 transition-opacity duration-base"
@@ -14,9 +16,10 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
         ></div>
 
         <!-- Modal -->
-        <div class="flex min-h-screen items-center justify-center p-4">
+        <div class="flex w-full justify-center p-4">
           <div
-            class="relative w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-base dark:bg-gray-800"
+            class="relative transform rounded-md bg-white shadow-xl transition-all duration-base dark:bg-gray-800"
+            [ngStyle]="{'width': width}"
             (click)="$event.stopPropagation()"
           >
             <!-- Header -->
@@ -40,18 +43,20 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
             <!-- Footer -->
             @if (showFooter) {
               <div class="flex justify-end gap-3 border-t border-gray-200 px-6 py-4 dark:border-gray-700">
-                <button
+                <app-button
                   (click)="closeModal()"
-                  class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors dark:text-gray-300 dark:hover:bg-gray-700"
+                  size="sm"
+                  variant="outline"
                 >
                   Cancel
-                </button>
-                <button
+                </app-button>
+                <app-button
                   (click)="confirm()"
-                  class="px-4 py-2 text-sm font-medium text-white bg-primary hover:opacity-90 rounded-md transition-all dark:bg-primary-dark"
+                  size="sm"
+                  variant="secondary"
                 >
-                  Confirm
-                </button>
+                  {{confirmButtonTitle}}
+                </app-button>
               </div>
             }
           </div>
@@ -63,8 +68,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 })
 export class ModalComponent {
   @Input() isOpen = false;
-  @Input() title = 'Modal Title';
+  @Input() title: string | null = 'Modal Title';
   @Input() showFooter = true;
+  @Input() confirmButtonTitle = 'Confirm';
+
+  // NEW: modal width input with default
+  @Input() width = '500px';
 
   @Output() close = new EventEmitter<void>();
   @Output() confirmed = new EventEmitter<void>();

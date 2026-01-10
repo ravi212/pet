@@ -9,7 +9,21 @@ import {
   AlertComponent,
   ModalComponent,
   SkeletonComponent,
+  DataTableComponent,
+  SideSheetComponent,
+  PaginationComponent,
+  SelectComponent,
+  TextareaComponent,
+  AppCheckboxComponent,
+  AppHeaderComponent,
+  AppSidebarComponent,
+  AppRadioGroupComponent,
+  AppDatePickerComponent,
+  ConfirmDialogComponent,
+  ColorPickerComponent,
+  FileUploadComponent
 } from './components';
+
 
 const SHARED_COMPONENTS = [
   ButtonComponent,
@@ -19,6 +33,19 @@ const SHARED_COMPONENTS = [
   AlertComponent,
   ModalComponent,
   SkeletonComponent,
+  DataTableComponent,
+  SideSheetComponent,
+  PaginationComponent,
+  SelectComponent,
+  TextareaComponent,
+  AppCheckboxComponent,
+  AppHeaderComponent,
+  AppSidebarComponent,
+  AppRadioGroupComponent,
+  AppDatePickerComponent,
+  ConfirmDialogComponent,
+  ColorPickerComponent,
+  FileUploadComponent
 ];
 
 @NgModule({

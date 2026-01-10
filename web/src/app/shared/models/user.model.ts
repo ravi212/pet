@@ -15,6 +15,8 @@ export interface User {
   oauthProviderId?: string;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
+  displayName?: string;
+  sessionId?: string;
 }
 
 export interface CreateUserDto {
@@ -34,14 +36,4 @@ export interface UpdateUserDto {
   timezone?: string;
   locale?: string;
   aiOptIn?: boolean;
-}
-
-export interface LoginDto {
-  email: string;
-  password: string;
-}
-
-export interface AuthResponse {
-  accessToken: string;
-  user: User;
 }

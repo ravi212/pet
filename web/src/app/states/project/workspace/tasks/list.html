@@ -1,0 +1,93 @@
+<div class="flex flex-col gap-4">
+  <!-- Header -->
+  <div class="flex items-center justify-between gap-2">
+    <h2 class="text-xl font-semibold">Tasks</h2>
+
+    <div class="flex items-center gap-2">
+      <app-input
+        type="text"
+        placeholder="Search tasks..."
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange($event)"
+      />
+
+      <app-button variant="primary" (click)="openCreateSheet()">
+        <lucide-angular size="16" [img]="plusIcon" class="mr-1" />
+        Create Task
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <app-datatable
+    [columns]="columns"
+    [data]="tasks"
+    [loading]="loading"
+    [actionsTemplate]="actions"
+  />
+
+  <!-- Pagination -->
+  <app-pagination
+    [page]="page"
+    [total]="total"
+    (pageChange)="onPageChange($event)"
+    (limitChange)="onLimitChange($event)"
+  />
+</div>
+
+<!-- Actions -->
+<ng-template #actions let-task>
+  <div class="flex gap-2">
+    <app-button size="sm" variant="outline" (click)="edit(task)">
+      <lucide-angular size="14" [img]="editIcon" />
+    </app-button>
+
+    <app-button size="sm" variant="danger" (click)="openConfirm(task)">
+      <lucide-angular size="14" [img]="deleteIcon" />
+    </app-button>
+  </div>
+</ng-template>
+
+<!-- Status -->
+<ng-template #statusTpl let-task>
+  <span
+    class="px-2 py-1 rounded text-xs capitalize"
+    [class.bg-gray-200]="task.status === 'todo'"
+    [class.bg-blue-200]="task.status === 'in-progress'"
+    [class.bg-green-200]="task.status === 'done'"
+  >
+    {{ task.status }}
+  </span>
+</ng-template>
+
+<!-- Assignee -->
+<ng-template #assigneeTpl let-task>
+  {{ task.assignee?.firstName }} {{ task.assignee?.lastName || '-' }}
+</ng-template>
+
+<!-- Confirm -->
+<app-confirm-dialog
+  [open]="confirmOpen"
+  title="Delete Task?"
+  message="This will permanently delete the task."
+  (confirm)="remove(selectedTask); confirmOpen = false"
+  (cancel)="confirmOpen = false"
+/>
+
+<!-- Side Sheet -->
+<app-side-sheet [(open)]="sideSheetOpen" width="600px">
+  <div slot="title">
+    {{ selectedTask ? 'Edit Task' : 'Create Task' }}
+  </div>
+
+  @if (sideSheetOpen) {
+  <app-task-form [task]="selectedTask" [projectId]="projectId" (saved)="onSave()" />
+  }
+
+  <div slot="footer" class="flex justify-end gap-2">
+    <app-button variant="outline" (click)="sideSheetOpen = false"> Cancel </app-button>
+    <app-button type="submit" variant="secondary" (click)="taskForm.submit()"
+      >Save</app-button
+    >
+  </div>
+</app-side-sheet>

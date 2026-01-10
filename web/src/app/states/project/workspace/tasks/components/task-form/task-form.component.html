@@ -1,0 +1,42 @@
+<form [formGroup]="form" class="flex flex-col gap-4">
+  <app-input
+    label="Title"
+    placeholder="Enter task title"
+    [required]="true"
+    formControlName="title"
+    [error]="getError('title')"
+  />
+
+  <app-textarea
+    label="Description"
+    placeholder="Describe the task (optional)"
+    formControlName="description"
+    [error]="getError('description')"
+  />
+
+  <div class="grid grid-cols-2 gap-4">
+    <app-select
+      label="Status"
+      [required]="true"
+      formControlName="status"
+      [options]="statusOptions"
+      placeholder="Select status"
+      [error]="getError('status')"
+    />
+
+    <app-input
+      label="Budget Amount"
+      type="number"
+      placeholder="Enter budget"
+      formControlName="budgetAmount"
+      [error]="getError('budgetAmount')"
+    />
+  </div>
+
+  <!-- <app-input
+    label="Assigned To (User ID)"
+    placeholder="User ID (optional)"
+    formControlName="assignedTo"
+    [error]="getError('assignedTo')"
+  /> -->
+</form>

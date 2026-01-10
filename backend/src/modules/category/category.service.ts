@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Prisma } from 'generated/prisma/client';
+import { REQUEST_MODE } from 'src/enums/common.enum';
 
 @Injectable()
 export class CategoryService {
@@ -55,6 +56,7 @@ export class CategoryService {
     page = 1,
     limit = 10,
     search?: string,
+    mode: REQUEST_MODE = REQUEST_MODE.LIST
   ) {
     try {
       const skip = (page - 1) * limit;
@@ -86,9 +88,18 @@ export class CategoryService {
         this.prisma.category.count({ where }),
       ]);
 
+      let finalCategories: any[] = categories;
+
+      if (mode == REQUEST_MODE.SELECT) {
+        finalCategories = categories.map((c) => ({
+          label: c.name,
+          value: c.id,
+        }));
+      }
+
       return {
-        data: categories,
-        meta: {
+        data: finalCategories,
+        pagination: {
           total,
           page,
           limit,

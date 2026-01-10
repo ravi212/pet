@@ -1,0 +1,30 @@
+<form [formGroup]="form" class="flex flex-col gap-4">
+  <app-input
+    label="Title"
+    placeholder="Enter Project Title"
+    [required]="true"
+    formControlName="title"
+    [error]="getError('title')"
+  />
+
+  <app-textarea label="Description" formControlName="description" [rows]="4" placeholder="Enter description here..." />
+
+  <app-select
+    label="Project Type"
+    placeholder="Select type"
+    formControlName="type"
+    [required]="true"
+    [options]="[
+      { label: 'One Time', value: 'one_time' },
+      { label: 'Recurring', value: 'recurring' }
+    ]"
+  />
+
+  <!-- <app-select
+    label="Collaborators"
+    formControlName="collaborators"
+    [multiple]="true"
+    [options]="users"
+    hint="Hold Ctrl / Cmd to select multiple"
+  /> -->
+</form>

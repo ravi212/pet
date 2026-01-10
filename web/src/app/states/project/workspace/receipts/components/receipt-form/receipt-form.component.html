@@ -1,0 +1,44 @@
+<form [formGroup]="form" class="flex flex-col gap-4">
+  @if (!receipt) {
+  <app-file-upload
+    formControlName="file"
+    label="Receipt File"
+    accept="image/*,.pdf"
+    [previewUrl]="previewUrl"
+    hint="Images or PDF only"
+    [error]="form.get('file')?.touched && !form.get('file')?.value ? 'File is required' : null"
+  />
+
+  } @if (receipt) {
+  <app-button variant="ghost" (click)="showPreview.emit(true)">
+    <div class="flex items-center gap-1 underline">
+      <lucide-angular size="14" [img]="fileIcon" />
+      {{ receipt.originalFileName || 'Receipt' }}
+    </div>
+  </app-button>
+  }
+
+  <app-textarea label="Description" formControlName="description" />
+
+  <app-select placeholder="Select Expense..." [options]="expensesDropdown.items" formControlName="expenseId" label="Expense" class="flex-1"></app-select>
+</form>
+
+@if(receipt) {
+<app-modal
+  [showFooter]="false"
+  [width]="'800px'"
+  [isOpen]="isPreviewOpen"
+  (close)="isPreviewOpen = false"
+  [title]="previewName"
+>
+  <div class="flex justify-center items-center">
+    <ng-container *ngIf="isImage(previewUrl); else pdfTemplate">
+      <img [src]="previewUrl" class="max-w-full max-h-[70vh] rounded" />
+    </ng-container>
+
+    <ng-template #pdfTemplate>
+      <iframe [src]="previewUrl | safeUrl" class="w-full h-[70vh]"></iframe>
+    </ng-template>
+  </div>
+</app-modal>
+}

@@ -1,0 +1,39 @@
+<div class="max-w-md mx-auto mt-10 px-4">
+  <app-card title="Login" [elevated]="true">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <app-input
+          label="Email"
+          type="email"
+          placeholder="Enter your email"
+          [required]="true"
+          formControlName="email"
+          [error]="getError('email')"
+        ></app-input>
+      </div>
+      <div class="mb-3">
+        <app-input
+          label="Password"
+          type="password"
+          placeholder="Enter your password"
+          [required]="true"
+          formControlName="password"
+          [error]="getError('password')"
+        ></app-input>
+      </div>
+      <div class="my-4">
+        <app-button
+          type="submit"
+          [disabled]="isSubmitting || loginForm.invalid"
+          [fullWidth]="true"
+          [loading]="isSubmitting"
+          >Sign In</app-button
+        >
+      </div>
+    </form>
+    <div class="my-2 text-center">
+      <span>Don't have an account? </span
+      ><a href="/auth/signup" class="text-primary hover:underline">SignUp</a>
+    </div>
+  </app-card>
+</div>

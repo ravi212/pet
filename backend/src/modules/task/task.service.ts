@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Prisma } from 'generated/prisma/client';
+import { REQUEST_MODE } from 'src/enums/common.enum';
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
   include: {
@@ -23,13 +24,14 @@ type TaskWithRelations = Prisma.TaskGetPayload<{
 export class TaskService {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Convert BigInt fields to strings for JSON serialization
-   */
-  private toTaskResponse(task: TaskWithRelations) {
-    return {
+  private toTaskResponse(task: TaskWithRelations, mode: REQUEST_MODE = REQUEST_MODE.LIST) {
+    return mode == REQUEST_MODE.LIST
+      ?  {
       ...task,
       budgetAmount: task.budgetAmount ? task.budgetAmount.toString() : null,
+    }: {
+      label: task.title,
+      value: task.id,
     };
   }
 
@@ -101,7 +103,10 @@ export class TaskService {
         },
       });
 
-      return this.toTaskResponse(task);
+      return {
+        data: this.toTaskResponse(task),
+        message: 'Task created successfully',
+      };
     } catch (err) {
       if (
         err instanceof BadRequestException ||
@@ -121,10 +126,9 @@ export class TaskService {
       status?: string;
       assignedTo?: string;
     },
-    pagination?: { page?: number; limit?: number; orderBy?: 'asc' | 'desc' },
+    pagination?: { page?: number; limit?: number; orderBy?: 'asc' | 'desc', mode?: REQUEST_MODE},
   ) {
     try {
-
       const project = await this.prisma.project.findUnique({
         where: { id: projectId },
         include: { collaborators: true },
@@ -189,13 +193,17 @@ export class TaskService {
       ]);
 
       const totalPages = Math.ceil(total / limit);
+      const mode = pagination?.mode ?? REQUEST_MODE.LIST;
 
       return {
-        data: tasks.map((t) => this.toTaskResponse(t)),
+        data: tasks.map((t) => this.toTaskResponse(t, mode)),
         pagination: { page, limit, total, totalPages },
       };
     } catch (err) {
-      if (err instanceof BadRequestException || err instanceof ForbiddenException) {
+      if (
+        err instanceof BadRequestException ||
+        err instanceof ForbiddenException
+      ) {
         throw err;
       }
       throw new InternalServerErrorException('Internal Server Error');
@@ -232,7 +240,10 @@ export class TaskService {
         throw new ForbiddenException('You do not have access to this task');
       }
 
-      return this.toTaskResponse(task);
+      return {
+        data: this.toTaskResponse(task),
+        message: 'Task fetched successfully',
+      };
     } catch (err) {
       if (
         err instanceof NotFoundException ||
@@ -287,7 +298,8 @@ export class TaskService {
         }
 
         // Check if assignee has access to project
-        const assigneeIsOwner = task.project.ownerId === updateTaskDto.assignedTo;
+        const assigneeIsOwner =
+          task.project.ownerId === updateTaskDto.assignedTo;
         const assigneeIsCollaborator = task.project.collaborators.some(
           (c) => c.userId === updateTaskDto.assignedTo,
         );
@@ -330,7 +342,10 @@ export class TaskService {
         },
       });
 
-      return this.toTaskResponse(updated);
+      return {
+        data: this.toTaskResponse(updated),
+        message: 'Task updated successfully',
+      };
     } catch (err) {
       if (
         err instanceof NotFoundException ||

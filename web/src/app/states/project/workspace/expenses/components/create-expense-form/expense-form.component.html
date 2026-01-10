@@ -1,0 +1,50 @@
+<form [formGroup]="form" class="flex flex-col gap-4">
+  <!-- Currency -->
+  <app-select
+    label="Currency"
+    placeholder="Select currency"
+    formControlName="currency"
+    [required]="true"
+    [options]="currencies"
+  />
+
+  <!-- Amount -->
+  <app-input
+    label="Amount"
+    placeholder="Enter amount"
+    type="number"
+    formControlName="amount"
+    [required]="true"
+    [error]="getError('amount')"
+  />
+
+  <!-- <app-checkbox label="Reimbursable" formControlName="isReimbursable" />
+  @if(form.get('isReimbursable')?.value){
+  <app-input label="Reimbursed Amount" type="number" formControlName="reimbursedAmount" />
+  } -->
+
+  <!-- Date -->
+  <app-date-picker
+    label="Incurred Date"
+    formControlName="incurredAt"
+    [required]="true"
+    [error]="getError('incurredAt')"
+    hint="Select the expense date"
+  />
+
+  <!-- Vendor -->
+  <app-input label="Vendor" placeholder="e.g. Amazon, Uber, Restaurant" formControlName="vendor" />
+
+
+  <!-- <app-select
+    label="Category"
+    placeholder="Select category"
+    formControlName="categoryId"
+    [options]="categories"
+  />
+
+  <app-select label="Task" placeholder="Select task" formControlName="taskId" [options]="tasks" /> -->
+
+  <!-- Notes -->
+  <app-textarea label="Note" placeholder="Enter text here..." formControlName="note" [rows]="3" />
+</form>

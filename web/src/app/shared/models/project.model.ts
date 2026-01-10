@@ -1,4 +1,3 @@
-export type ProjectType = 'one_time' | 'recurring';
 
 export interface Project {
   id: string;
@@ -36,6 +35,25 @@ export interface ProjectWithCollaborators extends Project {
   expenses?: Expense[];
 }
 
+export interface Project {
+  id: string;
+  title: string;
+  description?: string;
+  type: ProjectType;
+  updatedAt: Date;
+}
+
+export interface PaginatedProjects {
+  data: Project[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 import { ProjectCollaborator } from './project-collaborator.model';
 import { ProjectCycle } from './cycle.model';
-import { Expense } from './expense.model';
+import { Expense } from './expense.model';import { ProjectType } from '../enums';
+

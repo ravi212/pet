@@ -11,6 +11,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateReceiptDto } from './dto/create-receipt.dto';
 import { UpdateReceiptDto } from './dto/update-receipt.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { REQUEST_MODE } from 'src/enums/common.enum';
+
+export interface Response<T> {
+  message: string;
+  data: T;
+}
 
 export interface ReceiptResponse {
   id: string;
@@ -29,6 +35,8 @@ export interface ReceiptResponse {
   expiresAt: Date | null;
   uploadedAt: Date;
   createdAt: Date;
+  description: string | null;
+  expenseId: string | null;
 }
 
 export interface ListReceiptsResponse {
@@ -78,7 +86,7 @@ export class ReceiptService {
     file: MultipartFile,
     createReceiptDto: CreateReceiptDto,
     userId: string,
-  ): Promise<ReceiptResponse> {
+  ) {
     if (!file) {
       throw new BadRequestException('File is required');
     }
@@ -113,49 +121,36 @@ export class ReceiptService {
       );
 
       if (!isOwner && !isCollaborator) {
-        throw new ForbiddenException(
-          'You do not have access to this project',
-        );
+        throw new ForbiddenException('You do not have access to this project');
       }
 
-      // If expenseId is provided, validate it belongs to the project
-      if (createReceiptDto.expenseId) {
-        const expense = await this.prisma.expense.findUnique({
-          where: { id: createReceiptDto.expenseId },
-        });
-
-        if (!expense || expense.projectId !== createReceiptDto.projectId) {
-          throw new BadRequestException(
-            'Expense does not belong to this project',
-          );
-        }
-      }
-
-      // Generate storage path
+      // Generate filename
       const timestamp = Date.now();
       const fileId = uuidv4();
       const ext = this.getFileExtension(file.originalname);
-      const storagePath = path.join(
-        this.STORAGE_DIR,
-        userId,
-        `${timestamp}-${fileId}.${ext}`,
-      );
+      const fileName = `${timestamp}-${fileId}.${ext}`;
 
       // Create user directory if it doesn't exist
-      const userDir = path.dirname(storagePath);
+      const userDir = path.join(this.STORAGE_DIR, userId);
       if (!fs.existsSync(userDir)) {
         fs.mkdirSync(userDir, { recursive: true });
       }
 
+      // Full storage path (server-only)
+      const storagePath = path.join(userDir, fileName);
+
       // Save file to disk
       fs.writeFileSync(storagePath, file.buffer);
+
+      // Public URL to return to client
+      const fileUrl = `/storage/receipts/${userId}/${fileName}`;
 
       // Create receipt record with OCR status pending
       const receipt = await this.prisma.receipt.create({
         data: {
           userId,
           projectId: createReceiptDto.projectId,
-          fileUrl: `/uploads/receipts/${userId}/${timestamp}-${fileId}.${ext}`,
+          fileUrl,
           fileType: file.mimetype,
           fileSize: BigInt(file.size),
           originalFileName: file.originalname,
@@ -167,11 +162,28 @@ export class ReceiptService {
       });
 
       // Trigger OCR processing asynchronously (fire and forget)
-      this.processOCRAsync(receipt.id, storagePath).catch((err) => {
-        console.error(`OCR processing failed for receipt ${receipt.id}:`, err);
-      });
+      // this.processOCRAsync(receipt.id, storagePath).catch((err) => {
+      //   console.error(`OCR processing failed for receipt ${receipt.id}:`, err);
+      // });
+      
+      // update expense based on receipt id
+      if (createReceiptDto.expenseId) {
+        try {
+          await this.prisma.expense.update({
+            where: { id: createReceiptDto.expenseId as string },
+            data: {
+              receiptId: receipt.id,
+            },
+          });
+        } catch (e) {
+          throw new BadRequestException('Expense not found');
+        }
+      }
 
-      return this.toReceiptResponse(receipt);
+      return {
+        data: this.toReceiptResponse(receipt),
+        message: 'Receipt uploaded successfully',
+      };
     } catch (error) {
       // Clean up uploaded file on error
       if (file.path && fs.existsSync(file.path)) {
@@ -200,7 +212,8 @@ export class ReceiptService {
     page: number = 1,
     limit: number = 10,
     ocrStatus?: string,
-  ): Promise<ListReceiptsResponse> {
+    mode: REQUEST_MODE = REQUEST_MODE.LIST,
+  ) {
     try {
       // Check if project exists and user has access
       const project = await this.prisma.project.findUnique({
@@ -218,9 +231,7 @@ export class ReceiptService {
       );
 
       if (!isOwner && !isCollaborator) {
-        throw new ForbiddenException(
-          'You do not have access to this project',
-        );
+        throw new ForbiddenException('You do not have access to this project');
       }
 
       const skip = (page - 1) * limit;
@@ -241,11 +252,13 @@ export class ReceiptService {
       ]);
 
       return {
-        data: receipts.map((receipt) => this.toReceiptResponse(receipt)),
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        data: receipts.map((receipt) => this.toReceiptResponse(receipt, mode)),
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
       };
     } catch (error) {
       if (
@@ -263,7 +276,10 @@ export class ReceiptService {
   /**
    * Find single receipt by ID
    */
-  async findOne(id: string, userId: string): Promise<ReceiptResponse> {
+  async findOne(
+    id: string,
+    userId: string,
+  ) {
     try {
       const receipt = await this.prisma.receipt.findUnique({
         where: { id },
@@ -289,12 +305,13 @@ export class ReceiptService {
       );
 
       if (!isOwner && !isCollaborator) {
-        throw new ForbiddenException(
-          'You do not have access to this receipt',
-        );
+        throw new ForbiddenException('You do not have access to this receipt');
       }
 
-      return this.toReceiptResponse(receipt);
+      return {
+        data: this.toReceiptResponse(receipt),
+        message: 'Receipt fetched successfully',
+      };
     } catch (error) {
       if (
         error instanceof ForbiddenException ||
@@ -308,14 +325,11 @@ export class ReceiptService {
     }
   }
 
-  /**
-   * Update receipt (description, expiresAt, etc.)
-   */
   async update(
     id: string,
     updateReceiptDto: UpdateReceiptDto,
     userId: string,
-  ): Promise<ReceiptResponse> {
+  ) {
     try {
       const receipt = await this.prisma.receipt.findUnique({
         where: { id },
@@ -341,9 +355,7 @@ export class ReceiptService {
       );
 
       if (!isOwner && !isCollaborator) {
-        throw new ForbiddenException(
-          'You do not have access to this receipt',
-        );
+        throw new ForbiddenException('You do not have access to this receipt');
       }
 
       // Validate projectId if it's being updated
@@ -360,12 +372,29 @@ export class ReceiptService {
         }
       }
 
+      // update expense based on receipt id
+      if (updateReceiptDto.expenseId) {
+        try {
+          await this.prisma.expense.update({
+            where: { id: updateReceiptDto.expenseId as string },
+            data: {
+              receiptId: receipt.id,
+            },
+          });
+        } catch (e) {
+          console.log(e);
+          throw new BadRequestException('Expense not found');
+        }
+      }
       const updated = await this.prisma.receipt.update({
         where: { id },
         data: updateReceiptDto,
       });
 
-      return this.toReceiptResponse(updated);
+      return {
+        data: this.toReceiptResponse(updated),
+        message: 'Receipt updated successfully',
+      };
     } catch (error) {
       if (
         error instanceof BadRequestException ||
@@ -383,7 +412,7 @@ export class ReceiptService {
   /**
    * Delete receipt and associated file
    */
-  async remove(id: string, userId: string): Promise<void> {
+  async remove(id: string, userId: string) {
     try {
       const receipt = await this.prisma.receipt.findUnique({
         where: { id },
@@ -409,9 +438,7 @@ export class ReceiptService {
       );
 
       if (!isOwner && !isCollaborator) {
-        throw new ForbiddenException(
-          'You do not have access to this receipt',
-        );
+        throw new ForbiddenException('You do not have access to this receipt');
       }
 
       // Delete file from disk
@@ -420,9 +447,13 @@ export class ReceiptService {
       }
 
       // Delete from database
-      await this.prisma.receipt.delete({
+      const deletedReceipt = await this.prisma.receipt.delete({
         where: { id },
       });
+      return {
+        message: 'Receipt deleted successfully',
+        data: this.toReceiptResponse(deletedReceipt),
+      };
     } catch (error) {
       if (
         error instanceof ForbiddenException ||
@@ -515,8 +546,8 @@ export class ReceiptService {
   /**
    * Convert database receipt to response with BigInt conversion
    */
-  private toReceiptResponse(receipt: any): ReceiptResponse {
-    return {
+  private toReceiptResponse(receipt: any, mode: REQUEST_MODE = REQUEST_MODE.LIST) {
+    return mode == REQUEST_MODE.LIST ? {
       id: receipt.id,
       userId: receipt.userId,
       projectId: receipt.projectId,
@@ -533,6 +564,14 @@ export class ReceiptService {
       expiresAt: receipt.expiresAt,
       uploadedAt: receipt.uploadedAt,
       createdAt: receipt.createdAt,
+      description: receipt.description,
+      expenseId: receipt.expenseId,
+    }: {
+      label: receipt.originalFileName,
+      value: receipt.id,
+      meta: {
+        fileUrl: receipt?.fileUrl,
+      }
     };
   }
 

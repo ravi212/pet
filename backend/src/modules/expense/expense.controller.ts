@@ -15,6 +15,7 @@ import { ExpenseService } from './expense.service';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { REQUEST_MODE } from 'src/enums/common.enum';
 
 @ApiTags('Expenses')
 @ApiBearerAuth()
@@ -102,6 +103,7 @@ export class ExpenseController {
     @Query('isReimbursable') isReimbursable?: string,
     @Query('createdBy') createdBy?: string,
     @Query('orderBy') orderBy?: 'asc' | 'desc',
+    @Query('mode') mode?: REQUEST_MODE,
   ) {
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
     const limitNum = Math.max(1, Math.min(100, parseInt(limit, 10) || 10));
@@ -122,6 +124,7 @@ export class ExpenseController {
       page: pageNum,
       limit: limitNum,
       orderBy,
+      mode,
     };
 
     return this.expenseService.findAll(projectId, req.user.id, filters, pagination);

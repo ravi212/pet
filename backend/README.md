@@ -110,7 +110,7 @@ The Swagger interface provides:
 ```
 POST   /auth/signup                      - Create new account
 POST   /auth/login                       - Authenticate user
-POST   /auth/refresh-token               - Refresh access token
+POST   /auth/refresh                     - Refresh access token
 GET    /auth/sessions                    - Get active sessions
 GET    /auth/verify-email?token=xxx      - Verify email
 POST   /auth/resend-verification-email   - Resend verification

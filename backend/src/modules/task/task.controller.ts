@@ -15,6 +15,7 @@ import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { REQUEST_MODE } from 'src/enums/common.enum';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
@@ -89,6 +90,7 @@ export class TaskController {
     @Query('status') status?: string,
     @Query('assignedTo') assignedTo?: string,
     @Query('orderBy') orderBy?: 'asc' | 'desc',
+    @Query('mode') mode?: REQUEST_MODE,
     @Request() req?: any,
   ) {
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
@@ -104,6 +106,7 @@ export class TaskController {
       page: pageNum,
       limit: limitNum,
       orderBy,
+      mode
     };
 
     return this.taskService.findAll(projectId, req.user.id, filters, pagination);

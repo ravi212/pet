@@ -57,7 +57,7 @@ export class ProjectService {
 
       return {
         data: projects,
-        meta: {
+        pagination: {
           total,
           page,
           limit,
@@ -79,7 +79,7 @@ export class ProjectService {
       });
       return {
         data: project,
-        message: 'Project found',
+        message: 'Project fetched successfully',
       };
     } catch (e) {
       throw new InternalServerErrorException('Something went wrong');

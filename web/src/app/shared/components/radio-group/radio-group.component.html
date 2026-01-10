@@ -1,0 +1,44 @@
+<div class="flex flex-col gap-2">
+  <label *ngIf="label" class="text-sm font-medium">
+    {{ label }}
+  </label>
+
+  <div class="flex flex-col gap-2">
+    <label
+      *ngFor="let option of options"
+      class="flex items-center gap-3 cursor-pointer select-none"
+      [class.opacity-50]="disabled || option.disabled"
+    >
+      <input
+        type="radio"
+        class="hidden"
+        [checked]="isSelected(option)"
+        [disabled]="disabled || option.disabled"
+        (change)="select(option)"
+      />
+
+      <!-- Custom radio -->
+      <span
+        class="h-5 w-5 rounded-full border flex items-center justify-center transition"
+        [class.border-red-500]="error"
+        [class.border-gray-300]="!error"
+        [class.border-blue-600]="isSelected(option)"
+      >
+        <span
+          *ngIf="isSelected(option)"
+          class="h-2.5 w-2.5 rounded-full bg-blue-600"
+        ></span>
+      </span>
+
+      <span class="text-sm">{{ option.label }}</span>
+    </label>
+  </div>
+
+  <span *ngIf="hint && !error" class="text-xs text-gray-500">
+    {{ hint }}
+  </span>
+
+  <span *ngIf="error" class="text-xs text-red-500">
+    {{ error }}
+  </span>
+</div>
