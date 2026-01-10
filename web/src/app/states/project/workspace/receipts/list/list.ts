@@ -97,7 +97,7 @@ export class List implements OnInit {
       .subscribe({
         next: (res) => {
           this.receipts = res.data;
-          this.total = res.total;
+          this.total = res.pagination.total;
         },
         error: (err) => console.error('Failed to load receipts', err),
       });

@@ -30,6 +30,16 @@ export interface Receipt {
 
 export interface PaginatedReceipts {
   data: Receipt[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface ReceiptResponse {
+  id: string;
   page: number;
   limit: number;
   total: number;

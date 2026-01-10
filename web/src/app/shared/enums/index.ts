@@ -27,6 +27,11 @@ export enum OCRStatus {
   failed = 'failed',
 }
 
+export enum VIEW_MODE {
+  TABLE = 0,
+  GRID = 1
+}
+
 export enum TaskStatus {
   todo,
   in_progress,

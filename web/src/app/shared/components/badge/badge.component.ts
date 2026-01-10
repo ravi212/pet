@@ -9,7 +9,7 @@ type BadgeSize = 'sm' | 'md';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <span [class]="getBadgeClasses()" class="inline-flex items-center rounded-full font-medium">
+    <span [class]="getBadgeClasses()" class="inline-flex items-center rounded-md font-medium">
       <ng-content></ng-content>
     </span>
   `,

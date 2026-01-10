@@ -1,17 +1,25 @@
 import { Component, DestroyRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Edit, Trash2, Plus, Settings } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Edit,
+  Trash2,
+  Plus,
+  Settings,
+  Grid,
+  List,
+  Grid2X2,
+} from 'lucide-angular';
 import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SharedModule } from '../../../shared/shared.module';
 import { ProjectFormComponent } from './components/create-project-form/project-form.component';
-import { ProjectType } from '../../../shared/enums';
+import { ProjectType, VIEW_MODE } from '../../../shared/enums';
 import { DataTableColumn } from '../../../shared/components';
 import { Router } from '@angular/router';
 import { PROJECT_ROUTES } from '../../../shared/constants/routes.const';
 import { Project, ProjectsService } from '../services/projects.service';
-
 
 @Component({
   selector: 'app-project-list',
@@ -34,11 +42,15 @@ export class ProjectListComponent implements OnInit {
   readonly projectType = ProjectType;
 
   private projectService = inject(ProjectsService);
+  viewMode = VIEW_MODE;
+  selectedView = VIEW_MODE.TABLE;
 
   readonly editIcon = Edit;
   readonly deleteIcon = Trash2;
   readonly plusIcon = Plus;
   readonly settingsIcon = Settings;
+  readonly gridIcon = Grid2X2;
+  readonly listIcon = List;
 
   loading = false;
   search = '';
@@ -134,7 +146,6 @@ export class ProjectListComponent implements OnInit {
     this.router.navigate([PROJECT_ROUTES.ROOT, project.id]);
   }
 
-
   openCreateSheet() {
     this.selectedProject = null;
     this.sideSheetOpen = true;
@@ -149,5 +160,16 @@ export class ProjectListComponent implements OnInit {
     this.limit = limit;
     this.page = 1;
     this.loadProjects();
+  }
+
+  getbadgeVarient(projectType: ProjectType) {
+    switch (projectType) {
+      case ProjectType.one_time:
+        return 'primary';
+      case ProjectType.recurring:
+        return 'secondary';
+      default:
+        return 'info';
+    }
   }
 }

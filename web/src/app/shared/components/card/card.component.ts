@@ -7,11 +7,11 @@ import { Component, Input } from '@angular/core';
   template: `
     <div
       [class]="getCardClasses()"
-      class="rounded-lg transition-all duration-base"
+      class="rounded-md transition-all duration-base"
     >
       @if (title) {
         <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-50">{{ title }}</h3>
+          <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-50">{{ title }}</h3>
         </div>
       }
       <div [class]="padding">

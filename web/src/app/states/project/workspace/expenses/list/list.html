@@ -113,6 +113,7 @@
   [isOpen]="previewOpen"
   (close)="previewOpen = false"
   [title]="previewFileName"
+  [showFooter]="false"
 >
   <div class="flex justify-center items-center">
     <ng-container *ngIf="isImage(previewFileUrl); else pdfTemplate">
