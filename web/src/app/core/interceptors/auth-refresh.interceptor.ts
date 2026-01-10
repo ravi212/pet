@@ -16,19 +16,20 @@ export const authRefreshInterceptor: HttpInterceptorFn = (
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const ignored = [
-    '/auth/login',
-    '/auth/signup',
-    '/auth/refresh',
-  ];
+  const ignored = ['/auth/login', '/auth/signup', '/auth/refresh'];
 
-  if (ignored.some(url => req.url.includes(url))) {
+  if (ignored.some((url) => req.url.includes(url))) {
     return next(req);
   }
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status !== 401) {
+        return throwError(() => error);
+      }
+
+      const hasAuthHeader = req.headers.has('Authorization');
+      if (!hasAuthHeader) {
         return throwError(() => error);
       }
 
@@ -45,7 +46,7 @@ export const authRefreshInterceptor: HttpInterceptorFn = (
 
       return authService.refreshToken().pipe(
         switchMap(() => next(retryReq)),
-        catchError(refreshErr => {
+        catchError((refreshErr) => {
           // refresh failed → logout immediately
           authService.clearAuth();
           router.navigate(['/auth/login']);
