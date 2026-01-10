@@ -54,6 +54,7 @@ backend/dist
 backend/node_modules
 backend/build
 backend/generated
+backend/storage
 backend/google-vision.json
 # Logs
 logs
