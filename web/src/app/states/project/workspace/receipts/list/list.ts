@@ -1,7 +1,7 @@
 import { Component, effect, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Trash2, Plus, FileText } from 'lucide-angular';
+import { LucideAngularModule, Trash2, Plus, FileText, Edit } from 'lucide-angular';
 import { finalize } from 'rxjs';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { ReceiptFormComponent } from '../components/receipt-form/receipt-form.component';
@@ -13,7 +13,14 @@ import { SafeUrlPipe } from '../../../../../shared/pipes/safeurl.pipe';
 @Component({
   selector: 'app-receipts-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedModule, LucideAngularModule, ReceiptFormComponent, SafeUrlPipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SharedModule,
+    LucideAngularModule,
+    ReceiptFormComponent,
+    SafeUrlPipe,
+  ],
   templateUrl: './list.html',
 })
 export class List implements OnInit {
@@ -41,6 +48,7 @@ export class List implements OnInit {
   readonly deleteIcon = Trash2;
   readonly plusIcon = Plus;
   readonly fileIcon = FileText;
+  readonly editIcon = Edit;
 
   @ViewChild('statusTpl', { static: true })
   statusTpl!: TemplateRef<{ $implicit: Receipt }>;
@@ -117,6 +125,11 @@ export class List implements OnInit {
   onSave() {
     this.sideSheetOpen = false;
     this.loadReceipts();
+  }
+
+  edit(receipt: Receipt) {
+    this.selectedReceipt = { ...receipt };
+    this.sideSheetOpen = true;
   }
 
   onPageChange(page: number) {

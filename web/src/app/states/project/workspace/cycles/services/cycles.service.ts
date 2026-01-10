@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../../../core/services/api.service';
 import { endpoints } from '../../../../../shared/constants/endpoints.const';
 import { ApiResponse } from '../../../../../shared/models';
@@ -46,20 +46,12 @@ export interface CycleFilters {
   search?: string;
 }
 
-
-/* =======================
-   Service
-======================= */
-
 @Injectable({ providedIn: 'root' })
 export class CyclesService {
   private api = inject(ApiService);
 
   create(cycle: Partial<Cycle>): Observable<ApiResponse<Cycle>> {
-    return this.api.post<ApiResponse<Cycle>>(
-      endpoints.cycles.cycles,
-      cycle
-    );
+    return this.api.post<ApiResponse<Cycle>>(endpoints.cycles.cycles, cycle);
   }
 
   findAll(filters: CycleFilters): Observable<PaginatedCycles> {
@@ -70,16 +62,11 @@ export class CyclesService {
 
     if (filters.orderBy) params = params.set('orderBy', filters.orderBy);
 
-    return this.api.get<PaginatedCycles>(
-      endpoints.cycles.cycles,
-      { params }
-    );
+    return this.api.get<PaginatedCycles>(endpoints.cycles.cycles, { params });
   }
 
   findOne(cycleId: string): Observable<ApiResponse<Cycle>> {
-    return this.api.get<ApiResponse<Cycle>>(
-      endpoints.cycles.cycleById(cycleId)
-    );
+    return this.api.get<ApiResponse<Cycle>>(endpoints.cycles.cycleById(cycleId));
   }
 
   update(cycleId: string, payload: Partial<Cycle>): Observable<ApiResponse<Partial<Cycle>>> {
@@ -90,15 +77,34 @@ export class CyclesService {
   }
 
   toggleLock(cycleId: string): Observable<ApiResponse<Cycle>> {
-    return this.api.patch<ApiResponse<Cycle>>(
-      endpoints.cycles.toggleLock(cycleId),
-      {}
-    );
+    return this.api.patch<ApiResponse<Cycle>>(endpoints.cycles.toggleLock(cycleId), {});
   }
 
   remove(cycleId: string): Observable<ApiResponse<Partial<Cycle>>> {
-    return this.api.delete<ApiResponse<Partial<Cycle>>>(
-      endpoints.cycles.cycleById(cycleId)
-    );
+    return this.api.delete<ApiResponse<Partial<Cycle>>>(endpoints.cycles.cycleById(cycleId));
+  }
+
+  getDropdown(params: { projectId: string; page: number; limit: number; search?: string }) {
+    let httpParams = new HttpParams()
+      .set('projectId', params.projectId)
+      .set('page', params.page)
+      .set('limit', params.limit)
+      .set('mode', 'select');
+
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+
+    return this.api
+      .get<{
+        data: { label: string; value: string }[];
+        pagination: { total: number };
+      }>(endpoints.cycles.cycles, { params: httpParams })
+      .pipe(
+        map((res) => ({
+          data: res.data,
+          total: res.pagination.total,
+        }))
+      );
   }
 }

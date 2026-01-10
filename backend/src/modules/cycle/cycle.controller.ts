@@ -15,6 +15,7 @@ import { CycleService } from './cycle.service';
 import { CreateCycleDto } from './dto/create-cycle.dto';
 import { UpdateCycleDto } from './dto/update-cycle.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { REQUEST_MODE } from 'src/enums/common.enum';
 
 @ApiTags('Cycles')
 @ApiBearerAuth()
@@ -84,6 +85,7 @@ export class CycleController {
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
     @Query('orderBy') orderBy?: 'asc' | 'desc',
+    @Query('mode') mode?: REQUEST_MODE,
   ) {
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
     const limitNum = Math.max(1, Math.min(100, parseInt(limit, 10) || 10));
@@ -92,6 +94,7 @@ export class CycleController {
       page: pageNum,
       limit: limitNum,
       orderBy,
+      mode,
     };
 
     return this.cycleService.findAll(projectId, req.user.id, pagination);

@@ -24,6 +24,9 @@
 </div>
 
 <ng-template #actions let-receipt>
+  <app-button size="sm" variant="outline" (click)="edit(receipt)">
+    <lucide-angular size="14" [img]="editIcon" />
+  </app-button>
   <app-button size="sm" variant="danger" (click)="openConfirm(receipt)">
     <lucide-angular size="14" [img]="deleteIcon" />
   </app-button>
@@ -50,16 +53,13 @@
       <lucide-angular size="14" [img]="fileIcon" />
       {{ receipt.originalFileName || 'Receipt' }}
     </div>
-
   </app-button>
-  <a
-
+  <!-- <a
     [href]="getUploadedFileUrl(receipt.fileUrl)"
     [download]="receipt.originalFileName"
     target="_blank"
   >
-
-  </a>
+  </a> -->
 </ng-template>
 
 <app-confirm-dialog
@@ -70,24 +70,33 @@
   (cancel)="confirmOpen = false"
 />
 
-<app-side-sheet [(open)]="sideSheetOpen" width="600px">
-  <div slot="title">Upload Receipt</div>
+<app-side-sheet [(open)]="sideSheetOpen" width="500px">
+  <div slot="title">{{ selectedReceipt ? 'Edit Receipt' : 'Upload Receipt' }}</div>
 
   @if (sideSheetOpen) {
-    <app-receipt-form
-      [projectId]="projectId"
-      (saved)="onSave()"
-    />
+  <app-receipt-form
+    [projectId]="projectId"
+    [receipt]="selectedReceipt"
+    (saved)="onSave()"
+    (showPreview)="
+      selectedReceipt &&
+        openFilePreview(selectedReceipt.fileUrl, selectedReceipt.originalFileName ?? 'Receipt')
+    "
+  />
   }
-    <div slot="footer" class="flex justify-end gap-2">
+  <div slot="footer" class="flex justify-end gap-2">
     <app-button variant="outline" (click)="sideSheetOpen = false"> Cancel </app-button>
-    <app-button type="submit" variant="secondary" (click)="receiptForm.submit()"
-      >Save</app-button
-    >
+    <app-button type="submit" variant="secondary" (click)="receiptForm.submit()">Save</app-button>
   </div>
 </app-side-sheet>
 
-<app-modal [showFooter]="false" [width]="'800px'" [isOpen]="previewOpen" (close)="previewOpen = false" [title]="previewFileName">
+<app-modal
+  [showFooter]="false"
+  [width]="'800px'"
+  [isOpen]="previewOpen"
+  (close)="previewOpen = false"
+  [title]="previewFileName"
+>
   <div class="flex justify-center items-center">
     <ng-container *ngIf="isImage(previewFileUrl); else pdfTemplate">
       <img [src]="previewFileUrl" class="max-w-full max-h-[70vh] rounded" />

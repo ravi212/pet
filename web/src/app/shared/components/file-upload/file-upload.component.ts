@@ -95,4 +95,5 @@ export class FileUploadComponent implements ControlValueAccessor {
     this.previewUrl = null;
     this.onChange(null);
   }
+
 }

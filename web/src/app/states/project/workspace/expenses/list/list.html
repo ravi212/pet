@@ -59,9 +59,7 @@
   {{ expense.incurredAt | date : 'mediumDate' }}
 </ng-template>
 
-<ng-template #amountTpl let-expense>
-    {{ expense.currency }} {{ expense.amount }}
-</ng-template>
+<ng-template #amountTpl let-expense> {{ expense.currency }} {{ expense.amount }} </ng-template>
 
 <app-confirm-dialog
   [open]="confirmOpen"
@@ -90,12 +88,82 @@
   </div>
 </app-side-sheet>
 
-<app-side-sheet [(open)]="openManage" (openChange)="$event == false ? this.fetchExpenses() : ''" width="800px" class="max-w-7xl">
-  <div slot="title">Manage Expense ({{expense && expense.id}})</div>
+<app-side-sheet
+  [(open)]="openManage"
+  (openChange)="$event == false ? this.fetchExpenses() : ''"
+  width="800px"
+  class="max-w-7xl"
+>
+  <div slot="title">Manage Expense ({{ expense && expense.id }})</div>
   @if(expense) {
-    <app-manage-expense [expense]="expense"></app-manage-expense>
+  <app-manage-expense
+    (showAttachReceipt)="showReceiptModal = true"
+    (showReceiptView)="openFilePreview()"
+    [expense]="expense"
+  ></app-manage-expense>
   }
   <div slot="footer" class="flex justify-end gap-2">
-    <app-button variant="outline" (click)="openManage=false; fetchExpenses()">Close</app-button>
+    <app-button variant="outline" (click)="openManage = false; fetchExpenses()">Close</app-button>
   </div>
 </app-side-sheet>
+
+@if(selectedExpense){
+<app-modal
+  [width]="'800px'"
+  [isOpen]="previewOpen"
+  (close)="previewOpen = false"
+  [title]="previewFileName"
+>
+  <div class="flex justify-center items-center">
+    <ng-container *ngIf="isImage(previewFileUrl); else pdfTemplate">
+      <img [src]="previewFileUrl" class="max-w-full max-h-[70vh] rounded" />
+    </ng-container>
+
+    <ng-template #pdfTemplate>
+      <iframe [src]="previewFileUrl | safeUrl" class="w-full h-[70vh]"></iframe>
+    </ng-template>
+  </div>
+</app-modal>
+} @if(showReceiptModal){
+<app-modal
+  [width]="'500px'"
+  [isOpen]="showReceiptModal"
+  (close)="showReceiptModal = false"
+  [title]="'Attach Receipt'"
+  [showFooter]="false"
+>
+  <div class="flex flex-col gap-4">
+    <!-- Select Dropdown for Receipts -->
+    <app-select
+      [options]="receiptsDropdown.items"
+      placeholder="Select a receipt"
+      [(ngModel)]="selectedReceiptUrl"
+      (ngModelChange)="onReceiptSelect($event)"
+    ></app-select>
+    @if(selectedReceiptUrl){
+    <!-- Preview -->
+    <div class="flex justify-center items-center mt-4">
+      <ng-container *ngIf="isImage(selectedReceiptUrl); else pdfTemplate">
+        <img
+          [src]="getUploadedFileUrl(selectedReceiptUrl)"
+          class="max-w-full max-h-[50vh] rounded"
+        />
+      </ng-container>
+
+      <ng-template #pdfTemplate>
+        <iframe
+          [src]="getUploadedFileUrl(selectedReceiptUrl) | safeUrl"
+          class="w-full h-[50vh]"
+        ></iframe>
+      </ng-template>
+    </div>
+    }
+    <div class="flex justify-end gap-2 pt-4">
+      <app-button size="sm" type="button" variant="outline" (click)="showReceiptModal = false"
+        >Cancel</app-button
+      >
+      <app-button [disabled]="!selectedReceiptUrl" size="sm" variant="secondary">Save</app-button>
+    </div>
+  </div>
+</app-modal>
+}

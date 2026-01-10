@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../../../core/services/api.service';
 import { endpoints } from '../../../../../shared/constants/endpoints.const';
 import { ApiResponse } from '../../../../../shared/models';
@@ -52,10 +52,7 @@ export class TasksService {
   private api = inject(ApiService);
 
   create(task: Partial<Task>): Observable<ApiResponse<Task>> {
-    return this.api.post<ApiResponse<Task>>(
-      endpoints.tasks.tasks,
-      task
-    );
+    return this.api.post<ApiResponse<Task>>(endpoints.tasks.tasks, task);
   }
 
   findAll(filters: TaskFilters): Observable<PaginatedTasks> {
@@ -69,28 +66,42 @@ export class TasksService {
     if (filters.assignedTo) params = params.set('assignedTo', filters.assignedTo);
     if (filters.orderBy) params = params.set('orderBy', filters.orderBy);
 
-    return this.api.get<PaginatedTasks>(
-      endpoints.tasks.tasks,
-      { params }
-    );
+    return this.api.get<PaginatedTasks>(endpoints.tasks.tasks, { params });
   }
 
   findOne(taskId: string): Observable<ApiResponse<Task>> {
-    return this.api.get<ApiResponse<Task>>(
-      endpoints.tasks.taskById(taskId)
-    );
+    return this.api.get<ApiResponse<Task>>(endpoints.tasks.taskById(taskId));
   }
 
   update(taskId: string, payload: Partial<Task>): Observable<ApiResponse<Partial<Task>>> {
-    return this.api.patch<ApiResponse<Partial<Task>>>(
-      endpoints.tasks.taskById(taskId),
-      payload
-    );
+    return this.api.patch<ApiResponse<Partial<Task>>>(endpoints.tasks.taskById(taskId), payload);
   }
 
   remove(taskId: string): Observable<ApiResponse<Partial<Task>>> {
-    return this.api.delete<ApiResponse<Partial<Task>>>(
-      endpoints.tasks.taskById(taskId)
-    );
+    return this.api.delete<ApiResponse<Partial<Task>>>(endpoints.tasks.taskById(taskId));
+  }
+
+  getDropdown(params: { projectId: string; page: number; limit: number; search?: string }) {
+    let httpParams = new HttpParams()
+      .set('projectId', params.projectId)
+      .set('page', params.page)
+      .set('limit', params.limit)
+      .set('mode', 'select');
+
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+
+    return this.api
+      .get<{
+        data: { label: string; value: string }[];
+        pagination: { total: number };
+      }>(endpoints.tasks.tasks, { params: httpParams })
+      .pipe(
+        map((res) => ({
+          data: res.data,
+          total: res.pagination.total,
+        }))
+      );
   }
 }

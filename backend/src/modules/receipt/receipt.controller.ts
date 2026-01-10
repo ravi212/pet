@@ -19,6 +19,7 @@ import { ReceiptService } from './receipt.service';
 import { CreateReceiptDto } from './dto/create-receipt.dto';
 import { UpdateReceiptDto } from './dto/update-receipt.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { REQUEST_MODE } from 'src/enums/common.enum';
 
 @ApiTags('Receipts')
 @ApiBearerAuth()
@@ -90,6 +91,7 @@ export class ReceiptController {
     @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
     @Query('limit', new ParseIntPipe({ optional: true })) limit: number = 10,
     @Query('ocrStatus') ocrStatus?: string,
+    @Query('mode') mode?: REQUEST_MODE,
   ): Promise<any> {
     return this.receiptService.findAll(
       projectId,
@@ -97,6 +99,7 @@ export class ReceiptController {
       page,
       limit,
       ocrStatus,
+      mode,
     );
   }
 

@@ -22,9 +22,9 @@ export enum RolloverMode {
 }
 
 export enum OCRStatus {
-  pending,
-  done,
-  failed,
+  pending = 'pending',
+  done = 'done',
+  failed = 'failed',
 }
 
 export enum TaskStatus {

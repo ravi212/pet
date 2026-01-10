@@ -22,6 +22,7 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { REQUEST_MODE } from 'src/enums/common.enum';
 
 @ApiTags('Categories')
 @ApiBearerAuth()
@@ -97,6 +98,7 @@ export class CategoryController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('search') search?: string,
+    @Query('mode') mode?: REQUEST_MODE,
   ) {
     return this.categoryService.findAll(
       req.user.id,
@@ -104,6 +106,7 @@ export class CategoryController {
       page ? Number(page) : 1,
       limit ? Number(limit) : 20,
       search,
+      mode,
     );
   }
 

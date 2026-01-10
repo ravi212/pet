@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { Prisma } from 'generated/prisma/client';
+import { REQUEST_MODE } from 'src/enums/common.enum';
 
 type ExpenseWithRelations = Prisma.ExpenseGetPayload<{
   include: {
@@ -29,11 +30,26 @@ export class ExpenseService {
   /**
    * Convert BigInt fields to strings for JSON serialization
    */
-  private toExpenseResponse(expense: ExpenseWithRelations) {
-    return {
+  private toExpenseResponse(expense: ExpenseWithRelations, mode: REQUEST_MODE = REQUEST_MODE.LIST) {
+    return mode == REQUEST_MODE.LIST ? {
       ...expense,
       amount: expense.amount.toString(),
+      cycle: expense.cycle? {
+        ...expense.cycle,
+        budgetAmount: expense.cycle.budgetAmount ? expense.cycle.budgetAmount.toString() : null,
+      }: null,
+      task: expense.task ? {
+        ...expense.task,
+        budgetAmount: expense.task.budgetAmount ? expense.task.budgetAmount.toString() : null,
+      }: null,
       reimbursedAmount: expense.reimbursedAmount.toString(),
+      receipt: expense.receipt ? {
+        originalFileName: expense.receipt?.originalFileName,
+        fileUrl: expense.receipt?.fileUrl,
+      }: null,
+    } : {
+      label: `${expense.vendor} - ${expense.amount.toString()}`,
+      value: expense.id
     };
   }
 
@@ -196,8 +212,9 @@ export class ExpenseService {
       isReimbursable?: boolean;
       createdBy?: string;
     },
-    pagination?: { page?: number; limit?: number; orderBy?: 'asc' | 'desc' },
-  ) {
+    pagination?: { page?: number; limit?: number; orderBy?: 'asc' | 'desc', mode?: REQUEST_MODE },
+  ) 
+  {
     try {
       // Verify user has access to project
       const project = await this.prisma.project.findUnique({
@@ -270,11 +287,7 @@ export class ExpenseService {
       const limit = pagination?.limit ?? 10;
       const skip = (page - 1) * limit;
       const orderByDir = pagination?.orderBy ?? 'desc';
-
-      const [expenses, total] = await Promise.all([
-        this.prisma.expense.findMany({
-          where,
-          include: {
+      const include = {
             creator: {
               select: {
                 id: true,
@@ -287,7 +300,11 @@ export class ExpenseService {
             task: true,
             receipt: true,
             cycle: true,
-          },
+          }
+      const [expenses, total] = await Promise.all([
+        this.prisma.expense.findMany({
+          where,
+          include,
           orderBy: { incurredAt: orderByDir },
           skip,
           take: limit,
@@ -296,9 +313,10 @@ export class ExpenseService {
       ]);
 
       const totalPages = Math.ceil(total / limit);
+      const mode = pagination?.mode ?? REQUEST_MODE.LIST;
 
       return {
-        data: expenses.map((e) => this.toExpenseResponse(e)),
+        data: expenses.map((e) => this.toExpenseResponse(e, mode)),
         pagination: { page, limit, total, totalPages },
       };
     } catch (err) {

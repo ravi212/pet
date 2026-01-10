@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { LucideAngularModule, Check, X, Paperclip, Eye, Edit } from 'lucide-angular';
@@ -7,6 +7,12 @@ import { Expense, ExpensesService } from '../../services/expense.service';
 import { CURRENCIES } from '../../../../../../shared/constants/common';
 import { baseUrl } from '../../../../../../shared/constants/endpoints.const';
 import { SafeUrlPipe } from '../../../../../../shared/pipes/safeurl.pipe';
+import { DropdownLoader } from '../../../../../../shared/helpers/dropdown-loader';
+import { CategoriesService } from '../../../settings/components/categories/services/category.service';
+import { TasksService } from '../../../tasks/services/tasks.service';
+import { CyclesService } from '../../../cycles/services/cycles.service';
+import { finalize } from 'rxjs';
+import { RouterLink } from "@angular/router";
 
 type EditableField =
   | 'amount'
@@ -23,12 +29,17 @@ type EditableField =
 @Component({
   selector: 'app-manage-expense',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, SharedModule, SafeUrlPipe],
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, SharedModule, RouterLink],
   templateUrl: './manage-expense.component.html',
 })
 export class ManageExpenseComponent implements OnInit {
   @Input() expense!: Expense;
+  @Output() showReceiptView: EventEmitter<boolean> = new EventEmitter<boolean>(false);
+  @Output() showAttachReceipt: EventEmitter<boolean> = new EventEmitter<boolean>(false);
 
+  categoriesDropdown!: DropdownLoader<{ label: string; value: string }>;
+  tasksDropdown!: DropdownLoader<{ label: string; value: string }>;
+  cyclesDropdown!: DropdownLoader<{ label: string; value: string }>;
   previewOpen = false;
   previewFileUrl: string | null = null;
   previewFileName: string | null = null;
@@ -49,7 +60,13 @@ export class ManageExpenseComponent implements OnInit {
   attachIcon = Paperclip;
   viewIcon = Eye;
 
-  constructor(private fb: FormBuilder, private expenseService: ExpensesService) {}
+  constructor(
+    private fb: FormBuilder,
+    private expenseService: ExpensesService,
+    private categoriesService: CategoriesService,
+    private tasksService: TasksService,
+    private cyclesService: CyclesService
+  ) {}
 
   ngOnInit() {
     // Initialize all controls upfront
@@ -65,6 +82,22 @@ export class ManageExpenseComponent implements OnInit {
       reimbursedAmount: [this.expense.reimbursedAmount],
       note: [this.expense.note],
     });
+
+    this.categoriesDropdown = new DropdownLoader(this.expense.projectId, (params) =>
+      this.categoriesService.getDropdown(params)
+    );
+
+    this.tasksDropdown = new DropdownLoader(this.expense.projectId, (params) =>
+      this.tasksService.getDropdown(params)
+    );
+
+    this.cyclesDropdown = new DropdownLoader(this.expense.projectId, (params) =>
+      this.cyclesService.getDropdown(params)
+    );
+
+    this.categoriesDropdown.load();
+    this.cyclesDropdown.load();
+    this.tasksDropdown.load();
   }
 
   startEdit(field: EditableField) {
@@ -72,8 +105,8 @@ export class ManageExpenseComponent implements OnInit {
   }
 
   fetchCategories() {
-    this.expenseService }
-
+    this.expenseService;
+  }
 
   cancelEdit() {
     if (!this.editingField) return; // exit if nothing is being edited
@@ -98,13 +131,15 @@ export class ManageExpenseComponent implements OnInit {
         ? new Date(this.form.get(field)?.value).toISOString()
         : this.form.get(field)?.value;
 
-    this.expenseService.update(this.expense.id, { [field]: value }).subscribe({
-      next: () => {
+    this.expenseService.update(this.expense.id, { [field]: value }).pipe(
+      finalize(() => (this.saving = false))
+    ).subscribe({
+      next: (response) => {
+        this.expense = response.data as Expense;
         (this.expense as any)[field] = value;
         this.editingField = null;
       },
       error: (err) => console.error('Failed to update', err),
-      complete: () => (this.saving = false),
     });
   }
 
@@ -113,24 +148,7 @@ export class ManageExpenseComponent implements OnInit {
   }
 
   viewReceipt() {
-    console.log('View receipt');
+    this.showReceiptView.emit(true);
   }
 
-    getUploadedFileUrl(fileUrl: string) {
-      return `${baseUrl}${fileUrl}`;
-    }
-
-    openFilePreview() {
-      const fileUrl = this.expense?.receipt?.fileUrl;
-      const fileName = this.expense?.receipt?.originalFileName;
-      if (!fileUrl || !fileName) return;
-      this.previewFileUrl = this.getUploadedFileUrl(fileUrl);
-      this.previewFileName = fileName;
-      this.previewOpen = true;
-    }
-
-    isImage(url: string | null) {
-      if (!url) return false;
-      return url.match(/\.(jpeg|jpg|png|gif)$/i);
-    }
 }

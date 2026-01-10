@@ -78,7 +78,7 @@
     <label class="text-sm font-semibold">Category</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'categoryId'; else viewCategory">
-        <app-select [options]="categories" [formControl]="getControl('categoryId')" class="flex-1"></app-select>
+        <app-select [options]="categoriesDropdown.items" placeholder="Select Category..." [formControl]="getControl('categoryId')" class="flex-1"></app-select>
         <div class="flex gap-2">
           <app-button size="sm" variant="secondary" [loading]="saving" (click)="save('categoryId')">
             <lucide-angular [img]="checkIcon"></lucide-angular>
@@ -102,7 +102,7 @@
     <label class="text-sm font-semibold">Task</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'taskId'; else viewTask">
-        <app-select [options]="tasks" [formControl]="getControl('taskId')" class="flex-1"></app-select>
+        <app-select [options]="tasksDropdown.items" placeholder="Select Task..." [formControl]="getControl('taskId')" class="flex-1"></app-select>
         <div class="flex gap-2">
           <app-button size="sm" variant="secondary" [loading]="saving" (click)="save('taskId')">
             <lucide-angular [img]="checkIcon"></lucide-angular>
@@ -126,7 +126,7 @@
     <label class="text-sm font-semibold">Cycle</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'cycleId'; else viewCycle">
-        <app-select [options]="cycles" [formControl]="getControl('cycleId')" class="flex-1"></app-select>
+        <app-select [options]="cyclesDropdown.items" placeholder="Select Cycle..." [formControl]="getControl('cycleId')" class="flex-1"></app-select>
         <div class="flex gap-2">
           <app-button size="sm" variant="secondary" [loading]="saving" (click)="save('cycleId')">
             <lucide-angular [img]="checkIcon"></lucide-angular>
@@ -227,16 +227,18 @@
     <div class="flex items-center gap-3">
       @if(!expense.receiptId){
       <label class="cursor-pointer">
-        <input type="file" hidden accept="image/*,application/pdf" (change)="attachReceipt($event.target.files?.[0] ?? null)" />
-        <app-button size="sm" variant="outline">
+        <a class="underline text-blue-500" [routerLink]="`/project/${expense.projectId}/receipt/list`">Click Here</a> to redirect.
+        <p class="text-sm text-gray-400">* Attach Receipt from Receipts List</p>
+        <!-- <input type="file" hidden accept="image/*,application/pdf" (change)="attachReceipt($event.target.files?.[0] ?? null)" />
+        <app-button size="sm" variant="outline" (click)="showAttachReceipt.emit(true)">
           <lucide-angular [img]="attachIcon" class="mr-1"></lucide-angular>
-          Attach
-        </app-button>
+          *Attach
+        </app-button> -->
       </label>
       }
 
       @if(expense.receiptId){
-        <app-button size="sm" variant="ghost" (click)="openFilePreview()">
+        <app-button size="sm" variant="ghost" (click)="viewReceipt()">
           <lucide-angular [img]="viewIcon" class="mr-1"></lucide-angular>
           View
         </app-button>
@@ -246,15 +248,3 @@
   </div>
 
 </div>
-
-<app-modal [width]="'800px'" [isOpen]="previewOpen" (close)="previewOpen = false" [title]="previewFileName">
-  <div class="flex justify-center items-center">
-    <ng-container *ngIf="isImage(previewFileUrl); else pdfTemplate">
-      <img [src]="previewFileUrl" class="max-w-full max-h-[70vh] rounded" />
-    </ng-container>
-
-    <ng-template #pdfTemplate>
-      <iframe [src]="previewFileUrl | safeUrl" class="w-full h-[70vh]"></iframe>
-    </ng-template>
-  </div>
-</app-modal>

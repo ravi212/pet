@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Prisma } from 'generated/prisma/client';
+import { REQUEST_MODE } from 'src/enums/common.enum';
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
   include: {
@@ -23,13 +24,14 @@ type TaskWithRelations = Prisma.TaskGetPayload<{
 export class TaskService {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Convert BigInt fields to strings for JSON serialization
-   */
-  private toTaskResponse(task: TaskWithRelations) {
-    return {
+  private toTaskResponse(task: TaskWithRelations, mode: REQUEST_MODE = REQUEST_MODE.LIST) {
+    return mode == REQUEST_MODE.LIST
+      ?  {
       ...task,
       budgetAmount: task.budgetAmount ? task.budgetAmount.toString() : null,
+    }: {
+      label: task.title,
+      value: task.id,
     };
   }
 
@@ -124,7 +126,7 @@ export class TaskService {
       status?: string;
       assignedTo?: string;
     },
-    pagination?: { page?: number; limit?: number; orderBy?: 'asc' | 'desc' },
+    pagination?: { page?: number; limit?: number; orderBy?: 'asc' | 'desc', mode?: REQUEST_MODE},
   ) {
     try {
       const project = await this.prisma.project.findUnique({
@@ -191,9 +193,10 @@ export class TaskService {
       ]);
 
       const totalPages = Math.ceil(total / limit);
+      const mode = pagination?.mode ?? REQUEST_MODE.LIST;
 
       return {
-        data: tasks.map((t) => this.toTaskResponse(t)),
+        data: tasks.map((t) => this.toTaskResponse(t, mode)),
         pagination: { page, limit, total, totalPages },
       };
     } catch (err) {

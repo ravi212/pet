@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../../../core/services/api.service';
 import { endpoints } from '../../../../../shared/constants/endpoints.const';
 import { ApiResponse, Category, ProjectCycle, Task } from '../../../../../shared/models';
@@ -116,5 +116,34 @@ export class ExpensesService {
     return this.api.delete<ApiResponse<Partial<Expense>>>(
       endpoints.expenses.expenseById(expenseId)
     );
+  }
+
+  getDropdown(params: {
+    projectId: string;
+    page: number;
+    limit: number;
+    search?: string;
+  }) {
+    let httpParams = new HttpParams()
+      .set('projectId', params.projectId)
+      .set('page', params.page)
+      .set('limit', params.limit)
+      .set('mode', 'select');
+
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+
+    return this.api
+      .get<{
+        data: { label: string; value: string }[];
+        pagination: { total: number };
+      }>(endpoints.expenses.expenses, { params: httpParams })
+      .pipe(
+        map((res) => ({
+          data: res.data,
+          total: res.pagination.total,
+        }))
+      );
   }
 }

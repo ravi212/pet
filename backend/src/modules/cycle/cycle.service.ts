@@ -10,6 +10,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCycleDto } from './dto/create-cycle.dto';
 import { UpdateCycleDto } from './dto/update-cycle.dto';
 import { Prisma } from 'generated/prisma/client';
+import { REQUEST_MODE } from 'src/enums/common.enum';
 
 type CycleWithRelations = Prisma.ProjectCycleGetPayload<{
   include: {
@@ -25,11 +26,19 @@ export class CycleService {
   /**
    * Convert BigInt fields to strings for JSON serialization
    */
-  private toCycleResponse(cycle: CycleWithRelations) {
-    return {
-      ...cycle,
-      budgetAmount: cycle.budgetAmount.toString(),
-    };
+  private toCycleResponse(
+    cycle: CycleWithRelations,
+    mode: REQUEST_MODE = REQUEST_MODE.LIST,
+  ) {
+    return mode == REQUEST_MODE.LIST
+      ? {
+          ...cycle,
+          budgetAmount: cycle.budgetAmount.toString(),
+        }
+      : {
+          label: `${cycle.cycleStart.toLocaleDateString()} -> ${cycle.cycleEnd.toLocaleDateString()}`,
+          value: cycle.id,
+        };
   }
 
   async create(createCycleDto: CreateCycleDto, userId: string) {
@@ -59,9 +68,7 @@ export class CycleService {
       const endDate = new Date(cycleEnd);
 
       if (startDate >= endDate) {
-        throw new BadRequestException(
-          'cycleStart must be before cycleEnd',
-        );
+        throw new BadRequestException('cycleStart must be before cycleEnd');
       }
 
       const existingCycle = await this.prisma.projectCycle.findUnique({
@@ -112,7 +119,12 @@ export class CycleService {
   async findAll(
     projectId: string,
     userId: string,
-    pagination?: { page?: number; limit?: number; orderBy?: 'asc' | 'desc' },
+    pagination?: {
+      page?: number;
+      limit?: number;
+      orderBy?: 'asc' | 'desc';
+      mode?: REQUEST_MODE;
+    },
   ) {
     try {
       const project = await this.prisma.project.findUnique({
@@ -153,13 +165,17 @@ export class CycleService {
       ]);
 
       const totalPages = Math.ceil(total / limit);
+      const mode = pagination?.mode ?? REQUEST_MODE.LIST;
 
       return {
-        data: cycles.map((c) => this.toCycleResponse(c)),
+        data: cycles.map((c) => this.toCycleResponse(c, mode)),
         pagination: { page, limit, total, totalPages },
       };
     } catch (err) {
-      if (err instanceof BadRequestException || err instanceof ForbiddenException) {
+      if (
+        err instanceof BadRequestException ||
+        err instanceof ForbiddenException
+      ) {
         throw err;
       }
       throw new InternalServerErrorException('Internal Server Error');
@@ -239,9 +255,7 @@ export class CycleService {
       const cycleEnd = updateCycleDto.cycleEnd ?? cycle.cycleEnd;
 
       if (cycleStart >= cycleEnd) {
-        throw new BadRequestException(
-          'cycleStart must be before cycleEnd',
-        );
+        throw new BadRequestException('cycleStart must be before cycleEnd');
       }
 
       // If cycleStart is changing, check for duplicate
@@ -304,7 +318,6 @@ export class CycleService {
       throw new InternalServerErrorException('Internal Server Error');
     }
   }
-
 
   async toggleLock(id: string, userId: string) {
     try {

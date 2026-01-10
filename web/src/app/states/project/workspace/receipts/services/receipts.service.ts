@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../../../core/services/api.service';
-import { ApiResponse } from '../../../../../shared/models';
+import { ApiResponse, OCRStatus } from '../../../../../shared/models';
 import { endpoints } from '../../../../../shared/constants/endpoints.const';
 
 export interface Receipt {
@@ -40,7 +40,7 @@ export interface ReceiptFilters {
   projectId: string;
   page?: number;
   limit?: number;
-  ocrStatus?: 'pending' | 'done' | 'failed';
+  ocrStatus?: OCRStatus;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -91,6 +91,7 @@ export class ReceiptsService {
     receiptId: string,
     payload: {
       description?: string;
+      expenseId?: string;
       expiresAt?: string;
     }
   ): Observable<ApiResponse<Receipt>> {
@@ -99,5 +100,29 @@ export class ReceiptsService {
 
   remove(receiptId: string): Observable<ApiResponse<void>> {
     return this.api.delete<ApiResponse<void>>(endpoints.receipts.receiptById(receiptId));
+  }
+
+  getDropdown(params: { projectId: string; page: number; limit: number; search?: string }) {
+    let httpParams = new HttpParams()
+      .set('projectId', params.projectId)
+      .set('page', params.page)
+      .set('limit', params.limit)
+      .set('mode', 'select');
+
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+
+    return this.api
+      .get<{
+        data: { label: string; value: string, meta: any }[];
+        pagination: { total: number };
+      }>(endpoints.receipts.receipts, { params: httpParams })
+      .pipe(
+        map((res) => ({
+          data: res.data,
+          total: res.pagination.total,
+        }))
+      );
   }
 }
