@@ -4,7 +4,7 @@ import { Category } from '../../../../../../shared/models';
 import { Router } from '@angular/router';
 import { ProjectContextService } from '../../../../services/project-context.service';
 import { CategoriesService, CategoryFilters } from './services/category.service';
-import { Edit, LucideAngularModule, Plus, Trash2 } from 'lucide-angular';
+import { Edit, InfoIcon, LucideAngularModule, Plus, Trash2 } from 'lucide-angular';
 import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
 import { DataTableColumn } from '../../../../../../shared/components';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -36,7 +36,7 @@ export class CategoriesComponent {
   readonly editIcon = Edit;
   readonly deleteIcon = Trash2;
   readonly plusIcon = Plus;
-
+  readonly infoIcon = InfoIcon;
   loading = false;
   page = 1;
   limit = 10;
@@ -163,6 +163,6 @@ export class CategoriesComponent {
   }
 
   get modalTitle() {
-    return this.selectedCategory ? 'Edit Category' : 'Create Category';
+    return this.selectedCategory ? 'Edit Category' : 'Add Category';
   }
 }

@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [LucideAngularModule, CardComponent, CommonModule],
   template: `
-    <div class="flex items-center justify-center min-h-[60vh] px-4">
+    <div class="flex items-center justify-center min-h-[60vh]">
       <app-card class="max-w-md w-full text-center" [elevated]="true">
         <div class="flex flex-col items-center gap-4 py-8">
           <span

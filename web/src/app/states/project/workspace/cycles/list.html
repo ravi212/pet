@@ -1,21 +1,24 @@
 <div class="flex flex-col gap-4">
-<div class="flex items-center justify-between gap-2">
-  <h2 class="text-xl font-semibold">Cycles</h2>
+  @if(cycles.length > 0){
+  <div class="flex items-start sm:items-center sm:flex-row flex-col justify-between gap-2">
+    <h2 class="text-lg sm:text-xl font-semibold">Cycles</h2>
 
-  <div class="flex items-center gap-2">
-    <app-input
-      type="text"
-      placeholder="Search cycles..."
-      [(ngModel)]="search"
-      (ngModelChange)="onSearchChange($event)"
-    />
+    <div class="flex items-center gap-2">
+      <app-input
+        type="text"
+        placeholder="Search cycles..."
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange($event)"
+      />
 
-    <app-button variant="primary" (click)="openCreateSheet()">
-      <lucide-angular size="16" [img]="plusIcon" class="mr-1" />
-      Create Cycle
-    </app-button>
+      <app-button variant="primary" (click)="openCreateSheet()">
+        <div class="flex gap-1 items-center p-0.5">
+          <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
+          <span class="hidden sm:flex">Add Cycle</span>
+        </div>
+      </app-button>
+    </div>
   </div>
-</div>
 
   <app-datatable
     [columns]="columns"
@@ -30,16 +33,17 @@
     (pageChange)="onPageChange($event)"
     (limitChange)="onLimitChange($event)"
   />
+  } @else {
+    <app-no-data actionLabel="Add Cycle" (action)="openCreateSheet()"></app-no-data>
+  }
+
 </div>
 
 <!-- Actions -->
 <ng-template #actions let-cycle>
   <div class="flex gap-2">
     <app-button size="sm" variant="outline" (click)="toggleLock(cycle)">
-      <lucide-angular
-        size="14"
-        [img]="cycle.isLocked ? lockIcon : unlockIcon"
-      />
+      <lucide-angular size="14" [img]="cycle.isLocked ? lockIcon : unlockIcon" />
     </app-button>
 
     <app-button size="sm" variant="accent" (click)="edit(cycle)">
@@ -81,23 +85,15 @@
 <!-- Side Sheet -->
 <app-side-sheet [(open)]="sideSheetOpen" width="600px">
   <div slot="title">
-    {{ selectedCycle ? 'Edit Cycle' : 'Create Cycle' }}
+    {{ selectedCycle ? 'Edit Cycle' : 'Add Cycle' }}
   </div>
 
   @if (sideSheetOpen) {
-    <app-cycle-form
-      [cycle]="selectedCycle"
-      [projectId]="projectId"
-      (saved)="onSave()"
-    />
+  <app-cycle-form [cycle]="selectedCycle" [projectId]="projectId" (saved)="onSave()" />
   }
 
   <div slot="footer" class="flex justify-end gap-2">
-    <app-button variant="outline" (click)="sideSheetOpen = false">
-      Cancel
-    </app-button>
-        <app-button type="submit" variant="secondary" (click)="cycleForm.submit()"
-      >Save</app-button
-    >
+    <app-button variant="outline" (click)="sideSheetOpen = false"> Cancel </app-button>
+    <app-button type="submit" variant="secondary" (click)="cycleForm.submit()">Save</app-button>
   </div>
 </app-side-sheet>

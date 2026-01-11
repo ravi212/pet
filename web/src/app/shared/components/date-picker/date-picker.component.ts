@@ -3,6 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Calendar } from 'lucide-angular';
 
+type InputSize = 'sm' | 'md' | 'lg';
 @Component({
   selector: 'app-date-picker',
   standalone: true,
@@ -23,7 +24,7 @@ export class AppDatePickerComponent implements ControlValueAccessor {
   @Input() error?: string | null = null;
   @Input() hint?: string;
   @Input() disabled = false;
-
+  @Input() size: InputSize = 'sm';
   open = false;
   value: string | null = null;
 
@@ -108,6 +109,16 @@ export class AppDatePickerComponent implements ControlValueAccessor {
       month: 'short',
       year: 'numeric',
     });
+  }
+
+  getSizeClasses(): string {
+    const sizes: Record<InputSize, string> = {
+      sm: 'px-3 py-1.5 text-sm',
+      md: 'px-4 py-2 text-base',
+      lg: 'px-5 py-3 text-lg',
+    };
+
+    return sizes[this.size];
   }
 
   private toLocalISO(date: Date): string {

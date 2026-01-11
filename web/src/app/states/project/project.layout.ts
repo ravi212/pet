@@ -57,7 +57,7 @@ import { SharedModule } from '../../shared/shared.module';
         </div>
       </div>
     </app-header>
-    <div class="w-full max-w-7xl mx-auto px-10 py-8">
+    <div class="w-full max-w-7xl mx-auto p-6 sm:px-10 sm:py-8 py-4">
       <router-outlet />
     </div>
   `,

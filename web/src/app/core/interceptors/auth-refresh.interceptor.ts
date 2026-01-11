@@ -7,7 +7,7 @@ import {
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../../states/auth/services/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 export const authRefreshInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,
@@ -15,7 +15,7 @@ export const authRefreshInterceptor: HttpInterceptorFn = (
 ) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-
+  const route = inject(ActivatedRoute)
   const ignored = ['/auth/login', '/auth/signup', '/auth/refresh'];
 
   if (ignored.some((url) => req.url.includes(url))) {
@@ -28,10 +28,11 @@ export const authRefreshInterceptor: HttpInterceptorFn = (
         return throwError(() => error);
       }
 
-      const hasAuthHeader = req.headers.has('Authorization');
-      if (!hasAuthHeader) {
-        return throwError(() => error);
-      }
+      // const hasAuthHeader = req.headers.has('Authorization');
+
+      // if (!hasAuthHeader && !router.url.includes('/signup')) {
+      //   return throwError(() => error);
+      // }
 
       // already tried refresh once → logout
       if ((req as any)._retry) {

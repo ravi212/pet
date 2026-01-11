@@ -1,13 +1,18 @@
 <div class="flex flex-col gap-4">
-  <div class="flex items-center justify-between">
-    <h2 class="text-xl font-semibold">Receipts</h2>
+
+  @if(receipts.length > 0){
+      <div class="flex items-start sm:items-center justify-between">
+    <h2 class="text-lg sm:text-xl font-semibold">Receipts</h2>
 
     <app-button variant="primary" (click)="openCreateSheet()">
-      <lucide-angular size="16" [img]="plusIcon" class="mr-1" />
-      Upload Receipt
+      <div class="flex gap-1 items-center p-0.5">
+        <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
+        <span>Add Receipt</span>
+      </div>
     </app-button>
-  </div>
 
+
+  </div>
   <app-datatable
     [columns]="columns"
     [data]="receipts"
@@ -21,6 +26,10 @@
     (pageChange)="onPageChange($event)"
     (limitChange)="onLimitChange($event)"
   />
+  } @else {
+    <app-no-data actionLabel="Add Receipt" (action)="openCreateSheet()"></app-no-data>
+  }
+
 </div>
 
 <ng-template #actions let-receipt>

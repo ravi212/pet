@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Expense, ExpenseFilters, ExpensesService } from '../services/expense.service';
 import { ExpenseFormComponent } from '../components/create-expense-form/expense-form.component';
-import { Edit, Eye, LucideAngularModule, Plus, Trash2, Settings } from 'lucide-angular';
+import { Edit, Eye, LucideAngularModule, Plus, Trash2, Settings, InfoIcon } from 'lucide-angular';
 import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
 import { DataTableColumn } from '../../../../../shared/components';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -58,6 +58,7 @@ export class List {
   readonly plusIcon = Plus;
   readonly eyeIcon = Eye;
   readonly settingsIcon = Settings;
+  readonly infoIcon = InfoIcon;
 
   categories = [];
   tasks = [];

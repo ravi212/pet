@@ -1,6 +1,7 @@
 <div class="flex flex-col gap-4">
-  <div class="flex items-center justify-between gap-2">
-    <h2 class="text-xl font-semibold">Category List</h2>
+  @if(categories.length > 0) {
+  <div class="flex items-start sm:items-center sm:flex-row flex-col justify-between gap-2">
+    <!-- <h2 class="text-lg sm:text-xl font-semibold">Category List</h2> -->
     <div class="flex items-center gap-2">
       <app-input
         type="text"
@@ -8,12 +9,13 @@
         (inputChange)="onSearchChange($event)"
       />
       <app-button (click)="openCreateModal()" variant="primary">
-        <lucide-angular size="16" [img]="plusIcon" class="mr-1"></lucide-angular>
-        Create Category
+        <div class="flex gap-1 items-center p-0.5">
+          <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
+          <span class="hidden sm:flex">Add Category</span>
+        </div>
       </app-button>
     </div>
   </div>
-
   <!-- DataTable -->
   <app-datatable
     [columns]="columns"
@@ -29,6 +31,9 @@
     (pageChange)="onPageChange($event)"
     (limitChange)="onLimitChange($event)"
   ></app-pagination>
+  } @else {
+  <app-no-data actionLabel="Add Category" (action)="openCreateModal()"></app-no-data>
+  }
 </div>
 
 <ng-template #actions let-category>

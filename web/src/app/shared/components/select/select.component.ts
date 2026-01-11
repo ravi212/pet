@@ -9,7 +9,7 @@ export interface SelectOption {
 }
 
 type SelectState = 'default' | 'error' | 'success';
-
+type InputSize = 'sm' | 'md' | 'lg';
 @Component({
   selector: 'app-select',
   standalone: true,
@@ -17,12 +17,12 @@ type SelectState = 'default' | 'error' | 'success';
   template: `
     <div class="w-full">
       @if (label) {
-        <label [for]="id" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
-          {{ label }}
-          @if (required) {
-            <span class="text-danger">*</span>
-          }
-        </label>
+      <label [for]="id" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+        {{ label }}
+        @if (required) {
+        <span class="text-danger">*</span>
+        }
+      </label>
       }
 
       <select
@@ -31,31 +31,29 @@ type SelectState = 'default' | 'error' | 'success';
         [disabled]="disabled"
         (change)="onSelect($event)"
         (blur)="onBlur()"
-        [ngClass]="getClasses()"
+        [ngClass]="[getClasses(), getSizeClasses()]"
         class="w-full px-4 py-2 rounded-sm transition-all duration-150
           bg-white dark:bg-gray-800
           text-gray-900 dark:text-gray-100
           outline-none"
       >
         @if (!multiple && placeholder) {
-          <option value="" disabled selected>{{ placeholder }}</option>
-        }
-
-        @for (option of options; track option.value) {
-          <option
-            [value]="option.value"
-            [disabled]="option.disabled"
-            [selected]="isSelected(option.value)"
-          >
-            {{ option.label }}
-          </option>
+        <option value="" disabled selected>{{ placeholder }}</option>
+        } @for (option of options; track option.value) {
+        <option
+          [value]="option.value"
+          [disabled]="option.disabled"
+          [selected]="isSelected(option.value)"
+        >
+          {{ option.label }}
+        </option>
         }
       </select>
 
       @if (error) {
-        <p class="mt-1 text-sm text-danger">{{ error }}</p>
+      <p class="mt-1 text-sm text-danger">{{ error }}</p>
       } @else if (hint) {
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ hint }}</p>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ hint }}</p>
       }
     </div>
   `,
@@ -77,6 +75,7 @@ export class SelectComponent implements ControlValueAccessor {
   @Input() required = false;
   @Input() error: string | null = null;
   @Input() hint: string | null = null;
+  @Input() size: InputSize = 'sm';
 
   value: string | string[] | null = this.multiple ? [] : null;
 
@@ -105,7 +104,7 @@ export class SelectComponent implements ControlValueAccessor {
     const select = event.target as HTMLSelectElement;
 
     const value = this.multiple
-      ? Array.from(select.selectedOptions).map(o => o.value)
+      ? Array.from(select.selectedOptions).map((o) => o.value)
       : select.value;
 
     this.value = value;
@@ -123,16 +122,24 @@ export class SelectComponent implements ControlValueAccessor {
       : this.value === value;
   }
 
+  getSizeClasses(): string {
+    const sizes: Record<InputSize, string> = {
+      sm: 'px-3 py-1.5 text-sm',
+      md: 'px-4 py-2 text-base',
+      lg: 'px-5 py-3 text-lg',
+    };
+
+    return sizes[this.size];
+  }
+
   getClasses(): string {
     const state: SelectState = this.error ? 'error' : 'default';
 
     return {
       default:
         'border border-gray-200 dark:border-gray-700 focus:border-slate-400 dark:focus:border-slate-300 focus:ring-2 focus:ring-slate-400/15 dark:focus:ring-slate-300/20',
-      error:
-        'border border-danger focus:border-danger focus:ring-2 focus:ring-danger/20',
-      success:
-        'border border-success focus:border-success focus:ring-2 focus:ring-success/20',
+      error: 'border border-danger focus:border-danger focus:ring-2 focus:ring-danger/20',
+      success: 'border border-success focus:border-success focus:ring-2 focus:ring-success/20',
     }[state];
   }
 }
