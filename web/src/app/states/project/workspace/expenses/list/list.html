@@ -1,7 +1,6 @@
 <div class="flex flex-col gap-4">
-
   @if(expenses.length > 0) {
-      <div class="flex items-start sm:items-center justify-between gap-2 sm:flex-row flex-col">
+  <div class="flex items-start sm:items-center justify-between gap-2 sm:flex-row flex-col">
     <h2 class="text-lg sm:text-xl font-semibold">Expenses</h2>
     <div class="flex items-center gap-2">
       <app-input
@@ -9,15 +8,20 @@
         placeholder="Search expenses..."
         (inputChange)="onSearchChange($event)"
       />
-      <app-button (click)="openCreateSheet()" variant="primary">
-        <div class="flex gap-1 items-center p-0.5">
-          <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
-          <span class="hidden sm:flex">Add Expense</span>
-        </div>
-      </app-button>
+      <div class="flex gap-2 items-center">
+        <app-button (click)="openCreateSheet()" variant="primary">
+          <div class="flex gap-1 items-center p-0.5">
+            <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
+            <span class="hidden sm:flex">Add Expense</span>
+          </div>
+        </app-button>
+        <app-button variant="outline" (click)="filtersOpen = true">
+          <lucide-angular size="20" [img]="filterIcon"></lucide-angular>
+        </app-button>
+      </div>
     </div>
   </div>
-      <!-- DataTable -->
+  <!-- DataTable -->
   <app-datatable
     [columns]="columns"
     [data]="expenses"
@@ -33,9 +37,8 @@
     (limitChange)="onLimitChange($event)"
   ></app-pagination>
   } @else {
-    <app-no-data actionLabel="Add Expense" (action)="openCreateSheet()"></app-no-data>
+  <app-no-data actionLabel="Add Expense" (action)="openCreateSheet()"></app-no-data>
   }
-
 </div>
 
 <ng-template #actions let-expense>
@@ -107,10 +110,79 @@
     (showAttachReceipt)="showReceiptModal = true"
     (showReceiptView)="openFilePreview()"
     [expense]="expense"
+    [categoriesDropdown]="categoriesDropdown"
+    [tasksDropdown]="tasksDropdown"
+    [cyclesDropdown]="cyclesDropdown"
   ></app-manage-expense>
   }
   <div slot="footer" class="flex justify-end gap-2">
     <app-button variant="outline" (click)="openManage = false; fetchExpenses()">Close</app-button>
+  </div>
+</app-side-sheet>
+
+<!-- Filters -->
+<app-side-sheet [(open)]="filtersOpen" width="500px">
+  <div slot="title">Filters</div>
+
+  <div class="w-full flex flex-col gap-3">
+    <!-- Date Range -->
+      <!-- <app-date-picker
+        label="Start Date"
+        [(ngModel)]="filters.startDate"
+        (ngModelChange)="filters.page = 1"
+      ></app-date-picker>
+
+      <app-date-picker
+        label="End Date"
+        [(ngModel)]="filters.endDate"
+        (ngModelChange)="filters.page = 1"
+      ></app-date-picker> -->
+
+    <!-- Category -->
+    <app-select
+      label="Category"
+      [options]="categoriesDropdown.items || []"
+      itemLabel="name"
+      itemValue="id"
+      [(ngModel)]="filters.categoryId"
+      placeholder="All"
+      (ngModelChange)="filters.page = 1"
+    ></app-select>
+
+    <!-- Task -->
+    <app-select
+      label="Task"
+      [options]="tasksDropdown.items || []"
+      itemLabel="name"
+      itemValue="id"
+      [(ngModel)]="filters.taskId"
+      placeholder="All"
+      (ngModelChange)="filters.page = 1"
+    ></app-select>
+
+    <!-- Min & Max Amount -->
+      <!-- <app-input
+        type="number"
+        label="Min Amount"
+        [(ngModel)]="filters.minAmount"
+        placeholder="0"
+        (ngModelChange)="filters.page = 1"
+      ></app-input>
+
+      <app-input
+        type="number"
+        label="Max Amount"
+        [(ngModel)]="filters.maxAmount"
+        placeholder="0"
+        (ngModelChange)="filters.page = 1"
+      ></app-input> -->
+  </div>
+
+  <!-- Footer Buttons -->
+  <div slot="footer" class="flex justify-end gap-2">
+    <app-button type="button" variant="outline" (click)="resetFilters()">Reset</app-button>
+
+    <app-button type="button" variant="secondary" (click)="applyFilters()">Apply</app-button>
   </div>
 </app-side-sheet>
 

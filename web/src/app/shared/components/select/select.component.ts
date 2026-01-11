@@ -31,6 +31,7 @@ type InputSize = 'sm' | 'md' | 'lg';
         [disabled]="disabled"
         (change)="onSelect($event)"
         (blur)="onBlur()"
+        [value]="value ?? ''"
         [ngClass]="[getClasses(), getSizeClasses()]"
         class="w-full px-4 py-2 rounded-sm transition-all duration-150
           bg-white dark:bg-gray-800
