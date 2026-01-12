@@ -1,7 +1,5 @@
 <div class="flex flex-col gap-4">
-
-  @if(receipts.length > 0){
-      <div class="flex items-start sm:items-center justify-between">
+  <div class="flex items-start sm:items-center justify-between">
     <h2 class="text-lg sm:text-xl font-semibold">Receipts</h2>
 
     <app-button variant="primary" (click)="openCreateSheet()">
@@ -10,9 +8,9 @@
         <span>Add Receipt</span>
       </div>
     </app-button>
-
-
   </div>
+  @if(receipts.length > 0){
+
   <app-datatable
     [columns]="columns"
     [data]="receipts"
@@ -27,9 +25,8 @@
     (limitChange)="onLimitChange($event)"
   />
   } @else {
-    <app-no-data actionLabel="Add Receipt" (action)="openCreateSheet()"></app-no-data>
+  <app-no-data (action)="openCreateSheet()"></app-no-data>
   }
-
 </div>
 
 <ng-template #actions let-receipt>

@@ -1,5 +1,4 @@
 <div class="flex flex-col gap-4">
-  @if(categories.length > 0) {
   <div class="flex items-start sm:items-center sm:flex-row flex-col justify-between gap-2">
     <!-- <h2 class="text-lg sm:text-xl font-semibold">Category List</h2> -->
     <div class="flex items-center gap-2">
@@ -16,6 +15,7 @@
       </app-button>
     </div>
   </div>
+  @if(categories.length > 0) {
   <!-- DataTable -->
   <app-datatable
     [columns]="columns"
@@ -32,7 +32,7 @@
     (limitChange)="onLimitChange($event)"
   ></app-pagination>
   } @else {
-  <app-no-data actionLabel="Add Category" (action)="openCreateModal()"></app-no-data>
+  <app-no-data (action)="openCreateModal()"></app-no-data>
   }
 </div>
 

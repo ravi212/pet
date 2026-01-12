@@ -1,5 +1,4 @@
 <div class="flex flex-col gap-4">
-  @if(expenses.length > 0) {
   <div class="flex items-start sm:items-center justify-between gap-2 sm:flex-row flex-col">
     <h2 class="text-lg sm:text-xl font-semibold">Expenses</h2>
     <div class="flex items-center gap-2">
@@ -21,6 +20,9 @@
       </div>
     </div>
   </div>
+
+  @if(expenses.length > 0) {
+
   <!-- DataTable -->
   <app-datatable
     [columns]="columns"
@@ -37,7 +39,7 @@
     (limitChange)="onLimitChange($event)"
   ></app-pagination>
   } @else {
-  <app-no-data actionLabel="Add Expense" (action)="openCreateSheet()"></app-no-data>
+  <app-no-data (action)="openCreateSheet()"></app-no-data>
   }
 </div>
 
@@ -126,7 +128,7 @@
 
   <div class="w-full flex flex-col gap-3">
     <!-- Date Range -->
-      <!-- <app-date-picker
+    <!-- <app-date-picker
         label="Start Date"
         [(ngModel)]="filters.startDate"
         (ngModelChange)="filters.page = 1"
@@ -161,7 +163,7 @@
     ></app-select>
 
     <!-- Min & Max Amount -->
-      <!-- <app-input
+    <!-- <app-input
         type="number"
         label="Min Amount"
         [(ngModel)]="filters.minAmount"
