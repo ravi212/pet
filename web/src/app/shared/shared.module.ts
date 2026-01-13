@@ -21,7 +21,8 @@ import {
   AppDatePickerComponent,
   ConfirmDialogComponent,
   ColorPickerComponent,
-  FileUploadComponent
+  FileUploadComponent,
+  LoaderComponent
 } from './components';
 import { NoDataComponent } from './pages/no-data/no-data.component';
 
@@ -47,7 +48,8 @@ const SHARED_COMPONENTS = [
   ConfirmDialogComponent,
   ColorPickerComponent,
   FileUploadComponent,
-  NoDataComponent
+  NoDataComponent,
+  LoaderComponent
 ];
 
 @NgModule({

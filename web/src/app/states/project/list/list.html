@@ -90,9 +90,11 @@
     (pageChange)="onPageChange($event)"
     (limitChange)="onLimitChange($event)"
   />
-  } @else {
+  } @else { @if(loading){
+  <app-loader position="center" size="lg" title="Loading..."></app-loader>
+  }@else {
   <app-no-data (action)="openCreateSheet()"></app-no-data>
-  }
+  } }
 </div>
 
 <ng-template #actions let-project>
