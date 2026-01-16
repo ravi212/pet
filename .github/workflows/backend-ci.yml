@@ -32,6 +32,7 @@ jobs:
           TAG=${{ github.sha }}
 
           docker build \
+            --build-arg DATABASE_URL="file:./dev.db" \
             -t $IMAGE:latest \
             -t $IMAGE:$TAG \
             -f backend/Dockerfile \
