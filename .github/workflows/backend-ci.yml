@@ -1,0 +1,46 @@
+name: Backend CI - Build Image
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "backend/**"
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      DOCKER_BUILDKIT: 1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | \
+          docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build & tag backend image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository_owner }}/backend
+          IMAGE=$(echo $IMAGE | tr '[:upper:]' '[:lower:]')
+          TAG=${{ github.sha }}
+
+          docker build \
+            -t $IMAGE:latest \
+            -t $IMAGE:$TAG \
+            -f backend/Dockerfile \
+            backend
+
+      - name: Push backend image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository_owner }}/backend
+          IMAGE=$(echo $IMAGE | tr '[:upper:]' '[:lower:]')
+
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}

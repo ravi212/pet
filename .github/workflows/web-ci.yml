@@ -1,0 +1,41 @@
+name: Build & Push Angular Docker Image
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "web/**"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: ./web
+
+      - name: Build Angular app
+        run: yarn build --configuration production
+        working-directory: ./web
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: docker build -t ghcr.io/<your-username>/pet-web:latest ./web
+
+      - name: Push Docker image
+        run: docker push ghcr.io/<your-username>/pet-web:latest

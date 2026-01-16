@@ -1,0 +1,28 @@
+# dependencies
+node_modules
+.yarn
+.pnp.*
+npm-debug.log
+yarn-error.log
+
+# build output
+dist
+coverage
+
+# environment / secrets
+.env
+.env.*
+# src/environments/environment*.ts
+
+# git / editor
+.git
+.gitignore
+.vscode
+.idea
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# tests (optional)
+**/*.spec.ts

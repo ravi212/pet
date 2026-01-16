@@ -1,0 +1,9 @@
+services:
+  pet-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pet-web
+    ports:
+      - "8080:80"
+    restart: unless-stopped
