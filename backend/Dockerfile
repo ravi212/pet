@@ -12,6 +12,7 @@ RUN corepack enable
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 COPY . .
+RUN npx prisma generate
 RUN yarn build
 
 # ---------- RUN ----------
