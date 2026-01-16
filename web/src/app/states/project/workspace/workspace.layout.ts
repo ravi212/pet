@@ -75,7 +75,7 @@ import { SharedModule } from '../../../shared/shared.module';
         <app-sidebar [collapsed]="collapsed()" (toggle)="toggleSidebar()" [items]="nav" />
 
         <main class="flex-1 overflow-y-auto bg-gray-50">
-          <div class="px-8 py-6 max-w-7xl mx-auto">
+          <div class="max-w-7xl mx-auto w-full px-6 sm:px-10 sm:py-8 py-4">
             <router-outlet />
           </div>
         </main>

@@ -12,15 +12,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
-  
+
   app.use('/storage', express.static(join(process.cwd(), 'storage')));
-  
-  const config = new DocumentBuilder()
-    .setTitle('Pet Expense Tracker API')
-    .setDescription('API documentation for pet expense tracking')
-    .setVersion('1.0.0')
-    .addBearerAuth()
-    .build();
 
   app.use(cookieParser());
 
@@ -30,9 +23,18 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   });
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('Pet Expense Tracker API')
+      .setDescription('API documentation for pet expense tracking')
+      .setVersion('1.0.0')
+      .addBearerAuth()
+      .build();
 
-  await app.listen(3000);
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, document);
+  }
+
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

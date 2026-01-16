@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-4">
   <!-- Header -->
-  <div class="flex items-center justify-between gap-2">
+  <div class="flex items-start sm:items-center sm:flex-row flex-col justify-between gap-2">
     <h2 class="text-xl font-semibold">Tasks</h2>
 
     <div class="flex items-center gap-2">
@@ -12,11 +12,14 @@
       />
 
       <app-button variant="primary" (click)="openCreateSheet()">
-        <lucide-angular size="16" [img]="plusIcon" class="mr-1" />
-        Create Task
+        <div class="flex gap-1 items-center p-0.5">
+          <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
+          <span class="hidden sm:flex">Add Task</span>
+        </div>
       </app-button>
     </div>
   </div>
+  @if(tasks.length > 0){
 
   <!-- Table -->
   <app-datatable
@@ -33,6 +36,9 @@
     (pageChange)="onPageChange($event)"
     (limitChange)="onLimitChange($event)"
   />
+  } @else {
+  <app-no-data (action)="openCreateSheet()"></app-no-data>
+  }
 </div>
 
 <!-- Actions -->
@@ -77,7 +83,7 @@
 <!-- Side Sheet -->
 <app-side-sheet [(open)]="sideSheetOpen" width="600px">
   <div slot="title">
-    {{ selectedTask ? 'Edit Task' : 'Create Task' }}
+    {{ selectedTask ? 'Edit Task' : 'Add Task' }}
   </div>
 
   @if (sideSheetOpen) {
@@ -86,8 +92,6 @@
 
   <div slot="footer" class="flex justify-end gap-2">
     <app-button variant="outline" (click)="sideSheetOpen = false"> Cancel </app-button>
-    <app-button type="submit" variant="secondary" (click)="taskForm.submit()"
-      >Save</app-button
-    >
+    <app-button type="submit" variant="secondary" (click)="taskForm.submit()">Save</app-button>
   </div>
 </app-side-sheet>

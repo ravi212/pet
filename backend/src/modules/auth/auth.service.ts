@@ -6,13 +6,13 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { LoginDto, SignUpDto } from './dto';
 import { EmailService } from '../email/email.service';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes, createHash } from 'crypto';
 import { DeviceType } from 'generated/prisma/enums';
+import { compare, hash } from 'bcrypt-ts';
 
 function hashToken(token: string) {
   return createHash('sha256').update(token).digest('hex');
@@ -42,7 +42,7 @@ export class AuthService {
       }
 
       // Hash the password using bcrypt
-      const hashedPassword = await bcrypt.hash(signupDto.password, 10);
+      const hashedPassword = await hash(signupDto.password, 10);
 
       // Generate email verification token (valid for 24 hours)
       const emailVerificationToken = crypto.randomBytes(32).toString('hex');
@@ -168,7 +168,7 @@ export class AuthService {
       }
 
       // Compare passwords using bcrypt
-      const passwordValid = await bcrypt.compare(
+      const passwordValid = await compare(
         loginDto.password,
         user.password || '',
       );

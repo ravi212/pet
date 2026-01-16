@@ -26,7 +26,7 @@ type ButtonSize = 'sm' | 'md' | 'lg';
 })
 export class ButtonComponent {
   @Input() variant: ButtonVariant = 'primary';
-  @Input() size: ButtonSize = 'md';
+  @Input() size: ButtonSize = 'sm';
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() disabled = false;
   @Input() loading = false;
@@ -47,7 +47,7 @@ export class ButtonComponent {
     const sizeClasses: Record<ButtonSize, string> = {
       sm: 'px-3 py-1.5 text-sm',
       md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg',
+      lg: 'px-5 py-3 text-lg',
     };
 
     // Variant classes

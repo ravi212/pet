@@ -1,39 +1,42 @@
 <div class="flex flex-col gap-4">
-  <div class="flex items-center justify-between gap-2">
-    <h2 class="text-xl font-semibold">Project List</h2>
+  <div class="flex sm:items-center items-start justify-between sm:flex-row flex-col gap-2">
+    <h2 class="text-lg sm:text-xl text-left font-semibold">Project List</h2>
     <div class="flex items-center gap-2">
-      @if(selectedView == viewMode.GRID){
-      <lucide-angular
-        class="cursor-pointer"
-        (click)="selectedView = viewMode.TABLE"
-        color="grey"
-        size="18"
-        [img]="gridIcon"
-      ></lucide-angular>
-      } @else {
-      <lucide-angular
-        class="cursor-pointer"
-        (click)="selectedView = viewMode.GRID"
-        color="grey"
-        size="18"
-        [img]="listIcon"
-      ></lucide-angular>
-      }
       <app-input
         type="text"
         placeholder="Search projects..."
         [(ngModel)]="search"
         (ngModelChange)="onSearchChange($event)"
       />
-
       <app-button (click)="openCreateSheet()" variant="primary">
-        <lucide-angular size="16" [img]="plusIcon" class="mr-1"></lucide-angular>
-        Create Project
+        <div class="flex gap-1 items-center p-0.5">
+          <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
+          <span class="hidden sm:flex">Create Project</span>
+        </div>
+      </app-button>
+      <app-button variant="outline">
+        <div class="flex gap-1 items-center p-0.5">
+          @if(selectedView == viewMode.GRID){
+          <lucide-angular
+            class="cursor-pointer"
+            (click)="selectedView = viewMode.TABLE"
+            [img]="gridIcon"
+            size="20"
+          ></lucide-angular>
+          } @else {
+          <lucide-angular
+            class="cursor-pointer"
+            (click)="selectedView = viewMode.GRID"
+            [img]="listIcon"
+            size="20"
+          ></lucide-angular>
+          }
+        </div>
       </app-button>
     </div>
   </div>
 
-  @if(selectedView == viewMode.TABLE && projects.length > 0) {
+  @if(projects.length > 0){ @if(selectedView == viewMode.TABLE && projects.length > 0) {
   <!-- DataTable -->
   <app-datatable
     [columns]="columns"
@@ -81,7 +84,17 @@
     }
   </div>
   }
-
+  <app-pagination
+    [page]="page"
+    [total]="total"
+    (pageChange)="onPageChange($event)"
+    (limitChange)="onLimitChange($event)"
+  />
+  } @else { @if(loading){
+  <app-loader position="center" size="lg" title="Loading..."></app-loader>
+  }@else {
+  <app-no-data (action)="openCreateSheet()"></app-no-data>
+  } }
 </div>
 
 <ng-template #actions let-project>

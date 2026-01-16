@@ -4,6 +4,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
 
 type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'date';
 type InputState = 'default' | 'error' | 'success';
+type InputSize = 'sm' | 'md' | 'lg';
 
 @Component({
   selector: 'app-input',
@@ -27,7 +28,7 @@ type InputState = 'default' | 'error' | 'success';
         [value]="value"
         (input)="onInput($event)"
         (blur)="onBlur()"
-        [ngClass]="getInputClasses()"
+        [ngClass]="[getInputClasses(), getSizeClasses()]"
         class="w-full px-4 py-2 rounded-sm transition-all duration-150
        bg-white dark:bg-gray-800
        text-gray-900 dark:text-gray-100
@@ -63,6 +64,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() error: string | null = null;
   @Input() hint: string | null = null;
   @Input() value = '';
+  @Input() size: InputSize = 'sm';
 
   @Output() inputChange = new EventEmitter<string>();
 
@@ -113,5 +115,15 @@ export class InputComponent implements ControlValueAccessor {
     const disabledClass = this.disabled ? 'disabled-state' : '';
 
     return `${baseClasses} ${stateClasses[currentState]} ${disabledClass}`;
+  }
+
+  getSizeClasses(): string {
+    const sizes: Record<InputSize, string> = {
+      sm: 'px-3 py-1.5 text-sm',
+      md: 'px-4 py-2 text-base',
+      lg: 'px-5 py-3 text-lg',
+    };
+
+    return sizes[this.size];
   }
 }

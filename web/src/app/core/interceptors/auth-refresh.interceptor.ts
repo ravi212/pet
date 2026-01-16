@@ -16,41 +16,59 @@ export const authRefreshInterceptor: HttpInterceptorFn = (
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const ignored = ['/auth/login', '/auth/signup', '/auth/refresh'];
+  // APIs that should NEVER trigger refresh logic
+  const ignoredEndpoints = [
+    '/auth/login',
+    '/auth/signup',
+    '/auth/refresh',
+  ];
 
-  if (ignored.some((url) => req.url.includes(url))) {
+  if (ignoredEndpoints.some((url) => req.url.includes(url))) {
     return next(req);
   }
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      // Only care about 401
       if (error.status !== 401) {
         return throwError(() => error);
       }
 
-      const hasAuthHeader = req.headers.has('Authorization');
-      if (!hasAuthHeader) {
+      /**
+       * 🔑 CRITICAL:
+       * If user is NOT authenticated, do NOTHING.
+       * Guest routes (login/signup) must NEVER refresh or redirect.
+       */
+      if (!authService.isAuthenticated()) {
         return throwError(() => error);
       }
 
-      // already tried refresh once → logout
+      /**
+       * If we already tried refreshing once and still got 401,
+       * tokens are invalid → force logout.
+       */
       if ((req as any)._retry) {
         authService.clearAuth();
         router.navigate(['/auth/login']);
         return throwError(() => error);
       }
 
-      // mark request as retried
+      /**
+       * Mark request so we don't infinite-loop
+       */
       const retryReq = req.clone() as any;
       retryReq._retry = true;
 
+      /**
+       * Attempt refresh
+       */
       return authService.refreshToken().pipe(
         switchMap(() => next(retryReq)),
-        catchError((refreshErr) => {
-          // refresh failed → logout immediately
+        catchError(() => {
+          // Refresh failed → logout hard
           authService.clearAuth();
           router.navigate(['/auth/login']);
-          return throwError(() => refreshErr);
+          return throwError(() => error);
         })
       );
     })

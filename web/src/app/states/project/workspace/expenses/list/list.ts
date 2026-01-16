@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Expense, ExpenseFilters, ExpensesService } from '../services/expense.service';
 import { ExpenseFormComponent } from '../components/create-expense-form/expense-form.component';
-import { Edit, Eye, LucideAngularModule, Plus, Trash2, Settings } from 'lucide-angular';
+import { Edit, Eye, LucideAngularModule, Plus, Trash2, Settings, InfoIcon, FilterIcon } from 'lucide-angular';
 import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
 import { DataTableColumn } from '../../../../../shared/components';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -16,6 +16,9 @@ import { SafeUrlPipe } from '../../../../../shared/pipes/safeurl.pipe';
 import { baseUrl } from '../../../../../shared/constants/endpoints.const';
 import { DropdownLoader } from '../../../../../shared/helpers/dropdown-loader';
 import { ReceiptsService } from '../../receipts/services/receipts.service';
+import { CategoriesService } from '../../settings/components/categories/services/category.service';
+import { TasksService } from '../../tasks/services/tasks.service';
+import { CyclesService } from '../../cycles/services/cycles.service';
 
 @Component({
   selector: 'app-list',
@@ -33,6 +36,7 @@ import { ReceiptsService } from '../../receipts/services/receipts.service';
 export class List {
   router = inject(Router);
   previewOpen: boolean = false;
+  filtersOpen: boolean = false;
   previewFileUrl: string | null = null;
   previewFileName: string | null = null;
   showReceiptModal: boolean = false;
@@ -40,7 +44,10 @@ export class List {
   expenses: Expense[] = [];
   @ViewChild('amountTpl', { static: true })
   amountTpl!: TemplateRef<{ $implicit: Expense }>;
-  receiptsDropdown!: DropdownLoader<{ label: string; value: string, meta: any }>;
+  receiptsDropdown!: DropdownLoader<{ label: string; value: string; meta: any }>;
+  categoriesDropdown!: DropdownLoader<{ label: string; value: string }>;
+  tasksDropdown!: DropdownLoader<{ label: string; value: string }>;
+  cyclesDropdown!: DropdownLoader<{ label: string; value: string }>;
   @ViewChild('incurredAtTpl', { static: true })
   incurredAtTpl!: TemplateRef<{ $implicit: Expense }>;
 
@@ -50,6 +57,9 @@ export class List {
   readonly projectType = ProjectType;
 
   private expenseService = inject(ExpensesService);
+  categoriesService = inject(CategoriesService)
+  tasksService = inject(TasksService);
+  cyclesService = inject(CyclesService);
   private context = inject(ProjectContextService);
   receiptsService = inject(ReceiptsService);
 
@@ -58,11 +68,8 @@ export class List {
   readonly plusIcon = Plus;
   readonly eyeIcon = Eye;
   readonly settingsIcon = Settings;
-
-  categories = [];
-  tasks = [];
-  cycles = [];
-  receipts = [];
+  readonly infoIcon = InfoIcon;
+  readonly filterIcon = FilterIcon;
 
   loading = false;
   page = 1;
@@ -88,6 +95,7 @@ export class List {
     orderBy: 'desc',
   };
 
+
   ngOnInit() {
     this.columns = [
       { key: 'note', label: 'Note', sortable: true },
@@ -96,7 +104,6 @@ export class List {
       { key: 'amount', label: 'Amount', sortable: true },
       { key: 'incurredAt', label: 'Incurred At', sortable: true, template: this.incurredAtTpl },
     ];
-
   }
 
   constructor() {
@@ -107,12 +114,25 @@ export class List {
       // only update projectId, not the whole object
       this.filters.projectId = projectId;
       this.filters.page = 1;
+      this.categoriesDropdown = new DropdownLoader(projectId, (params) =>
+        this.categoriesService.getDropdown(params)
+      );
 
+      this.tasksDropdown = new DropdownLoader(projectId, (params) =>
+        this.tasksService.getDropdown(params)
+      );
+
+      this.cyclesDropdown = new DropdownLoader(projectId, (params) =>
+        this.cyclesService.getDropdown(params)
+      );
       this.receiptsDropdown = new DropdownLoader(projectId, (params) =>
         this.receiptsService.getDropdown(params)
       );
 
       this.receiptsDropdown.load();
+      this.categoriesDropdown.load();
+      this.cyclesDropdown.load();
+      this.tasksDropdown.load();
       this.fetchExpenses();
     });
     this.search$.pipe(debounceTime(300), distinctUntilChanged()).subscribe((value) => {
@@ -240,7 +260,24 @@ export class List {
   }
 
   onReceiptSelect(id: string) {
-    const receipt = this.receiptsDropdown.items.find(item => item.value === id)
+    const receipt = this.receiptsDropdown.items.find((item) => item.value === id);
     this.selectedReceiptUrl = receipt?.meta?.fileUrl || null;
+  }
+
+  applyFilters() {
+    this.filters.page = 1;
+    this.fetchExpenses();
+    this.filtersOpen = false;
+  }
+
+  resetFilters() {
+    this.filters.startDate = undefined;
+    this.filters.endDate = undefined;
+    this.filters.categoryId = undefined;
+    this.filters.taskId = undefined;
+    this.filters.minAmount = undefined;
+    this.filters.maxAmount = undefined;
+    this.filters.page = 1;
+    this.fetchExpenses();
   }
 }

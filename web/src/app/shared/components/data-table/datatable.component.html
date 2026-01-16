@@ -1,104 +1,79 @@
 <div
-  class="relative overflow-hidden rounded-sm border border-gray-200/60 bg-white shadow-sm
-         dark:border-gray-800 dark:bg-gray-950"
+  class="relative overflow-hidden rounded-sm border border-gray-200/60 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950"
 >
   <div class="overflow-x-auto">
     <table class="w-full border-separate border-spacing-0 text-sm">
       <!-- Header -->
       <thead
-          class="sticky top-0 z-10
-         bg-gray-200 dark:bg-gray-900
-         border-b border-gray-300/70 dark:border-gray-700
-         backdrop-blur"
+        class="sticky top-0 z-10 bg-gray-200 dark:bg-gray-900 border-b border-gray-300/70 dark:border-gray-700 backdrop-blur"
       >
-        <tr >
+        <tr>
           @for (col of columns; track col.key) {
-            <th
-                class="px-5 py-3.5
-         text-[11px] font-bold uppercase tracking-wider
-         text-gray-600 dark:text-gray-300
-         select-none"
-              [class.cursor-pointer]="col.sortable"
-              (click)="sort(col)"
-            >
-              <div class="flex items-center gap-1">
-                {{ col.label }}
+          <th
+            class="px-5 py-1 sm:py-3 text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 select-none"
+            [class.cursor-pointer]="col.sortable"
+            (click)="sort(col)"
+          >
+            <div class="flex items-center gap-1">
+              {{ col.label }}
 
-                @if (col.sortable) {
-                  <span
-                    class="text-[14px] transition-opacity"
-                    [class.opacity-100]="sortKey === col.key"
-                    [class.opacity-50]="sortKey !== col.key"
-                  >
-                    {{ sortDir === 'asc' ? '↑' : '↓' }}
-                  </span>
-                }
-              </div>
-            </th>
-          }
-
-          @if (actionsTemplate) {
-            <th
-              class="px-5 py-3.5
-         text-[11px] text-right font-bold uppercase tracking-wider
-         text-gray-600 dark:text-gray-300
-         select-none"
-            >
-              Actions
-            </th>
+              @if (col.sortable) {
+              <span
+                class="text-[14px] transition-opacity"
+                [class.opacity-100]="sortKey === col.key"
+                [class.opacity-50]="sortKey !== col.key"
+              >
+                {{ sortDir === 'asc' ? '↑' : '↓' }}
+              </span>
+              }
+            </div>
+          </th>
+          } @if (actionsTemplate) {
+          <th
+            class="px-5 py-3.5 text-[11px] text-right font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 select-none"
+          >
+            Actions
+          </th>
           }
         </tr>
       </thead>
 
       <!-- Body -->
       <tbody>
-        @if (loading) {
-          <tr>
-            <td
-              class="bg-gray-50/50 dark:bg-gray-900/50"
-              [attr.colspan]="columns.length + (actionsTemplate ? 1 : 0)"
-            >
-              <app-skeleton rows="5" />
-            </td>
-          </tr>
-        } @else {
-          @for (row of data; track trackByRow($index, row)) {
-            <tr
-              class="group even:bg-gray-50/30 dark:even:bg-gray-900/30
-                     border-t border-gray-100/70 dark:border-gray-800
-                     transition-colors cursor-pointer
-                     hover:bg-gray-50/70 dark:hover:bg-gray-900/70"
-              (click)="rowClick.emit(row)"
-            >
-              @for (col of columns; track col.key) {
-                <td
-                  class="px-5 py-3 text-gray-700 dark:text-gray-300"
-                >
-                  @if (col.template) {
-                    <ng-container
-                      *ngTemplateOutlet="col.template; context: { $implicit: row }"
-                    />
-                  } @else {
-                    {{ getValue(row, col.key) }}
-                  }
-                </td>
-              }
-
-              @if (actionsTemplate) {
-                <td class="px-5 py-3 ">
-                  <div
-                    class="flex justify-end gap-2
-                           transition-opacity group-hover:opacity-100"
-                  >
-                    <ng-container
-                      *ngTemplateOutlet="actionsTemplate; context: { $implicit: row }"
-                    />
-                  </div>
-                </td>
-              }
-            </tr>
+        @if (loading) { @for (i of [1,2,3,4,5]; track i) {
+        <tr>
+          @for (col of columns; track col.key) {
+          <td class="px-5 py-3">
+            <app-skeleton />
+          </td>
+          } @if (actionsTemplate) {
+          <td class="px-5 py-3">
+            <app-skeleton />
+          </td>
           }
-        }
+        </tr>
+        } } @else { @for (row of data; track trackByRow($index, row)) {
+        <tr
+          class="group even:bg-gray-50/30 dark:even:bg-gray-900/30 border-t border-gray-100/70 dark:border-gray-800 transition-colors cursor-pointer hover:bg-gray-50/70 dark:hover:bg-gray-900/70"
+          (click)="rowClick.emit(row)"
+        >
+          @for (col of columns; track col.key) {
+          <td class="px-5 py-3 text-gray-700 dark:text-gray-300">
+            @if (col.template) {
+            <ng-container *ngTemplateOutlet="col.template; context: { $implicit: row }" />
+            } @else {
+            {{ getValue(row, col.key) }}
+            }
+          </td>
+          } @if (actionsTemplate) {
+          <td class="px-5 py-3">
+            <div class="flex justify-end gap-2 transition-opacity group-hover:opacity-100">
+              <ng-container *ngTemplateOutlet="actionsTemplate; context: { $implicit: row }" />
+            </div>
+          </td>
+          }
+        </tr>
+        } }
       </tbody>
     </table>
   </div>

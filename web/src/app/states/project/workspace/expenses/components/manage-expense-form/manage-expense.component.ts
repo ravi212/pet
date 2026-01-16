@@ -37,9 +37,9 @@ export class ManageExpenseComponent implements OnInit {
   @Output() showReceiptView: EventEmitter<boolean> = new EventEmitter<boolean>(false);
   @Output() showAttachReceipt: EventEmitter<boolean> = new EventEmitter<boolean>(false);
 
-  categoriesDropdown!: DropdownLoader<{ label: string; value: string }>;
-  tasksDropdown!: DropdownLoader<{ label: string; value: string }>;
-  cyclesDropdown!: DropdownLoader<{ label: string; value: string }>;
+  @Input() categoriesDropdown!: DropdownLoader<{ label: string; value: string }>;
+  @Input() tasksDropdown!: DropdownLoader<{ label: string; value: string }>;
+  @Input() cyclesDropdown!: DropdownLoader<{ label: string; value: string }>;
   previewOpen = false;
   previewFileUrl: string | null = null;
   previewFileName: string | null = null;
@@ -63,9 +63,6 @@ export class ManageExpenseComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private expenseService: ExpensesService,
-    private categoriesService: CategoriesService,
-    private tasksService: TasksService,
-    private cyclesService: CyclesService
   ) {}
 
   ngOnInit() {
@@ -82,18 +79,6 @@ export class ManageExpenseComponent implements OnInit {
       reimbursedAmount: [this.expense.reimbursedAmount],
       note: [this.expense.note],
     });
-
-    this.categoriesDropdown = new DropdownLoader(this.expense.projectId, (params) =>
-      this.categoriesService.getDropdown(params)
-    );
-
-    this.tasksDropdown = new DropdownLoader(this.expense.projectId, (params) =>
-      this.tasksService.getDropdown(params)
-    );
-
-    this.cyclesDropdown = new DropdownLoader(this.expense.projectId, (params) =>
-      this.cyclesService.getDropdown(params)
-    );
 
     this.categoriesDropdown.load();
     this.cyclesDropdown.load();

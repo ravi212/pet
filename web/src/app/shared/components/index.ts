@@ -62,3 +62,6 @@ export { ColorPickerComponent } from './color-picker/color-picker.component';
 
 // File Uplaod
 export { FileUploadComponent } from './file-upload/file-upload.component';
+
+// Loader
+export { LoaderComponent } from './loader/loader.component';

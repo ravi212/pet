@@ -34,6 +34,11 @@ export class CycleService {
       ? {
           ...cycle,
           budgetAmount: cycle.budgetAmount.toString(),
+          expenses: cycle.expenses.map((e) => ({
+            ...e,
+            amount: e.amount.toString(),
+            reimbursedAmount: e.reimbursedAmount.toString(),
+          })),
         }
       : {
           label: `${cycle.cycleStart.toLocaleDateString()} -> ${cycle.cycleEnd.toLocaleDateString()}`,

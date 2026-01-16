@@ -5,7 +5,7 @@ web/dist
 web/tmp
 web/out-tsc
 web/bazel-out
-web/src/environments
+# web/src/environments
 
 # Node
 web/node_modules
