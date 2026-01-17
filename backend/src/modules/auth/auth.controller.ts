@@ -112,14 +112,16 @@ export class AuthController {
       res.cookie('access_token', accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'strict',
+        sameSite: 'none',
+        domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '': '',
         maxAge: 15 * 60 * 1000,
       });
 
       res.cookie('refresh_token', refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'strict',
+        sameSite: 'none',
+        domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '': '',
         path: '/auth/refresh',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
@@ -168,14 +170,16 @@ export class AuthController {
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none',
+      domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '': '',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refresh_token', newRefresh, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none',
+      domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '': '',
       path: '/auth/refresh',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
