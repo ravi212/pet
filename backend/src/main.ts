@@ -18,7 +18,15 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: [process.env.FRONTEND_URL || 'http://localhost:4200'],
+    origin: (origin, callback) => {
+      const allowed = [process.env.FRONEND_URL || '', 'http://localhost:4200'];
+      if (!origin || allowed.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log('Origin not allowed:', origin, allowed);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   });
@@ -35,6 +43,6 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
   }
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }
 bootstrap();
