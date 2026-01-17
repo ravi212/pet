@@ -38,10 +38,13 @@ jobs:
         run: |
           IMAGE=ghcr.io/${{ github.repository_owner }}/pet-web
           IMAGE=$(echo $IMAGE | tr '[:upper:]' '[:lower:]')
-          docker build -t $IMAGE:latest ./web
+          TAG=${{ github.sha }}
+          docker build -t $IMAGE:latest -t $IMAGE:$TAG ./web
 
       - name: Push Docker image
         run: |
           IMAGE=ghcr.io/${{ github.repository_owner }}/pet-web
           IMAGE=$(echo $IMAGE | tr '[:upper:]' '[:lower:]')
+          TAG=${{ github.sha }}
           docker push $IMAGE:latest
+          docker push $IMAGE:$TAG
