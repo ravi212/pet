@@ -19,7 +19,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin, callback) => {
-      const allowed = [process.env.FRONEND_URL || '', 'http://localhost:4200'];
+      const allowed = [process.env.FRONTEND_URL || 'http://localhost:4200'];
       if (!origin || allowed.includes(origin)) {
         callback(null, true);
       } else {
