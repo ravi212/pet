@@ -1,45 +1,43 @@
 <div class="flex flex-col gap-4">
-  <div class="flex items-start sm:items-center justify-between gap-2 sm:flex-row flex-col">
-    <h2 class="text-lg sm:text-xl font-semibold">Expenses</h2>
-    <div class="flex items-center gap-2">
-      <app-input
-        type="text"
-        placeholder="Search expenses..."
-        (inputChange)="onSearchChange($event)"
-      />
-      <div class="flex gap-2 items-center">
-        <app-button (click)="openCreateSheet()" variant="primary">
-          <div class="flex gap-1 items-center p-0.5">
-            <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
-            <span class="hidden sm:flex">Add Expense</span>
-          </div>
-        </app-button>
-        <app-button variant="outline" (click)="filtersOpen = true">
-          <lucide-angular size="20" [img]="filterIcon"></lucide-angular>
-        </app-button>
+  @if (expenses.length == 0 && !loading) {
+    <app-no-data actionLabel="Add Expense" (action)="openCreateSheet()"></app-no-data>
+  } @else {
+    <div class="flex items-start sm:items-center justify-between gap-2 sm:flex-row flex-col">
+      <h2 class="text-lg sm:text-xl font-semibold">Expenses</h2>
+      <div class="flex items-center gap-2">
+        <app-input
+          type="text"
+          placeholder="Search expenses..."
+          (inputChange)="onSearchChange($event)"
+        />
+        <div class="flex gap-2 items-center">
+          <app-button (click)="openCreateSheet()" variant="primary">
+            <div class="flex gap-1 items-center p-0.5">
+              <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
+              <span class="hidden sm:flex">Add Expense</span>
+            </div>
+          </app-button>
+          <app-button variant="outline" (click)="filtersOpen = true">
+            <lucide-angular size="20" [img]="filterIcon"></lucide-angular>
+          </app-button>
+        </div>
       </div>
     </div>
-  </div>
+    <!-- DataTable -->
+    <app-datatable
+      [columns]="columns"
+      [data]="expenses"
+      [loading]="loading"
+      [actionsTemplate]="actions"
+    ></app-datatable>
 
-  @if(expenses.length > 0) {
-
-  <!-- DataTable -->
-  <app-datatable
-    [columns]="columns"
-    [data]="expenses"
-    [loading]="loading"
-    [actionsTemplate]="actions"
-  ></app-datatable>
-
-  <!-- Pagination -->
-  <app-pagination
-    [page]="page"
-    [total]="total"
-    (pageChange)="onPageChange($event)"
-    (limitChange)="onLimitChange($event)"
-  ></app-pagination>
-  } @else {
-  <app-no-data (action)="openCreateSheet()"></app-no-data>
+    <!-- Pagination -->
+    <app-pagination
+      [page]="page"
+      [total]="total"
+      (pageChange)="onPageChange($event)"
+      (limitChange)="onLimitChange($event)"
+    ></app-pagination>
   }
 </div>
 
@@ -68,7 +66,7 @@
 </ng-template>
 
 <ng-template #incurredAtTpl let-expense>
-  {{ expense.incurredAt | date : 'mediumDate' }}
+  {{ expense.incurredAt | date: 'mediumDate' }}
 </ng-template>
 
 <ng-template #amountTpl let-expense> {{ expense.currency }} {{ expense.amount }} </ng-template>
@@ -87,12 +85,12 @@
   <div slot="title">
     {{ selectedExpense ? 'Edit Expense' : 'Add Expense' }}
   </div>
-  @if(sideSheetOpen) {
-  <app-expense-form
-    [expense]="selectedExpense"
-    [projectId]="filters.projectId"
-    (saved)="onSave()"
-  ></app-expense-form>
+  @if (sideSheetOpen) {
+    <app-expense-form
+      [expense]="selectedExpense"
+      [projectId]="filters.projectId"
+      (saved)="onSave()"
+    ></app-expense-form>
   }
   <div slot="footer" class="flex justify-end gap-2 mt-4">
     <app-button type="button" variant="outline" (click)="sideSheetOpen = false"> Cancel</app-button>
@@ -107,15 +105,15 @@
   class="max-w-7xl"
 >
   <div slot="title">Manage Expense ({{ expense && expense.id }})</div>
-  @if(expense) {
-  <app-manage-expense
-    (showAttachReceipt)="showReceiptModal = true"
-    (showReceiptView)="openFilePreview()"
-    [expense]="expense"
-    [categoriesDropdown]="categoriesDropdown"
-    [tasksDropdown]="tasksDropdown"
-    [cyclesDropdown]="cyclesDropdown"
-  ></app-manage-expense>
+  @if (expense) {
+    <app-manage-expense
+      (showAttachReceipt)="showReceiptModal = true"
+      (showReceiptView)="openFilePreview()"
+      [expense]="expense"
+      [categoriesDropdown]="categoriesDropdown"
+      [tasksDropdown]="tasksDropdown"
+      [cyclesDropdown]="cyclesDropdown"
+    ></app-manage-expense>
   }
   <div slot="footer" class="flex justify-end gap-2">
     <app-button variant="outline" (click)="openManage = false; fetchExpenses()">Close</app-button>
@@ -188,64 +186,63 @@
   </div>
 </app-side-sheet>
 
-@if(selectedExpense){
-<app-modal
-  [width]="'800px'"
-  [isOpen]="previewOpen"
-  (close)="previewOpen = false"
-  [title]="previewFileName"
-  [showFooter]="false"
->
-  <div class="flex justify-center items-center">
-    <ng-container *ngIf="isImage(previewFileUrl); else pdfTemplate">
-      <img [src]="previewFileUrl" class="max-w-full max-h-[70vh] rounded" />
-    </ng-container>
-
-    <ng-template #pdfTemplate>
-      <iframe [src]="previewFileUrl | safeUrl" class="w-full h-[70vh]"></iframe>
-    </ng-template>
-  </div>
-</app-modal>
-} @if(showReceiptModal){
-<app-modal
-  [width]="'500px'"
-  [isOpen]="showReceiptModal"
-  (close)="showReceiptModal = false"
-  [title]="'Attach Receipt'"
-  [showFooter]="false"
->
-  <div class="flex flex-col gap-4">
-    <!-- Select Dropdown for Receipts -->
-    <app-select
-      [options]="receiptsDropdown.items"
-      placeholder="Select a receipt"
-      [(ngModel)]="selectedReceiptUrl"
-      (ngModelChange)="onReceiptSelect($event)"
-    ></app-select>
-    @if(selectedReceiptUrl){
-    <!-- Preview -->
-    <div class="flex justify-center items-center mt-4">
-      <ng-container *ngIf="isImage(selectedReceiptUrl); else pdfTemplate">
-        <img
-          [src]="getUploadedFileUrl(selectedReceiptUrl)"
-          class="max-w-full max-h-[50vh] rounded"
-        />
+@if (selectedExpense) {
+  <app-modal
+    [isOpen]="previewOpen"
+    (close)="previewOpen = false"
+    [title]="previewFileName"
+    [showFooter]="false"
+  >
+    <div class="flex justify-center items-center">
+      <ng-container *ngIf="isImage(previewFileUrl); else pdfTemplate">
+        <img [src]="previewFileUrl" class="max-w-full max-h-[70vh] rounded" />
       </ng-container>
 
       <ng-template #pdfTemplate>
-        <iframe
-          [src]="getUploadedFileUrl(selectedReceiptUrl) | safeUrl"
-          class="w-full h-[50vh]"
-        ></iframe>
+        <iframe [src]="previewFileUrl | safeUrl" class="w-full h-[70vh]"></iframe>
       </ng-template>
     </div>
-    }
-    <div class="flex justify-end gap-2 pt-4">
-      <app-button size="sm" type="button" variant="outline" (click)="showReceiptModal = false"
-        >Cancel</app-button
-      >
-      <app-button [disabled]="!selectedReceiptUrl" size="sm" variant="secondary">Save</app-button>
+  </app-modal>
+}
+@if (showReceiptModal) {
+  <app-modal
+    [isOpen]="showReceiptModal"
+    (close)="showReceiptModal = false"
+    [title]="'Attach Receipt'"
+    [showFooter]="false"
+  >
+    <div class="flex flex-col gap-4">
+      <!-- Select Dropdown for Receipts -->
+      <app-select
+        [options]="receiptsDropdown.items"
+        placeholder="Select a receipt"
+        [(ngModel)]="selectedReceiptUrl"
+        (ngModelChange)="onReceiptSelect($event)"
+      ></app-select>
+      @if (selectedReceiptUrl) {
+        <!-- Preview -->
+        <div class="flex justify-center items-center mt-4">
+          <ng-container *ngIf="isImage(selectedReceiptUrl); else pdfTemplate">
+            <img
+              [src]="getUploadedFileUrl(selectedReceiptUrl)"
+              class="max-w-full max-h-[50vh] rounded"
+            />
+          </ng-container>
+
+          <ng-template #pdfTemplate>
+            <iframe
+              [src]="getUploadedFileUrl(selectedReceiptUrl) | safeUrl"
+              class="w-full h-[50vh]"
+            ></iframe>
+          </ng-template>
+        </div>
+      }
+      <div class="flex justify-end gap-2 pt-4">
+        <app-button size="sm" type="button" variant="outline" (click)="showReceiptModal = false"
+          >Cancel</app-button
+        >
+        <app-button [disabled]="!selectedReceiptUrl" size="sm" variant="secondary">Save</app-button>
+      </div>
     </div>
-  </div>
-</app-modal>
+  </app-modal>
 }

@@ -17,7 +17,7 @@ import { LucideAngularModule, ArrowLeft } from 'lucide-angular';
       <!-- Toggle handle on the edge -->
       <button
         class="absolute -right-3 top-5 w-6 h-6 bg-white border border-gray-300
-               rounded-full shadow flex items-center justify-center
+               rounded-full shadow md:flex hidden items-center justify-center
                hover:bg-gray-100 transition"
         (click)="toggle.emit()"
       >

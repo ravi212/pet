@@ -1,52 +1,55 @@
 <div class="flex flex-col gap-4">
-  <div class="flex sm:items-center items-start justify-between sm:flex-row flex-col gap-2">
-    <h2 class="text-lg sm:text-xl text-left font-semibold">Project List</h2>
-    <div class="flex items-center gap-2">
-      <app-input
-        type="text"
-        placeholder="Search projects..."
-        [(ngModel)]="search"
-        (ngModelChange)="onSearchChange($event)"
-      />
-      <app-button (click)="openCreateSheet()" variant="primary">
-        <div class="flex gap-1 items-center p-0.5">
-          <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
-          <span class="hidden sm:flex">Create Project</span>
-        </div>
-      </app-button>
-      <app-button variant="outline">
-        <div class="flex gap-1 items-center p-0.5">
-          @if(selectedView == viewMode.GRID){
-          <lucide-angular
-            class="cursor-pointer"
-            (click)="selectedView = viewMode.TABLE"
-            [img]="gridIcon"
-            size="20"
-          ></lucide-angular>
-          } @else {
-          <lucide-angular
-            class="cursor-pointer"
-            (click)="selectedView = viewMode.GRID"
-            [img]="listIcon"
-            size="20"
-          ></lucide-angular>
-          }
-        </div>
-      </app-button>
+  @if (projects.length == 0 && !loading) {
+    <app-no-data actionLabel="Create Project" (action)="openCreateSheet()"></app-no-data>
+  } @else {
+    <div class="flex sm:items-center items-start justify-between sm:flex-row flex-col gap-2">
+      <h2 class="text-lg sm:text-xl text-left font-semibold">Project List</h2>
+      <div class="flex items-center gap-2">
+        <app-input
+          type="text"
+          placeholder="Search projects..."
+          [(ngModel)]="search"
+          (ngModelChange)="onSearchChange($event)"
+        />
+        <app-button (click)="openCreateSheet()" variant="primary">
+          <div class="flex gap-1 items-center p-0.5">
+            <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
+            <span class="hidden sm:flex">Create Project</span>
+          </div>
+        </app-button>
+        <app-button variant="outline">
+          <div class="flex gap-1 items-center p-0.5">
+            @if (selectedView == viewMode.GRID) {
+              <lucide-angular
+                class="cursor-pointer"
+                (click)="selectedView = viewMode.TABLE"
+                [img]="gridIcon"
+                size="20"
+              ></lucide-angular>
+            } @else {
+              <lucide-angular
+                class="cursor-pointer"
+                (click)="selectedView = viewMode.GRID"
+                [img]="listIcon"
+                size="20"
+              ></lucide-angular>
+            }
+          </div>
+        </app-button>
+      </div>
     </div>
-  </div>
-
-  @if(projects.length > 0){ @if(selectedView == viewMode.TABLE && projects.length > 0) {
-  <!-- DataTable -->
-  <app-datatable
-    [columns]="columns"
-    [data]="projects"
-    [loading]="loading"
-    [actionsTemplate]="actions"
-  ></app-datatable>
-  } @if (selectedView === viewMode.GRID) {
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-    <!-- <app-card [elevated]="true" [hover]="true">
+    @if (selectedView == viewMode.TABLE && projects.length > 0) {
+      <!-- DataTable -->
+      <app-datatable
+        [columns]="columns"
+        [data]="projects"
+        [loading]="loading"
+        [actionsTemplate]="actions"
+      ></app-datatable>
+    }
+    @if (selectedView === viewMode.GRID) {
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <!-- <app-card [elevated]="true" [hover]="true">
   <div class="flex flex-col gap-3 text-sm items-center justify-center h-full">
     <span class="p-4 rounded-full border border-blue-300">
       <lucide-angular
@@ -58,43 +61,43 @@
     <span class="text-sm text-gray-500">Create Project</span>
   </div>
     </app-card> -->
-    @for (project of projects; track project.id) {
-    <app-card [hover]="true" [title]="project.title">
-      <!-- Body -->
-      <div class="flex flex-col gap-3 text-sm">
-        <div>
-          <p class="text-sm text-gray-600">{{ project.description }}</p>
-        </div>
-        <div class="flex flex-row items-center justify-between">
-          <!-- Type badge -->
-          <ng-container *ngTemplateOutlet="typeTpl; context: { $implicit: project }"></ng-container>
+        @for (project of projects; track project.id) {
+          <app-card [hover]="true" [title]="project.title">
+            <!-- Body -->
+            <div class="flex flex-col gap-3 text-sm">
+              <div>
+                <p class="text-sm text-gray-600">{{ project.description }}</p>
+              </div>
+              <div class="flex flex-row items-center justify-between">
+                <!-- Type badge -->
+                <ng-container
+                  *ngTemplateOutlet="typeTpl; context: { $implicit: project }"
+                ></ng-container>
 
-          <!-- Updated date -->
-          <div class="text-gray-500">
-            {{ project.updatedAt | date : 'mediumDate' }}
-          </div>
-        </div>
+                <!-- Updated date -->
+                <div class="text-gray-500">
+                  {{ project.updatedAt | date: 'mediumDate' }}
+                </div>
+              </div>
 
-        <!-- Actions -->
-        <div class="mt-2 flex justify-end gap-2">
-          <ng-container *ngTemplateOutlet="actions; context: { $implicit: project }"></ng-container>
-        </div>
+              <!-- Actions -->
+              <div class="mt-2 flex justify-end gap-2">
+                <ng-container
+                  *ngTemplateOutlet="actions; context: { $implicit: project }"
+                ></ng-container>
+              </div>
+            </div>
+          </app-card>
+        }
       </div>
-    </app-card>
     }
-  </div>
+    <app-pagination
+      [page]="page"
+      [total]="total"
+      (pageChange)="onPageChange($event)"
+      (limitChange)="onLimitChange($event)"
+    />
   }
-  <app-pagination
-    [page]="page"
-    [total]="total"
-    (pageChange)="onPageChange($event)"
-    (limitChange)="onLimitChange($event)"
-  />
-  } @else { @if(loading){
-  <app-loader position="center" size="lg" title="Loading..."></app-loader>
-  }@else {
-  <app-no-data (action)="openCreateSheet()"></app-no-data>
-  } }
 </div>
 
 <ng-template #actions let-project>
@@ -123,7 +126,7 @@
 </ng-template>
 
 <ng-template #updatedAtTpl let-project>
-  {{ project.updatedAt | date : 'mediumDate' }}
+  {{ project.updatedAt | date: 'mediumDate' }}
 </ng-template>
 
 <ng-template #typeTpl let-project>
@@ -142,16 +145,29 @@
 
 <!-- Side Sheet -->
 
-
 <app-side-sheet [(open)]="sideSheetOpen" width="500px">
   <div slot="title">
     {{ selectedProject ? 'Edit Project' : 'Create Project' }}
   </div>
-  @if(sideSheetOpen) {
-  <app-project-form [project]="selectedProject" (saved)="onSave()"></app-project-form>
+  @if (sideSheetOpen) {
+    <app-project-form
+      (validityChange)="isFormValid = $event"
+      (submitting)="isSubmitting = $event"
+      [project]="selectedProject"
+      (saved)="onSave()"
+    ></app-project-form>
   }
   <div slot="footer" class="flex justify-end gap-2 mt-4">
-    <app-button type="button" variant="outline" (click)="sideSheetOpen = false">Cancel</app-button>
-    <app-button type="submit" variant="secondary" (click)="projectForm.submit()">Save</app-button>
+    <app-button type="button" variant="outline" (click)="sideSheetOpen = false">
+      Cancel
+    </app-button>
+    <app-button
+      [disabled]="!isFormValid || isSubmitting"
+      [loading]="isSubmitting"
+      type="submit"
+      variant="secondary"
+      (click)="projectForm?.submit()"
+      >Save</app-button
+    >
   </div>
 </app-side-sheet>

@@ -1,31 +1,30 @@
 <div class="flex flex-col gap-4">
-  <div class="flex items-start sm:items-center justify-between">
-    <h2 class="text-lg sm:text-xl font-semibold">Receipts</h2>
-
-    <app-button variant="primary" (click)="openCreateSheet()">
-      <div class="flex gap-1 items-center p-0.5">
-        <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
-        <span>Add Receipt</span>
-      </div>
-    </app-button>
-  </div>
-  @if(receipts.length > 0){
-
-  <app-datatable
-    [columns]="columns"
-    [data]="receipts"
-    [loading]="loading"
-    [actionsTemplate]="actions"
-  />
-
-  <app-pagination
-    [page]="page"
-    [total]="total"
-    (pageChange)="onPageChange($event)"
-    (limitChange)="onLimitChange($event)"
-  />
+  @if (receipts.length == 0 && !loading) {
+    <app-no-data actionLabel="Add Receipt" (action)="openCreateSheet()"></app-no-data>
   } @else {
-  <app-no-data (action)="openCreateSheet()"></app-no-data>
+    <div class="flex items-start sm:items-center justify-between">
+      <h2 class="text-lg sm:text-xl font-semibold">Receipts</h2>
+
+      <app-button variant="primary" (click)="openCreateSheet()">
+        <div class="flex gap-1 items-center p-0.5">
+          <lucide-angular size="20" [img]="plusIcon"></lucide-angular>
+          <span>Add Receipt</span>
+        </div>
+      </app-button>
+    </div>
+    <app-datatable
+      [columns]="columns"
+      [data]="receipts"
+      [loading]="loading"
+      [actionsTemplate]="actions"
+    />
+
+    <app-pagination
+      [page]="page"
+      [total]="total"
+      (pageChange)="onPageChange($event)"
+      (limitChange)="onLimitChange($event)"
+    />
   }
 </div>
 
@@ -39,7 +38,7 @@
 </ng-template>
 
 <ng-template #uploadedAtTpl let-receipt>
-  {{ receipt.uploadedAt | date : 'mediumDate' }}
+  {{ receipt.uploadedAt | date: 'mediumDate' }}
 </ng-template>
 
 <ng-template #statusTpl let-receipt>
@@ -80,15 +79,15 @@
   <div slot="title">{{ selectedReceipt ? 'Edit Receipt' : 'Upload Receipt' }}</div>
 
   @if (sideSheetOpen) {
-  <app-receipt-form
-    [projectId]="projectId"
-    [receipt]="selectedReceipt"
-    (saved)="onSave()"
-    (showPreview)="
-      selectedReceipt &&
-        openFilePreview(selectedReceipt.fileUrl, selectedReceipt.originalFileName ?? 'Receipt')
-    "
-  />
+    <app-receipt-form
+      [projectId]="projectId"
+      [receipt]="selectedReceipt"
+      (saved)="onSave()"
+      (showPreview)="
+        selectedReceipt &&
+          openFilePreview(selectedReceipt.fileUrl, selectedReceipt.originalFileName ?? 'Receipt')
+      "
+    />
   }
   <div slot="footer" class="flex justify-end gap-2">
     <app-button variant="outline" (click)="sideSheetOpen = false"> Cancel </app-button>
@@ -98,7 +97,6 @@
 
 <app-modal
   [showFooter]="false"
-  [width]="'800px'"
   [isOpen]="previewOpen"
   (close)="previewOpen = false"
   [title]="previewFileName"

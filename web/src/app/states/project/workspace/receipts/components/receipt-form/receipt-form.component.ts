@@ -7,8 +7,6 @@ import { SafeUrlPipe } from '../../../../../../shared/pipes/safeurl.pipe';
 import { baseUrl } from '../../../../../../shared/constants/endpoints.const';
 import { FileText, LucideAngularModule } from 'lucide-angular';
 import { DropdownLoader } from '../../../../../../shared/helpers/dropdown-loader';
-import { CategoriesService } from '../../../settings/components/categories/services/category.service';
-import { Category } from '../../../../../../shared/models';
 import { ExpensesService } from '../../../expenses/services/expense.service';
 @Component({
   selector: 'app-receipt-form',

@@ -37,14 +37,15 @@ export class ProjectListComponent implements OnInit {
   updatedAtTpl!: TemplateRef<{ $implicit: Project }>;
 
   @ViewChild(ProjectFormComponent)
-  projectForm!: ProjectFormComponent;
+  projectForm?: ProjectFormComponent;
 
   readonly projectType = ProjectType;
 
   private projectService = inject(ProjectsService);
   viewMode = VIEW_MODE;
   selectedView = VIEW_MODE.TABLE;
-
+  isSubmitting = false;
+  isFormValid = false;
   readonly editIcon = Edit;
   readonly deleteIcon = Trash2;
   readonly plusIcon = Plus;
@@ -102,7 +103,7 @@ export class ProjectListComponent implements OnInit {
         finalize(() => {
           this.loading = false;
           this.confirmOpen = false;
-        })
+        }),
       )
       .subscribe({
         next: (res) => {
