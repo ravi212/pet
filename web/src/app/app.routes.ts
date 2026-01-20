@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { NotFound } from './shared/pages/not-found/not-found';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
-import { AUTH_ROUTES, PROJECT_ROUTES } from './shared/constants/routes.const';
+import { AUTH_ROUTES, PROJECT_ROUTES, SETTINGS_ROUTES } from './shared/constants/routes.const';
 
 export const routes: Routes = [
   // 🔓 Auth
@@ -23,6 +23,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () =>
       import('./states/project/workspace/workspace.routes').then((m) => m.projectFeatureRoutes),
+  },
+
+  {
+    path: `${SETTINGS_ROUTES.ROOT}`,
+    canActivate: [authGuard],
+    loadChildren: () => import('./states/settings/settings.routes').then((m) => m.settingsRoutes),
   },
 
   // default

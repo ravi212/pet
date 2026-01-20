@@ -1,19 +1,19 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, RouterLinkWithHref } from '@angular/router';
 import { AuthService } from '../auth/services/auth.service';
 import { AUTH_ROUTES } from '../../shared/constants/routes.const';
 import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   standalone: true,
-  imports: [RouterOutlet, SharedModule],
+  imports: [RouterOutlet, SharedModule, RouterLinkWithHref],
   template: `
     <app-header [backButton]="false" title="PET" subtitle="Project Expense Tracker" >
       <!-- Avatar + Dropdown -->
       <div class="relative group">
         <!-- Avatar trigger -->
         <div
-          class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600
+          class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600
                text-white flex items-center justify-center text-sm font-semibold
                cursor-pointer select-none"
         >
@@ -42,8 +42,9 @@ import { SharedModule } from '../../shared/shared.module';
             <button
               class="w-full px-4 py-2 text-left text-sm text-gray-700
                    hover:bg-gray-100 transition"
+                   [routerLink]="'/settings'"
             >
-              Profile
+              Settings
             </button>
 
             <button

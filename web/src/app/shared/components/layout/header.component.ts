@@ -13,18 +13,21 @@ import { LucideAngularModule, ArrowLeft } from 'lucide-angular';
              bg-white border-b border-gray-200 shadow-sm"
     >
       <!-- LEFT -->
-      <div class="flex items-center gap-4">
-        @if (backButton){
-        <lucide-angular
-          [img]="arrowLeftIcon"
-          size="18"
-          class="cursor-pointer text-gray-500 hover:text-gray-900 transition"
-          (click)="goBack()"
-        />
+      <div class="flex items-center gap-3">
+        @if (backButton) {
+          <lucide-angular
+            [img]="arrowLeftIcon"
+            size="18"
+            class="cursor-pointer text-gray-500 hover:text-gray-900 transition"
+            (click)="goBack()"
+          />
         }
+        <div>
+          <img src="icon.png" class="h-9 w-9" alt="" />
+        </div>
 
         <div>
-          <h1 class="text-sm font-semibold leading-tight">
+          <h1 class="text-sm font-semibold text-gray-600 leading-tight">
             {{ title }}
           </h1>
           <p class="text-xs text-gray-500">

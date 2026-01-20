@@ -18,3 +18,8 @@ export const PROJECT_ROUTES = {
   SETTINGS: 'settings',
   CATEGORIES: 'category',
 } as const;
+
+export const SETTINGS_ROUTES = {
+  ROOT: 'settings',
+  PROFILE: 'profile',
+} as const;

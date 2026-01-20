@@ -17,7 +17,7 @@ export interface PaginatedResponse<T> {
     <div
       class="flex sm:flex-row flex-col gap-2 items-center justify-between px-4 py-3 bg-light-50 dark:bg-dark-800 rounded-xl"
     >
-      <div class="text-xs sm:text-sm  text-light-600 dark:text-dark-400">
+      <div class="text-xs sm:text-sm text-gray-600  text-light-600 dark:text-dark-400">
         Page {{ page }} of {{ totalPages }} | Total {{ total }} items
       </div>
 
@@ -47,7 +47,7 @@ export interface PaginatedResponse<T> {
         >
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-xs sm:text-sm text-light-600 dark:text-dark-400">Items per page:</span>
+        <span class="text-xs sm:text-sm text-light-600 dark:text-dark-400 text-gray-600 ">Items per page:</span>
         <select
           class="rounded border px-2 py-1 text-xs sm:text-sm"
           [value]="limit"
