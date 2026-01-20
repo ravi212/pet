@@ -45,6 +45,8 @@ export class List implements OnInit {
 
   sideSheetOpen = false;
   confirmOpen = false;
+  isSubmitting = false;
+  isFormValid = false;
 
   readonly editIcon = Edit;
   readonly deleteIcon = Trash2;

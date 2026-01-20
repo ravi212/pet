@@ -49,6 +49,9 @@ export class List implements OnInit {
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
 
+  isSubmitting = false;
+  isFormValid = false;
+
   projectId!: string;
 
   cycles: Cycle[] = [];

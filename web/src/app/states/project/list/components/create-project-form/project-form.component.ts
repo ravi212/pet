@@ -5,6 +5,7 @@ import { SharedModule } from '../../../../../shared/shared.module';
 import { ProjectType } from '../../../../../shared/enums';
 import { resolveError } from '../../../../../shared/helpers/form-errors.util';
 import { Project, ProjectsService } from '../../../services/projects.service';
+import { finalize } from 'rxjs';
 @Component({
   selector: 'app-project-form',
   standalone: true,
@@ -14,17 +15,25 @@ import { Project, ProjectsService } from '../../../services/projects.service';
 export class ProjectFormComponent implements OnInit {
   @Input() project: Project | null = null;
   @Output() saved = new EventEmitter<void>();
-
+  isSubmitting = false;
+  @Output() validityChange = new EventEmitter<boolean>();
+  @Output() submitting = new EventEmitter<boolean>();
   readonly projectType = ProjectType;
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder, private projectService: ProjectsService) {}
+  constructor(
+    private fb: FormBuilder,
+    private projectService: ProjectsService,
+  ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
       title: [this.project?.title || '', Validators.required],
       description: [this.project?.description || ''],
       type: [this.project?.type || this.projectType.one_time, Validators.required],
+    });
+    this.form.statusChanges.subscribe((status) => {
+      this.validityChange.emit(status === 'VALID');
     });
   }
 
@@ -34,19 +43,27 @@ export class ProjectFormComponent implements OnInit {
 
   submit() {
     if (this.form.invalid) return;
-
+    this.isSubmitting = true;
+    this.submitting.emit(true);
     const data = this.form.value;
     const request = this.project
       ? this.projectService.update(this.project.id, data)
       : this.projectService.create(data);
-    request.subscribe({
-      next: () => {
-        this.form.reset();
-        this.saved.emit()
-      },
-      error: (err) => {
-        console.error('Failed to save project', err);
-      }
-    });
+    request
+      .pipe(
+        finalize(() => {
+          this.submitting.emit(false);
+          this.isSubmitting = false;
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.form.reset();
+          this.saved.emit();
+        },
+        error: (err) => {
+          console.error('Failed to save project', err);
+        },
+      });
   }
 }

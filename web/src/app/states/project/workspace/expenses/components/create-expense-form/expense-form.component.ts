@@ -5,6 +5,7 @@ import { SharedModule } from '../../../../../../shared/shared.module';
 import { Expense, ExpensesService } from '../../services/expense.service';
 import { resolveError } from '../../../../../../shared/helpers/form-errors.util';
 import { CURRENCIES } from '../../../../../../shared/constants/common';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-expense-form',
@@ -16,35 +17,35 @@ export class ExpenseFormComponent implements OnInit {
   @Input() expense: Expense | null = null;
   @Input() projectId!: string;
   @Output() saved = new EventEmitter<void>();
+  isSubmitting = false;
+  @Output() validityChange = new EventEmitter<boolean>();
+  @Output() submitting = new EventEmitter<boolean>();
   categories = [];
   tasks = [];
   cycles = [];
 
   form!: FormGroup;
-  submitting = false;
+
   currencies = CURRENCIES;
   constructor(
     private fb: FormBuilder,
-    private expenseService: ExpensesService
+    private expenseService: ExpensesService,
   ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
-      amount: [
-        this.expense?.amount ?? '',
-        [Validators.required, Validators.pattern(/^\d+$/)],
-      ],
+      amount: [this.expense?.amount ?? '', [Validators.required, Validators.pattern(/^\d+$/)]],
       currency: [this.expense?.currency ?? 'INR', Validators.required],
       incurredAt: [
-        this.expense?.incurredAt
-          ? new Date(this.expense.incurredAt)
-          : new Date(),
+        this.expense?.incurredAt ? new Date(this.expense.incurredAt) : new Date(),
         Validators.required,
       ],
 
       vendor: [this.expense?.vendor ?? ''],
       note: [this.expense?.note ?? ''],
-
+    });
+    this.form.statusChanges.subscribe((status) => {
+      this.validityChange.emit(status === 'VALID');
     });
   }
 
@@ -53,9 +54,10 @@ export class ExpenseFormComponent implements OnInit {
   }
 
   submit() {
-    if (this.form.invalid || this.submitting) return;
+    if (this.form.invalid || this.isSubmitting) return;
 
-    this.submitting = true;
+    this.isSubmitting = true;
+    this.submitting.emit(true);
 
     const raw = this.form.value;
 
@@ -69,17 +71,21 @@ export class ExpenseFormComponent implements OnInit {
       ? this.expenseService.update(this.expense.id, payload)
       : this.expenseService.create(payload);
 
-    request$.subscribe({
-      next: () => {
-        this.form.reset();
-        this.saved.emit();
-      },
-      error: (err) => {
-        console.error('Failed to save expense', err);
-      },
-      complete: () => {
-        this.submitting = false;
-      },
-    });
+    request$
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.submitting.emit(false);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.form.reset();
+          this.saved.emit();
+        },
+        error: (err) => {
+          console.error('Failed to save expense', err);
+        },
+      });
   }
 }
