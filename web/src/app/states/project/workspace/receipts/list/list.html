@@ -80,6 +80,8 @@
 
   @if (sideSheetOpen) {
     <app-receipt-form
+      (validityChange)="isFormValid = $event"
+      (submitting)="isSubmitting = $event"
       [projectId]="projectId"
       [receipt]="selectedReceipt"
       (saved)="onSave()"
@@ -91,7 +93,14 @@
   }
   <div slot="footer" class="flex justify-end gap-2">
     <app-button variant="outline" (click)="sideSheetOpen = false"> Cancel </app-button>
-    <app-button type="submit" variant="secondary" (click)="receiptForm.submit()">Save</app-button>
+    <app-button
+      [disabled]="!isFormValid || isSubmitting"
+      [loading]="isSubmitting"
+      type="submit"
+      variant="secondary"
+      (click)="receiptForm.submit()"
+      >Save</app-button
+    >
   </div>
 </app-side-sheet>
 

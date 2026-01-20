@@ -86,11 +86,24 @@
   </div>
 
   @if (sideSheetOpen) {
-    <app-task-form [task]="selectedTask" [projectId]="projectId" (saved)="onSave()" />
+    <app-task-form
+      (validityChange)="isFormValid = $event"
+      (submitting)="isSubmitting = $event"
+      [task]="selectedTask"
+      [projectId]="projectId"
+      (saved)="onSave()"
+    />
   }
 
   <div slot="footer" class="flex justify-end gap-2">
     <app-button variant="outline" (click)="sideSheetOpen = false"> Cancel </app-button>
-    <app-button type="submit" variant="secondary" (click)="taskForm.submit()">Save</app-button>
+    <app-button
+      [disabled]="!isFormValid || isSubmitting"
+      [loading]="isSubmitting"
+      type="submit"
+      variant="secondary"
+      (click)="taskForm.submit()"
+      >Save</app-button
+    >
   </div>
 </app-side-sheet>

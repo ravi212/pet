@@ -8,6 +8,7 @@ import { baseUrl } from '../../../../../../shared/constants/endpoints.const';
 import { FileText, LucideAngularModule } from 'lucide-angular';
 import { DropdownLoader } from '../../../../../../shared/helpers/dropdown-loader';
 import { ExpensesService } from '../../../expenses/services/expense.service';
+import { finalize } from 'rxjs';
 @Component({
   selector: 'app-receipt-form',
   standalone: true,
@@ -19,7 +20,9 @@ export class ReceiptFormComponent implements OnInit {
   @Input() receipt?: Receipt | null;
   @Output() saved = new EventEmitter<void>();
   @Output() showPreview = new EventEmitter<boolean>(false);
-
+  isSubmitting = false;
+  @Output() validityChange = new EventEmitter<boolean>();
+  @Output() submitting = new EventEmitter<boolean>();
   receiptsService = inject(ReceiptsService);
   expensesService = inject(ExpensesService);
 
@@ -39,10 +42,14 @@ export class ReceiptFormComponent implements OnInit {
       expenseId: [this.receipt?.expenseId ?? null],
     });
     this.expensesDropdown = new DropdownLoader(this.projectId, (params) =>
-      this.expensesService.getDropdown(params)
+      this.expensesService.getDropdown(params),
     );
 
     this.expensesDropdown.load();
+
+    this.form.statusChanges.subscribe((status) => {
+      this.validityChange.emit(status === 'VALID');
+    });
   }
 
   submit() {
@@ -64,23 +71,38 @@ export class ReceiptFormComponent implements OnInit {
 
   private createReceipt() {
     const { file, description, expenseId } = this.form.value;
-
+    this.isSubmitting = true;
+    this.submitting.emit(true);
     this.receiptsService
       .upload(file, {
         projectId: this.projectId,
         description,
         expenseId,
       })
+      .pipe(
+        finalize(() => {
+          this.submitting.emit(false);
+          this.isSubmitting = false;
+        }),
+      )
       .subscribe(() => this.saved.emit());
   }
 
   private updateReceipt() {
     if (!this.receipt) return;
+    this.isSubmitting = true;
+    this.submitting.emit(true);
     this.receiptsService
       .update(this.receipt.id, {
         description: this.form.value.description,
         expenseId: this.form.value.expenseId,
       })
+      .pipe(
+        finalize(() => {
+          this.submitting.emit(false);
+          this.isSubmitting = false;
+        }),
+      )
       .subscribe(() => this.saved.emit());
   }
 

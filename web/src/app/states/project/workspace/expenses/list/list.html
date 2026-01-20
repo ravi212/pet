@@ -90,11 +90,20 @@
       [expense]="selectedExpense"
       [projectId]="filters.projectId"
       (saved)="onSave()"
+      (validityChange)="isFormValid = $event"
+      (submitting)="isSubmitting = $event"
     ></app-expense-form>
   }
   <div slot="footer" class="flex justify-end gap-2 mt-4">
     <app-button type="button" variant="outline" (click)="sideSheetOpen = false"> Cancel</app-button>
-    <app-button type="submit" variant="secondary" (click)="expenseForm.submit()">Save</app-button>
+    <app-button
+      [disabled]="!isFormValid || isSubmitting"
+      [loading]="isSubmitting"
+      type="submit"
+      variant="secondary"
+      (click)="expenseForm.submit()"
+      >Save</app-button
+    >
   </div>
 </app-side-sheet>
 

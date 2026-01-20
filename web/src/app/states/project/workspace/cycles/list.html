@@ -87,11 +87,24 @@
   </div>
 
   @if (sideSheetOpen) {
-    <app-cycle-form [cycle]="selectedCycle" [projectId]="projectId" (saved)="onSave()" />
+    <app-cycle-form
+      (validityChange)="isFormValid = $event"
+      (submitting)="isSubmitting = $event"
+      [cycle]="selectedCycle"
+      [projectId]="projectId"
+      (saved)="onSave()"
+    />
   }
 
   <div slot="footer" class="flex justify-end gap-2">
     <app-button variant="outline" (click)="sideSheetOpen = false"> Cancel </app-button>
-    <app-button type="submit" variant="secondary" (click)="cycleForm.submit()">Save</app-button>
+    <app-button
+      [disabled]="!isFormValid || isSubmitting"
+      [loading]="isSubmitting"
+      type="submit"
+      variant="secondary"
+      (click)="cycleForm.submit()"
+      >Save</app-button
+    >
   </div>
 </app-side-sheet>

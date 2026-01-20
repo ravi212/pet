@@ -50,7 +50,8 @@ export class List {
   cyclesDropdown!: DropdownLoader<{ label: string; value: string }>;
   @ViewChild('incurredAtTpl', { static: true })
   incurredAtTpl!: TemplateRef<{ $implicit: Expense }>;
-
+  isSubmitting = false;
+  isFormValid = false;
   @ViewChild(ExpenseFormComponent)
   expenseForm!: ExpenseFormComponent;
 
