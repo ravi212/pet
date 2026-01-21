@@ -11,7 +11,7 @@ import { LoginDto, SignUpDto } from './dto';
 import { EmailService } from '../email/email.service';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes, createHash } from 'crypto';
-import { DeviceType } from 'generated/prisma/enums';
+import { DeviceType, Provider } from 'generated/prisma/enums';
 import { compare, hash } from 'bcrypt-ts';
 
 function hashToken(token: string) {
@@ -230,8 +230,68 @@ export class AuthService {
     }
   }
 
-  async refreshToken(refreshToken: string) {
+  async validateOAuthLogin(
+    profile: any,
+    provider: 'google',
+    accessToken: string,
+    refreshToken: string,
+  ) {
+    const email = profile.emails[0].value;
+    const providerId = profile.id;
 
+    let user = await this.prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      // Create new OAuth user
+      user = await this.prisma.user.create({
+        data: {
+          email,
+          firstName: profile.name.givenName,
+          lastName: profile.name.familyName,
+          provider: provider,
+          oauthProviderId: providerId,
+          oauthAccessToken: accessToken,
+          oauthRefreshToken: refreshToken,
+          emailVerified: true,
+        },
+      });
+    } else {
+      // Update existing user with OAuth info if not already
+      user = await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          provider,
+          oauthProviderId: providerId,
+          oauthAccessToken: accessToken,
+          oauthRefreshToken: refreshToken,
+          emailVerified: true,
+        },
+      });
+    }
+
+    // Create session and JWT
+    const refreshTokenRandom = crypto.randomBytes(64).toString('hex');
+    const session = await this.prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshTokenHash: hashToken(refreshTokenRandom),
+        deviceType: 'web',
+        userAgent: 'OAuth',
+        ipAddress: '',
+      },
+    });
+
+    const payload = { sub: user.id, sid: session.id };
+    const jwtAccessToken = await this.jwtService.signAsync(payload);
+
+    return {
+      user,
+      accessToken: jwtAccessToken,
+      refreshToken: refreshTokenRandom,
+    };
+  }
+
+  async refreshToken(refreshToken: string) {
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token not found');
     }

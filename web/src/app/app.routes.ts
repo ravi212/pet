@@ -1,14 +1,11 @@
 import { Routes } from '@angular/router';
 import { NotFound } from './shared/pages/not-found/not-found';
 import { authGuard } from './core/guards/auth.guard';
-import { guestGuard } from './core/guards/guest.guard';
 import { AUTH_ROUTES, PROJECT_ROUTES, SETTINGS_ROUTES } from './shared/constants/routes.const';
 
 export const routes: Routes = [
-  // 🔓 Auth
   {
     path: AUTH_ROUTES.ROOT,
-    canActivate: [guestGuard],
     loadChildren: () => import('./states/auth/auth.routes').then((m) => m.authRoutes),
   },
 
