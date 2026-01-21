@@ -24,7 +24,10 @@
   <!-- Content -->
   <section>
     @if (activeTab === 'profile') {
-    <app-profile />
+    <app-profile/>
+    }
+    @if (activeTab === 'change password') {
+    <app-change-password/>
     }
   </section>
 </div>

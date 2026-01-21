@@ -1,13 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 
-import {
-  LucideAngularModule,
-  ArrowLeft,
-} from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft } from 'lucide-angular';
 import { SharedModule } from '../../shared/shared.module';
 import { AuthService } from '../auth/services/auth.service';
 import { AUTH_ROUTES } from '../../shared/constants/routes.const';
+import { UserStore } from './services/user.store';
+import { baseUrl } from '../../shared/constants/endpoints.const';
 
 @Component({
   standalone: true,
@@ -23,7 +22,11 @@ import { AUTH_ROUTES } from '../../shared/constants/routes.const';
                text-white flex items-center justify-center text-sm font-semibold
                cursor-pointer select-none"
           >
-            {{ initials }}
+            @if (avatarUrl) {
+              <img [src]="avatarUrl" class="w-full h-full object-cover" />
+            } @else {
+              {{ initials }}
+            }
           </div>
 
           <!-- Dropdown -->
@@ -36,7 +39,7 @@ import { AUTH_ROUTES } from '../../shared/constants/routes.const';
             <!-- User info -->
             <div class="px-4 py-3 border-b">
               <p class="text-sm font-semibold text-gray-900">
-                {{ user()?.displayName }}
+                {{ displayName }}
               </p>
               <p class="text-xs text-gray-500 truncate">
                 {{ user()?.email }}
@@ -49,7 +52,7 @@ import { AUTH_ROUTES } from '../../shared/constants/routes.const';
                 class="w-full px-4 py-2 text-left text-sm text-gray-700
                    hover:bg-gray-100 transition"
               >
-                Profile
+                Settings
               </button>
 
               <button
@@ -73,18 +76,24 @@ import { AUTH_ROUTES } from '../../shared/constants/routes.const';
 export class SettingsLayoutComponent {
   private auth = inject(AuthService);
   readonly router = inject(Router);
-
-  readonly user = signal(this.auth.userDetails());
   readonly backIcon = ArrowLeft;
-
   readonly collapsed = signal(true);
+  private userStore = inject(UserStore);
 
+  user = this.userStore.user;
+  avatar: string | undefined | null = null;
   toggleSidebar() {
     this.collapsed.update((v) => !v);
   }
 
+  constructor() {
+    effect(() => {
+      this.avatar = this.userStore.user()?.avatarUrl;
+    });
+  }
+
   get initials(): string {
-    const name = this.user()?.displayName?.trim();
+    const name = this.displayName?.trim();
     if (!name) return '';
 
     const parts = name.split(/\s+/);
@@ -93,6 +102,14 @@ export class SettingsLayoutComponent {
     const second = parts[1]?.[0] ?? '';
 
     return (first + second).toUpperCase();
+  }
+
+  get displayName() {
+    return `${this.user()?.firstName?.trim()} ${this.user()?.lastName?.trim()}`;
+  }
+
+  get avatarUrl() {
+    return this.avatar ? `${baseUrl}${this.avatar}` : null;
   }
 
   logOut() {

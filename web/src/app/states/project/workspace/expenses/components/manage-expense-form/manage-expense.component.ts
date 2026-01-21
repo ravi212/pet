@@ -5,12 +5,7 @@ import { LucideAngularModule, Check, X, Paperclip, Eye, Edit } from 'lucide-angu
 import { SharedModule } from '../../../../../../shared/shared.module';
 import { Expense, ExpensesService } from '../../services/expense.service';
 import { CURRENCIES } from '../../../../../../shared/constants/common';
-import { baseUrl } from '../../../../../../shared/constants/endpoints.const';
-import { SafeUrlPipe } from '../../../../../../shared/pipes/safeurl.pipe';
 import { DropdownLoader } from '../../../../../../shared/helpers/dropdown-loader';
-import { CategoriesService } from '../../../settings/components/categories/services/category.service';
-import { TasksService } from '../../../tasks/services/tasks.service';
-import { CyclesService } from '../../../cycles/services/cycles.service';
 import { finalize } from 'rxjs';
 import { RouterLink } from "@angular/router";
 

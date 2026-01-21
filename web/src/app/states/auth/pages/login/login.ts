@@ -3,10 +3,12 @@ import { SharedModule } from '../../../../shared/shared.module';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { LoginDto } from '../../../../shared/models';
-import { finalize, switchMap } from 'rxjs';
+import { finalize, switchMap, tap } from 'rxjs';
 import { resolveError } from '../../../../shared/helpers/form-errors.util';
 import { Router } from '@angular/router';
 import { PROJECT_ROUTES } from '../../../../shared/constants/routes.const';
+import { UserProfile, UserService } from '../../../settings/services/user.service';
+import { UserStore } from '../../../settings/services/user.store';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +19,8 @@ import { PROJECT_ROUTES } from '../../../../shared/constants/routes.const';
 export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private userService = inject(UserService);
+  private userStore = inject(UserStore);
   private router = inject(Router);
 
   isSubmitting = false;
@@ -40,9 +44,13 @@ export class Login {
           switchMap(() => {
             return this.authService.checkAuth();
           }),
+          switchMap(() => this.userService.getProfile(true)),
+          tap((res) => {
+            this.userStore.setUser(res?.data as UserProfile);
+          }),
           finalize(() => {
             this.isSubmitting = false;
-          })
+          }),
         )
         .subscribe({
           next: () => {

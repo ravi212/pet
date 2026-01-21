@@ -3,12 +3,14 @@ import { Router, RouterOutlet, RouterLinkWithHref } from '@angular/router';
 import { AuthService } from '../auth/services/auth.service';
 import { AUTH_ROUTES } from '../../shared/constants/routes.const';
 import { SharedModule } from '../../shared/shared.module';
+import { UserStore } from '../settings/services/user.store';
+import { baseUrl } from '../../shared/constants/endpoints.const';
 
 @Component({
   standalone: true,
   imports: [RouterOutlet, SharedModule, RouterLinkWithHref],
   template: `
-    <app-header [backButton]="false" title="PET" subtitle="Project Expense Tracker" >
+    <app-header [backButton]="false" title="PET" subtitle="Project Expense Tracker">
       <!-- Avatar + Dropdown -->
       <div class="relative group">
         <!-- Avatar trigger -->
@@ -17,7 +19,11 @@ import { SharedModule } from '../../shared/shared.module';
                text-white flex items-center justify-center text-sm font-semibold
                cursor-pointer select-none"
         >
-          {{ initials }}
+          @if (avatarUrl) {
+            <img [src]="avatarUrl" class="w-full h-full object-cover" />
+          } @else {
+            {{ initials }}
+          }
         </div>
 
         <!-- Dropdown -->
@@ -30,7 +36,7 @@ import { SharedModule } from '../../shared/shared.module';
           <!-- User info -->
           <div class="px-4 py-3 border-b">
             <p class="text-sm font-semibold text-gray-900">
-              {{ user()?.displayName }}
+              {{ displayName }}
             </p>
             <p class="text-xs text-gray-500 truncate">
               {{ user()?.email }}
@@ -42,7 +48,7 @@ import { SharedModule } from '../../shared/shared.module';
             <button
               class="w-full px-4 py-2 text-left text-sm text-gray-700
                    hover:bg-gray-100 transition"
-                   [routerLink]="'/settings'"
+              [routerLink]="'/settings'"
             >
               Settings
             </button>
@@ -66,11 +72,12 @@ import { SharedModule } from '../../shared/shared.module';
 export class ProjectLayoutComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private userStore = inject(UserStore);
 
-  user = signal(this.auth.userDetails());
+  user = signal(this.userStore.getUser());
 
   get initials(): string {
-    const name = this.user()?.displayName?.trim();
+    const name = this.displayName?.trim();
     if (!name) return '';
 
     const parts = name.split(/\s+/);
@@ -79,6 +86,14 @@ export class ProjectLayoutComponent {
     const second = parts[1]?.[0] ?? '';
 
     return (first + second).toUpperCase();
+  }
+
+  get displayName() {
+    return `${this.user()?.firstName?.trim()} ${this.user()?.lastName?.trim()}`;
+  }
+
+  get avatarUrl() {
+    return this.user()?.avatarUrl ? `${baseUrl}${this.user()?.avatarUrl}`: null;
   }
 
   logOut() {

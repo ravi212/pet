@@ -40,5 +40,10 @@ export const endpoints = {
     receipts: `${baseUrl}/receipts`,
     upload: `${baseUrl}/receipts/upload`,
     receiptById: (id: string) => `${baseUrl}/receipts/${id}`,
-  }
+  },
+  user: {
+    profile: `${baseUrl}/user/profile`,
+    avatar: `${baseUrl}/user/avatar`,
+    changePassword: `${baseUrl}/user/change-password`,
+  },
 } as const;
