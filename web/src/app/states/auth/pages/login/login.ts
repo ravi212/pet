@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { PROJECT_ROUTES } from '../../../../shared/constants/routes.const';
 import { UserProfile, UserService } from '../../../settings/services/user.service';
 import { UserStore } from '../../../settings/services/user.store';
+import { baseUrl } from '../../../../shared/constants/endpoints.const';
 
 @Component({
   selector: 'app-login',
@@ -61,5 +62,9 @@ export class Login {
           },
         });
     }
+  }
+
+  handleGoogleLogin() {
+    window.location.href = `${baseUrl}/auth/google`;
   }
 }

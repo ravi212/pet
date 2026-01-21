@@ -20,7 +20,9 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto, LoginDto, ResendVerificationEmailDto } from './dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
+import { GoogleAuthGuard } from 'src/guards/google-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -113,7 +115,8 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '': '',
+        domain:
+          process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '' : '',
         maxAge: 15 * 60 * 1000,
       });
 
@@ -121,7 +124,8 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '': '',
+        domain:
+          process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '' : '',
         path: '/auth/refresh',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
@@ -171,7 +175,8 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '': '',
+      domain:
+        process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '' : '',
       maxAge: 15 * 60 * 1000,
     });
 
@@ -179,7 +184,8 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '': '',
+      domain:
+        process.env.NODE_ENV === 'production' ? process.env.DOMAIN || '' : '',
       path: '/auth/refresh',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
@@ -298,5 +304,37 @@ export class AuthController {
       twoFactorEnabled: req.user.twoFactorEnabled,
       displayName: req.user.displayName,
     };
+  }
+  @UseGuards(GoogleAuthGuard)
+  @Get('google')
+  googleLogin() {
+    // Initiates OAuth flow
+  }
+  @UseGuards(GoogleAuthGuard)
+  @Get('google/callback')
+  async googleCallback(@Req() req, @Res({ passthrough: true }) res) {
+    const { accessToken, refreshToken } = req.user;
+
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/auth/refresh',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    let callbackUrl = 'http://localhost:3000/auth/google/callback';
+    if (process.env.FRONTEND_URL) {
+      callbackUrl = `${process.env.FRONTEND_URL}/auth/google/callback`;
+    }
+
+    return res.redirect(callbackUrl);
   }
 }

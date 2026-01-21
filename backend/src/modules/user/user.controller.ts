@@ -13,7 +13,7 @@ import {
 import { UserService } from './user.service';
 import { UpdateProfileDto } from './dto/update-profile';
 import { ChangePasswordDto } from './dto/change-password';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 @UseGuards(JwtAuthGuard)
 @Controller('user')

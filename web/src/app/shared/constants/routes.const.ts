@@ -3,6 +3,7 @@ export const AUTH_ROUTES = {
   LOGIN: 'login',
   SIGNUP: 'signup',
   VERIFY_EMAIL: 'verify-email',
+  GOOGLE_CALLBACK: 'google/callback',
 } as const;
 
 export const PROJECT_ROUTES = {

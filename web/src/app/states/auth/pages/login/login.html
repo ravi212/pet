@@ -30,7 +30,25 @@
           >Sign In</app-button
         >
       </div>
+      <div class="my-6 flex items-center">
+        <div class="flex-grow border-t border-gray-200"></div>
+        <span class="mx-4 text-sm text-gray-500 uppercase tracking-wide">or</span>
+        <div class="flex-grow border-t border-gray-200"></div>
+      </div>
+      <div class="my-4">
+        <app-button
+          type="button"
+          (click)="handleGoogleLogin()"
+          [fullWidth]="true"
+          variant="outline"
+          type="button"
+        >
+          <img src="/google.png" alt="Google logo" class="w-5 h-5 mr-3" />
+          <span class="text-gray-700 font-medium">Sign in with Google</span>
+        </app-button>
+      </div>
     </form>
+
     <div class="my-2 text-center">
       <span>Don't have an account? </span
       ><a href="/auth/signup" class="text-primary hover:underline">Sign Up</a>
