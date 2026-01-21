@@ -225,6 +225,7 @@ export class AuthService {
       if (error instanceof UnauthorizedException) {
         throw error;
       }
+      console.log('Error during login:', error);
       throw new InternalServerErrorException('Login failed');
     }
   }
