@@ -1,25 +1,27 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-
   <!-- Currency -->
   <div class="flex flex-col">
-    <label class="text-sm font-semibold">Currency</label>
+    <label class="text-sm font-semibold text-gray-700">Currency</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'currency'; else viewCurrency">
-        <app-select [options]="currencies" [formControl]="getControl('currency')" class="flex-1"></app-select>
+        <app-select
+          [options]="currencies"
+          [formControl]="getControl('currency')"
+          class="flex-1"
+        ></app-select>
         <div class="flex gap-2">
-          <app-button size="sm" [loading]="saving" (click)="save('currency')">
+          <app-button size="sm" variant="secondary" [loading]="saving" (click)="save('currency')">
             <lucide-angular [img]="checkIcon"></lucide-angular>
           </app-button>
-          <app-button size="sm" variant="ghost" (click)="cancelEdit()">
+          <app-button size="sm" variant="danger" (click)="cancelEdit()">
             <lucide-angular [img]="closeIcon"></lucide-angular>
           </app-button>
         </div>
       </ng-container>
       <ng-template #viewCurrency>
-        <p class="flex-1">{{ getControl('currency').value }}</p>
+        <p class="flex-1 text-gray-500">{{ getControl('currency').value }}</p>
         <button (click)="startEdit('currency')">
-          <lucide-angular [img]="editIcon"></lucide-angular>
+          <lucide-angular class="text-gray-700" [img]="editIcon"></lucide-angular>
         </button>
       </ng-template>
     </div>
@@ -27,7 +29,7 @@
 
   <!-- Amount -->
   <div class="flex flex-col">
-    <label class="text-sm font-semibold">Amount</label>
+    <label class="text-sm font-semibold text-gray-700">Amount</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'amount'; else viewAmount">
         <app-input type="number" [formControl]="getControl('amount')" class="flex-1"></app-input>
@@ -41,9 +43,9 @@
         </div>
       </ng-container>
       <ng-template #viewAmount>
-        <p class="flex-1">{{ getControl('amount').value }} </p>
+        <p class="flex-1 text-gray-500">{{ getControl('amount').value }}</p>
         <button (click)="startEdit('amount')">
-          <lucide-angular [img]="editIcon"></lucide-angular>
+          <lucide-angular class="text-gray-700" [img]="editIcon"></lucide-angular>
         </button>
       </ng-template>
     </div>
@@ -51,7 +53,7 @@
 
   <!-- Vendor -->
   <div class="flex flex-col">
-    <label class="text-sm font-semibold">Vendor</label>
+    <label class="text-sm font-semibold text-gray-700">Vendor</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'vendor'; else viewVendor">
         <app-input type="text" [formControl]="getControl('vendor')" class="flex-1"></app-input>
@@ -65,9 +67,9 @@
         </div>
       </ng-container>
       <ng-template #viewVendor>
-        <p class="flex-1">{{ getControl('vendor').value || '—' }}</p>
+        <p class="flex-1 text-gray-500">{{ getControl('vendor').value || '—' }}</p>
         <button (click)="startEdit('vendor')">
-          <lucide-angular [img]="editIcon"></lucide-angular>
+          <lucide-angular class="text-gray-700" [img]="editIcon"></lucide-angular>
         </button>
       </ng-template>
     </div>
@@ -75,10 +77,15 @@
 
   <!-- Category -->
   <div class="flex flex-col">
-    <label class="text-sm font-semibold">Category</label>
+    <label class="text-sm font-semibold text-gray-700">Category</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'categoryId'; else viewCategory">
-        <app-select [options]="categoriesDropdown.items" placeholder="Select Category..." [formControl]="getControl('categoryId')" class="flex-1"></app-select>
+        <app-select
+          [options]="categoriesDropdown.items"
+          placeholder="Select Category..."
+          [formControl]="getControl('categoryId')"
+          class="flex-1"
+        ></app-select>
         <div class="flex gap-2">
           <app-button size="sm" variant="secondary" [loading]="saving" (click)="save('categoryId')">
             <lucide-angular [img]="checkIcon"></lucide-angular>
@@ -89,9 +96,9 @@
         </div>
       </ng-container>
       <ng-template #viewCategory>
-        <p class="flex-1">{{ expense.category?.name || '—' }}</p>
+        <p class="flex-1 text-gray-500">{{ expense.category?.name || '—' }}</p>
         <button (click)="startEdit('categoryId')">
-          <lucide-angular [img]="editIcon"></lucide-angular>
+          <lucide-angular class="text-gray-700" [img]="editIcon"></lucide-angular>
         </button>
       </ng-template>
     </div>
@@ -99,10 +106,15 @@
 
   <!-- Task -->
   <div class="flex flex-col">
-    <label class="text-sm font-semibold">Task</label>
+    <label class="text-sm font-semibold text-gray-700">Task</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'taskId'; else viewTask">
-        <app-select [options]="tasksDropdown.items" placeholder="Select Task..." [formControl]="getControl('taskId')" class="flex-1"></app-select>
+        <app-select
+          [options]="tasksDropdown.items"
+          placeholder="Select Task..."
+          [formControl]="getControl('taskId')"
+          class="flex-1"
+        ></app-select>
         <div class="flex gap-2">
           <app-button size="sm" variant="secondary" [loading]="saving" (click)="save('taskId')">
             <lucide-angular [img]="checkIcon"></lucide-angular>
@@ -113,9 +125,9 @@
         </div>
       </ng-container>
       <ng-template #viewTask>
-        <p class="flex-1">{{ expense.task?.title || '—' }}</p>
+        <p class="flex-1 text-gray-500">{{ expense.task?.title || '—' }}</p>
         <button (click)="startEdit('taskId')">
-          <lucide-angular [img]="editIcon"></lucide-angular>
+          <lucide-angular class="text-gray-700" [img]="editIcon"></lucide-angular>
         </button>
       </ng-template>
     </div>
@@ -123,10 +135,15 @@
 
   <!-- Cycle -->
   <div class="flex flex-col">
-    <label class="text-sm font-semibold">Cycle</label>
+    <label class="text-sm font-semibold text-gray-700">Cycle</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'cycleId'; else viewCycle">
-        <app-select [options]="cyclesDropdown.items" placeholder="Select Cycle..." [formControl]="getControl('cycleId')" class="flex-1"></app-select>
+        <app-select
+          [options]="cyclesDropdown.items"
+          placeholder="Select Cycle..."
+          [formControl]="getControl('cycleId')"
+          class="flex-1"
+        ></app-select>
         <div class="flex gap-2">
           <app-button size="sm" variant="secondary" [loading]="saving" (click)="save('cycleId')">
             <lucide-angular [img]="checkIcon"></lucide-angular>
@@ -137,11 +154,15 @@
         </div>
       </ng-container>
       <ng-template #viewCycle>
-        <p class="flex-1">
-          {{ expense.cycle ? (expense.cycle.cycleStart | date) + ' - ' + (expense.cycle.cycleEnd | date) : '—' }}
+        <p class="flex-1 text-gray-500">
+          {{
+            expense.cycle
+              ? (expense.cycle.cycleStart | date) + ' - ' + (expense.cycle.cycleEnd | date)
+              : '—'
+          }}
         </p>
         <button (click)="startEdit('cycleId')">
-          <lucide-angular [img]="editIcon"></lucide-angular>
+          <lucide-angular class="text-gray-700" [img]="editIcon"></lucide-angular>
         </button>
       </ng-template>
     </div>
@@ -149,12 +170,20 @@
 
   <!-- Reimbursable -->
   <div class="flex flex-col">
-    <label class="text-sm font-semibold">Reimbursable</label>
+    <label class="text-sm font-semibold text-gray-700">Reimbursable</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'isReimbursable'; else viewReimbursable">
-        <app-checkbox [formControl]="getControl('isReimbursable')" label="Reimbursable"></app-checkbox>
+        <app-checkbox
+          [formControl]="getControl('isReimbursable')"
+          label="Reimbursable"
+        ></app-checkbox>
         <div class="flex gap-2">
-          <app-button size="sm" variant="secondary" [loading]="saving" (click)="save('isReimbursable')">
+          <app-button
+            size="sm"
+            variant="secondary"
+            [loading]="saving"
+            (click)="save('isReimbursable')"
+          >
             <lucide-angular [img]="checkIcon"></lucide-angular>
           </app-button>
           <app-button size="sm" variant="danger" (click)="cancelEdit()">
@@ -163,9 +192,9 @@
         </div>
       </ng-container>
       <ng-template #viewReimbursable>
-        <p class="flex-1">{{ getControl('isReimbursable').value ? 'Yes' : 'No' }}</p>
+        <p class="flex-1 text-gray-500">{{ getControl('isReimbursable').value ? 'Yes' : 'No' }}</p>
         <button (click)="startEdit('isReimbursable')">
-          <lucide-angular [img]="editIcon"></lucide-angular>
+          <lucide-angular class="text-gray-700" [img]="editIcon"></lucide-angular>
         </button>
       </ng-template>
     </div>
@@ -173,12 +202,21 @@
 
   <!-- Reimbursed Amount -->
   <div class="flex flex-col">
-    <label class="text-sm font-semibold">Reimbursed Amount</label>
+    <label class="text-sm font-semibold text-gray-700">Reimbursed Amount</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'reimbursedAmount'; else viewReimbursed">
-        <app-input type="number" [formControl]="getControl('reimbursedAmount')" class="flex-1"></app-input>
+        <app-input
+          type="number"
+          [formControl]="getControl('reimbursedAmount')"
+          class="flex-1"
+        ></app-input>
         <div class="flex gap-2">
-          <app-button size="sm" variant="secondary" [loading]="saving" (click)="save('reimbursedAmount')">
+          <app-button
+            size="sm"
+            variant="secondary"
+            [loading]="saving"
+            (click)="save('reimbursedAmount')"
+          >
             <lucide-angular [img]="checkIcon"></lucide-angular>
           </app-button>
           <app-button size="sm" variant="danger" (click)="cancelEdit()">
@@ -187,21 +225,21 @@
         </div>
       </ng-container>
       <ng-template #viewReimbursed>
-        <p class="flex-1">{{ getControl('reimbursedAmount').value || '—' }}</p>
+        <p class="flex-1 text-gray-500">{{ getControl('reimbursedAmount').value || '—' }}</p>
         <button (click)="startEdit('reimbursedAmount')">
-          <lucide-angular [img]="editIcon"></lucide-angular>
+          <lucide-angular class="text-gray-700" [img]="editIcon"></lucide-angular>
         </button>
       </ng-template>
     </div>
   </div>
 
-
   <!-- Note -->
   <div class="flex flex-col col-span-1 md:col-span-2 border-t pt-4">
-    <label class="text-sm font-semibold">Note</label>
+    <label class="text-sm font-semibold text-gray-700">Note</label>
     <div class="flex items-center gap-2 mt-1">
       <ng-container *ngIf="editingField === 'note'; else viewNote">
-        <app-textarea type="text" [formControl]="getControl('note')" class="flex-1"></app-textarea>
+        <div class="flex flex-col flex-1 gap-2">
+        <app-textarea type="text" [formControl]="getControl('note')" class="w-full"></app-textarea>
         <div class="flex gap-2">
           <app-button size="sm" variant="secondary" [loading]="saving" (click)="save('note')">
             <lucide-angular [img]="checkIcon"></lucide-angular>
@@ -210,41 +248,45 @@
             <lucide-angular [img]="closeIcon"></lucide-angular>
           </app-button>
         </div>
+        </div>
+
       </ng-container>
       <ng-template #viewNote>
-        <p class="flex-1">{{ getControl('note').value || '—' }}</p>
+        <p class="flex-1 text-gray-500">{{ getControl('note').value || '—' }}</p>
         <button (click)="startEdit('note')">
-          <lucide-angular [img]="editIcon"></lucide-angular>
+          <lucide-angular class="text-gray-700" [img]="editIcon"></lucide-angular>
         </button>
       </ng-template>
     </div>
   </div>
 
-
   <!-- Receipt (full width) -->
   <div class="flex flex-col col-span-1 md:col-span-2 border-t pt-4">
-    <label class="text-sm font-semibold mb-2">Receipt</label>
+    <label class="text-sm font-semibold mb-2 text-gray-700">Receipt</label>
     <div class="flex items-center gap-3">
-      @if(!expense.receiptId){
-      <label class="cursor-pointer">
-        <a class="underline text-blue-500" [routerLink]="`/project/${expense.projectId}/receipt/list`">Click Here</a> to redirect.
-        <p class="text-sm text-gray-400">* Attach Receipt from Receipts List</p>
-        <!-- <input type="file" hidden accept="image/*,application/pdf" (change)="attachReceipt($event.target.files?.[0] ?? null)" />
+      @if (!expense.receiptId) {
+        <label class="cursor-pointer">
+          <a
+            class="underline text-blue-500"
+            [routerLink]="`/project/${expense.projectId}/receipt/list`"
+            >Click Here</a
+          >
+          to redirect.
+          <p class="text-sm text-gray-400">* Attach Receipt from Receipts List</p>
+          <!-- <input type="file" hidden accept="image/*,application/pdf" (change)="attachReceipt($event.target.files?.[0] ?? null)" />
         <app-button size="sm" variant="outline" (click)="showAttachReceipt.emit(true)">
           <lucide-angular [img]="attachIcon" class="mr-1"></lucide-angular>
           *Attach
         </app-button> -->
-      </label>
+        </label>
       }
 
-      @if(expense.receiptId){
+      @if (expense.receiptId) {
         <app-button size="sm" variant="ghost" (click)="viewReceipt()">
           <lucide-angular [img]="viewIcon" class="mr-1"></lucide-angular>
           View
         </app-button>
       }
-
     </div>
   </div>
-
 </div>

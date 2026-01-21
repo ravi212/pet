@@ -1,29 +1,19 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { AuthService } from '../../auth/services/auth.service';
-import { AUTH_ROUTES, PROJECT_ROUTES } from '../../../shared/constants/routes.const';
-import { Project, ProjectsService } from '../services/projects.service';
-import { ProjectContextService } from '../services/project-context.service';
-import {
-  LucideAngularModule,
-  ArrowLeft,
-  LayoutDashboard,
-  Receipt,
-  CheckSquare,
-  Calendar,
-  ScanLine,
-  Settings,
-} from 'lucide-angular';
-import { SharedModule } from '../../../shared/shared.module';
-import { baseUrl } from '../../../shared/constants/endpoints.const';
-import { UserStore } from '../../settings/services/user.store';
+import { Component, effect, inject, signal } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+
+import { LucideAngularModule, ArrowLeft } from 'lucide-angular';
+import { SharedModule } from '../../shared/shared.module';
+import { AuthService } from '../auth/services/auth.service';
+import { AUTH_ROUTES } from '../../shared/constants/routes.const';
+import { UserStore } from './services/user.store';
+import { baseUrl } from '../../shared/constants/endpoints.const';
 
 @Component({
   standalone: true,
-  imports: [RouterOutlet, LucideAngularModule, SharedModule, RouterLink],
+  imports: [RouterOutlet, LucideAngularModule, SharedModule],
   template: `
     <div class="h-screen flex flex-col">
-      <app-header [title]="project()?.title || 'Loading…'" subtitle="Workspace">
+      <app-header title="PET" subtitle="Project Expense Tracker">
         <!-- Avatar + Dropdown -->
         <div class="relative group">
           <!-- Avatar trigger -->
@@ -61,7 +51,6 @@ import { UserStore } from '../../settings/services/user.store';
               <button
                 class="w-full px-4 py-2 text-left text-sm text-gray-700
                    hover:bg-gray-100 transition"
-                [routerLink]="'/settings'"
               >
                 Settings
               </button>
@@ -78,59 +67,29 @@ import { UserStore } from '../../settings/services/user.store';
         </div>
       </app-header>
 
-      <div class="flex flex-1 overflow-hidden">
-        <app-sidebar [collapsed]="collapsed()" (toggle)="toggleSidebar()" [items]="nav" />
-
-        <main class="flex-1 overflow-y-auto bg-gray-50">
-          <div class="max-w-7xl mx-auto w-full px-6 sm:px-10 sm:py-8 py-4">
-            <router-outlet />
-          </div>
-        </main>
+      <div class="max-w-7xl mx-auto w-full px-6 sm:px-10 sm:py-8 py-4">
+        <router-outlet />
       </div>
     </div>
   `,
 })
-export class ProjectFeaturesLayoutComponent implements OnInit {
+export class SettingsLayoutComponent {
   private auth = inject(AuthService);
   readonly router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private projectsService = inject(ProjectsService);
-  private context = inject(ProjectContextService);
+  readonly backIcon = ArrowLeft;
+  readonly collapsed = signal(true);
   private userStore = inject(UserStore);
 
-  readonly project = signal<Project | null>(null);
-  readonly user = signal(this.userStore.getUser());
-  readonly backIcon = ArrowLeft;
-
-  readonly collapsed = signal(true);
-
-  readonly nav = [
-    { label: 'Dashboard', link: PROJECT_ROUTES.DASHBOARD, icon: LayoutDashboard },
-    { label: 'Expenses', link: `${PROJECT_ROUTES.EXPENSES}/${PROJECT_ROUTES.LIST}`, icon: Receipt },
-    {
-      label: 'Receipts',
-      link: `${PROJECT_ROUTES.RECEIPTS}/${PROJECT_ROUTES.LIST}`,
-      icon: ScanLine,
-    },
-    { label: 'Tasks', link: `${PROJECT_ROUTES.TASKS}/${PROJECT_ROUTES.LIST}`, icon: CheckSquare },
-    { label: 'Cycles', link: `${PROJECT_ROUTES.CYCLES}/${PROJECT_ROUTES.LIST}`, icon: Calendar },
-    { label: 'Settings', link: `${PROJECT_ROUTES.SETTINGS}`, icon: Settings },
-  ];
-
-  ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
-      const projectId = params.get('projectId');
-      if (!projectId) return;
-
-      this.projectsService.findOne(projectId).subscribe((response) => {
-        this.project.set(response.data as Project);
-        this.context.set(projectId, response?.data as Project);
-      });
-    });
-  }
-
+  user = this.userStore.user;
+  avatar: string | undefined | null = null;
   toggleSidebar() {
     this.collapsed.update((v) => !v);
+  }
+
+  constructor() {
+    effect(() => {
+      this.avatar = this.userStore.user()?.avatarUrl;
+    });
   }
 
   get initials(): string {
@@ -148,8 +107,9 @@ export class ProjectFeaturesLayoutComponent implements OnInit {
   get displayName() {
     return `${this.user()?.firstName?.trim()} ${this.user()?.lastName?.trim()}`;
   }
+
   get avatarUrl() {
-    return this.user()?.avatarUrl ? `${baseUrl}${this.user()?.avatarUrl}`: null;
+    return this.avatar ? `${baseUrl}${this.avatar}` : null;
   }
 
   logOut() {

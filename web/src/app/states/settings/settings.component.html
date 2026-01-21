@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="p-0">
     <h1 class="text-md sm:text-lg text-gray-600 font-semibold">Settings</h1>
-    <p class="text-xs sm:text-sm text-light-500 text-gray-500">Manage workspace configurations</p>
+    <p class="text-xs sm:text-sm text-light-500 text-gray-500">Manage user configurations</p>
   </div>
 
   <!-- Tabs -->
@@ -23,8 +23,11 @@
 
   <!-- Content -->
   <section>
-    @if (activeTab === 'categories') {
-    <app-category-settings />
+    @if (activeTab === 'profile') {
+    <app-profile/>
+    }
+    @if (activeTab === 'change password') {
+    <app-change-password/>
     }
   </section>
 </div>

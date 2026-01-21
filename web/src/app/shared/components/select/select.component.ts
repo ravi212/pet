@@ -17,7 +17,7 @@ type InputSize = 'sm' | 'md' | 'lg';
   template: `
     <div class="w-full">
       @if (label) {
-      <label [for]="id" class="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+      <label [for]="id" class="block  text-sm font-medium text-gray-600 mb-1 dark:text-gray-300">
         {{ label }}
         @if (required) {
         <span class="text-danger">*</span>

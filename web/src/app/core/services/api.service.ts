@@ -27,7 +27,7 @@ export class ApiService {
       })
       .pipe(
         tap((res) => {
-          if (res.message) {
+          if (res.message && !options?.silent) {
             this.toast.show(res.message, 'success');
           }
         }),
@@ -48,7 +48,7 @@ export class ApiService {
       })
       .pipe(
         tap((res) => {
-          if (res.message) {
+          if (res.message && !options?.silent) {
             this.toast.show(res.message, 'success');
           }
         }),
@@ -69,7 +69,7 @@ export class ApiService {
       })
       .pipe(
         tap((res) => {
-          if (res.message) this.toast.show(res.message, 'success');
+          if (res.message && !options?.silent) this.toast.show(res.message, 'success');
         }),
         catchError((err) => {
           if (!options?.silent) {
@@ -88,7 +88,7 @@ export class ApiService {
       })
       .pipe(
         tap((res) => {
-          if (res.message) this.toast.show(res.message, 'success');
+          if (res.message && !options?.silent) this.toast.show(res.message, 'success');
         }),
         catchError((err) => {
           if (!options?.silent) {
@@ -107,7 +107,7 @@ export class ApiService {
       })
       .pipe(
         tap((res) => {
-          if (res.message) this.toast.show(res.message, 'success');
+          if (res.message && !options?.silent) this.toast.show(res.message, 'success');
         }),
         catchError((err) => {
           if (!options?.silent) {

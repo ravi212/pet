@@ -1,14 +1,16 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { endpoints } from '../../../shared/constants/endpoints.const';
 import { AuthResponse, LoginDto, SignupPayload, User } from '../../../shared/models';
+import { UserStore } from '../../settings/services/user.store';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   isAuthenticated = signal<boolean>(false);
+  userStore = inject(UserStore);
   user = signal<Partial<User> | null>(null);
 
   private setAuth(user: Partial<User>) {
@@ -18,6 +20,7 @@ export class AuthService {
 
   clearAuth() {
     this.user.set(null);
+    this.userStore.clearUser();
     this.isAuthenticated.set(false);
   }
 

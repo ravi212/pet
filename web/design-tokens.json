@@ -9,12 +9,12 @@
       "dark": "#10B981"
     },
     "accent": {
-      "light": "#7C3AED",
-      "dark": "#8B5CF6"
+      "light": "#8B95A7",
+      "dark": "#B6BDC9"
     },
     "danger": {
-      "light": "#DC2626",
-      "dark": "#EF4444"
+      "light": "#E14B4B",
+      "dark": "#F87171"
     },
     "warning": {
       "light": "#D97706",

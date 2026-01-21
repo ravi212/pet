@@ -6,6 +6,9 @@ export default {
   content: ['./src/**/*.{html,ts}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
       colors: {
         primary: {
           DEFAULT: designTokens.colors.primary.light,
