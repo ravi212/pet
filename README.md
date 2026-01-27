@@ -1,59 +1,187 @@
-# Pet
+# PET - Project Expense Tracker
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.10.
+A full-stack web application for managing project expenses, team collaboration, and financial tracking. This monorepo contains both the NestJS backend API and the Angular frontend application.
 
-## Development server
+## Project Overview
 
-To start a local development server, run:
+Project Expense Tracker (PET) is a comprehensive expense management solution designed to help individuals and teams efficiently organize project budgets, track expenses, manage team collaboration, and process receipts through automated OCR technology. The application provides a seamless user experience with real-time collaboration features and detailed financial analytics.
 
+## Architecture
+
+The project is structured as a monorepo with two main components:
+
+- **Backend** (`./backend`): NestJS API server with PostgreSQL database
+- **Web** (`./web`): Angular frontend application
+
+Both services can be deployed independently or together using Docker Compose.
+
+## Prerequisites
+
+- Node.js 18+ and npm/yarn
+- PostgreSQL 13+ (or Docker)
+- Docker and Docker Compose (optional, for containerized deployment)
+
+## Quick Start
+
+### Setup Development Environment
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd pet
+   ```
+
+2. **Install dependencies**
+   ```bash
+   # Backend
+   cd backend
+   yarn install
+   
+   # Frontend
+   cd ../web
+   yarn install
+   ```
+
+3. **Configure environment variables**
+   ```bash
+   # Backend
+   cd backend
+   cp .env.template .env
+   # Edit .env with your configuration
+   ```
+
+### Running Locally
+
+#### Option 1: Individual Services
+
+**Backend**:
 ```bash
-ng serve
+cd backend
+yarn start:dev
+# API runs on http://localhost:3000
+# Swagger docs at http://localhost:3000/api/docs
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+**Frontend**:
 ```bash
-ng generate component component-name
+cd web
+yarn start
+# Application runs on http://localhost:4200
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+#### Option 2: Using Docker Compose
 
 ```bash
-ng generate --help
+docker-compose up -d
 ```
 
-## Building
+This will start both services with all dependencies.
 
-To build the project run:
+## Project Structure
+
+```
+pet/
+├── backend/               # NestJS API
+│   ├── src/              # Source code
+│   ├── prisma/           # Database schema and migrations
+│   ├── generated/        # Prisma generated files
+│   └── storage/          # File uploads (avatars, receipts)
+├── web/                  # Angular frontend
+│   ├── src/              # Angular source code
+│   └── public/           # Static assets
+└── README.md             # This file
+```
+
+For detailed information about each service, see:
+- [Backend Documentation](./backend/README.md)
+- [Web Documentation](./web/README.md)
+
+## Development Workflow
+
+### Code Standards
+
+- TypeScript for type safety
+- ESLint for code quality
+- Prettier for code formatting
+- Unit and e2e tests for critical paths
+
+### Testing
 
 ```bash
-ng build
+# Backend tests
+cd backend
+yarn test              # Unit tests
+yarn test:e2e         # End-to-end tests
+
+# Frontend tests
+cd web
+yarn test             # Unit tests
+yarn e2e              # End-to-end tests
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Building for Production
 
 ```bash
-ng test
+# Backend
+cd backend
+yarn build
+yarn start:prod
+
+# Frontend
+cd web
+yarn build
 ```
 
-## Running end-to-end tests
+## Key Features
 
-For end-to-end (e2e) testing, run:
+- ✅ Multi-user authentication with JWT and Google OAuth
+- ✅ Role-based project collaboration (Owner, Editor, Commenter, Viewer)
+- ✅ Budget and expense tracking with hierarchical categories
+- ✅ Task management with budget allocation
+- ✅ Billing cycle organization with lock functionality
+- ✅ Receipt upload with automatic OCR processing
+- ✅ Comprehensive REST API with Swagger documentation
+- ✅ Responsive design optimized for desktop and mobile
 
-```bash
-ng e2e
-```
+## Tech Stack
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+**Backend:**
+- NestJS 10+
+- PostgreSQL with Prisma ORM
+- JWT authentication
+- Google Cloud Vision for OCR
+- Swagger/OpenAPI documentation
 
-## Additional Resources
+**Frontend:**
+- Angular 20
+- Tailwind CSS
+- TypeScript
+- RxJS for state management
+- Angular HttpClient with interceptors
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Documentation
+
+- [API Documentation](./backend/README.md)
+- [Component Guide](./web/docs/designs/COMPONENT_GUIDE.md)
+- [Example Pages](./web/docs/designs/EXAMPLE_PAGES.md)
+
+## Deployment
+
+Both services include Dockerfile configurations for containerized deployment. See deployment-specific documentation for cloud platform guides (Azure, AWS, etc.).
+
+## Contributing
+
+When contributing to this project:
+
+1. Create a feature branch from `main`
+2. Follow the existing code structure and naming conventions
+3. Write tests for new features
+4. Submit a pull request with a clear description
+
+## Support
+
+For issues, feature requests, or questions, please refer to the project documentation or contact the development team.
+
+<!-- ## License
+
+See LICENSE file for details. -->

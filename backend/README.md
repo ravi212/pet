@@ -1,17 +1,62 @@
-# Pet Expense Tracker API
+# PET - Project Expense Tracker API
 
-A comprehensive NestJS backend API for managing pet expenses, projects, tasks, and receipts with OCR processing capabilities.
+A production-grade NestJS backend API for managing project expenses, team collaboration, tasks, and receipts with OCR processing capabilities. Built with TypeScript, PostgreSQL, and Prisma ORM.
 
 ## Features
 
-- **User Authentication**: Signup, login, email verification, and JWT-based session management
-- **Project Management**: Create and manage projects with team collaboration
-- **Expense Tracking**: Track and categorize expenses with detailed filtering
-- **Task Management**: Create tasks, assign to team members, track progress
-- **Cycle Management**: Organize expenses into billing cycles with lock capabilities
-- **Receipt Management**: Upload receipts with Google Cloud Vision OCR integration
-- **Category Management**: Create custom expense categories per project
-- **API Documentation**: Interactive Swagger UI for exploring and testing endpoints
+- **User Authentication & Authorization**
+  - Email/password signup with verification
+  - JWT-based session management with refresh tokens
+  - Google OAuth integration
+  - Multi-session tracking per device
+  - 2FA support and email verification
+
+- **Project Management**
+  - Create and manage multiple projects
+  - Role-based team collaboration (Owner, Editor, Commenter, Viewer)
+  - Add project collaborators with granular permissions
+  - Project archival and configuration
+  - Support for one-time and recurring projects
+
+- **Expense Tracking**
+  - Create and manage expenses with detailed information
+  - Link expenses to projects, categories, and tasks
+  - Track reimbursement status and amounts
+  - Advanced filtering by date range, category, amount, vendor, status
+  - Vendor tracking and metadata storage
+  - Pagination support for large datasets
+
+- **Task Management**
+  - Create and assign tasks to team members
+  - Track task progress with status updates (To Do, In Progress, Done)
+  - Set budget amounts per task
+  - Link expenses to tasks for budget tracking
+  - Filter tasks by project, assignee, or status
+
+- **Budget & Cycle Management**
+  - Organize expenses into billing cycles (date-based)
+  - Set budget limits per cycle
+  - Lock cycles to prevent modifications
+  - Rollover modes for budget management (None, Positive, Negative)
+  - View cycle-specific expense summaries and spending analysis
+
+- **Receipt Management**
+  - Upload receipts with automatic OCR processing
+  - Extract structured data using Google Cloud Vision API
+  - Track OCR status (Pending, Done, Failed)
+  - Confidence scores for OCR accuracy
+  - Store file metadata and processing details
+
+- **Expense Categorization**
+  - Create hierarchical expense categories per project
+  - Color-coded categories for visual organization
+  - Parent-child category relationships
+  - AI-assisted category suggestions for expenses
+
+- **API Documentation**
+  - Interactive Swagger/OpenAPI documentation
+  - Try-it-out functionality for testing endpoints
+  - Auto-generated and always in sync with code
 
 ## Tech Stack
 
