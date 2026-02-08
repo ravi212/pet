@@ -46,4 +46,8 @@ export const endpoints = {
     avatar: `${baseUrl}/user/avatar`,
     changePassword: `${baseUrl}/user/change-password`,
   },
+  Collaboration: {
+    collaborators: (projectId: string) => `${baseUrl}/projects/${projectId}/collaborators`,
+    collaboratorById: (projectId: string, userId: string) => `${baseUrl}/projects/${projectId}/collaborators/${userId}`,
+  },
 } as const;

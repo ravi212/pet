@@ -34,14 +34,23 @@ export class ProjectService {
     try {
       const skip = (page - 1) * limit;
 
+      // Build where clause - only projects where user is owner OR collaborator
       const where: Prisma.ProjectWhereInput = {
-        ownerId: userId,
+        OR: [
+          { ownerId: userId },
+          { collaborators: { some: { userId } } },
+        ],
       };
 
+      // Add search filter if provided
       if (search) {
-        where.OR = [
-          { title: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } },
+        where.AND = [
+          {
+            OR: [
+              { title: { contains: search, mode: 'insensitive' } },
+              { description: { contains: search, mode: 'insensitive' } },
+            ],
+          },
         ];
       }
 
@@ -51,12 +60,35 @@ export class ProjectService {
           skip,
           take: limit,
           orderBy: { updatedAt: 'desc' },
+          include: {
+            owner: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+            collaborators: {
+              where: { userId },
+              select: {
+                userId: true,
+                role: true,
+              },
+            },
+          },
         }),
         this.prisma.project.count({ where }),
       ]);
 
+      // Add userRole field to differentiate owner vs collaborator
+      const projectsWithRole = projects.map((project) => ({
+        ...project,
+        userRole: project.ownerId === userId ? 'owner' : 'collaborator',
+      }));
+
       return {
-        data: projects,
+        data: projectsWithRole,
         pagination: {
           total,
           page,
@@ -74,7 +106,10 @@ export class ProjectService {
       const project = await this.prisma.project.findFirstOrThrow({
         where: {
           id,
-          ownerId: userId,
+          OR: [
+            { ownerId: userId },
+            { collaborators: { some: { userId } } },
+          ],
         },
       });
       return {

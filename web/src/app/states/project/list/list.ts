@@ -33,6 +33,9 @@ export class ProjectListComponent implements OnInit {
   @ViewChild('typeTpl', { static: true })
   typeTpl!: TemplateRef<{ $implicit: Project }>;
 
+  @ViewChild('roleTpl', { static: true })
+  roleTpl!: TemplateRef<{ $implicit: Project }>;
+
   @ViewChild('updatedAtTpl', { static: true })
   updatedAtTpl!: TemplateRef<{ $implicit: Project }>;
 
@@ -83,8 +86,9 @@ export class ProjectListComponent implements OnInit {
   ngOnInit() {
     this.columns = [
       { key: 'title', label: 'Title', sortable: true },
-      { key: 'description', label: 'Description' },
+      // { key: 'description', label: 'Description' },
       { key: 'type', label: 'Type', sortable: true, template: this.typeTpl },
+      { key: 'userRole', label: 'Role', sortable: true, template: this.roleTpl },
       { key: 'updatedAt', label: 'Last Updated', sortable: true, template: this.updatedAtTpl },
     ];
     this.loadProjects();

@@ -11,6 +11,7 @@ import { ExpenseModule } from './modules/expense/expense.module';
 import { TaskModule } from './modules/task/task.module';
 import { CycleModule } from './modules/cycle/cycle.module';
 import { ReceiptModule } from './modules/receipt/receipt.module';
+import { CollaborationModule } from './modules/collaboration/collaboration.module';
 @Module({
   imports: [PrismaModule, AuthModule, UserModule,
     MailerModule.forRoot({
@@ -27,7 +28,8 @@ import { ReceiptModule } from './modules/receipt/receipt.module';
     ExpenseModule,
     TaskModule,
     CycleModule,
-    ReceiptModule
+    ReceiptModule,
+    CollaborationModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { CategoriesComponent } from './components/categories/list';
+import { MembersComponent } from './components/members/list';
 import { SharedModule } from '../../../../shared/shared.module';
 
 type SettingsTab = 'categories' | 'cycles' | 'members';
 
 @Component({
   selector: 'app-settings',
-  imports: [CategoriesComponent, SharedModule],
+  imports: [CategoriesComponent, MembersComponent, SharedModule],
   templateUrl: './settings.html',
 })
 export class SettingsComponent {
@@ -14,6 +15,6 @@ export class SettingsComponent {
 
   tabs = [
     { key: 'categories' as const, label: 'Categories' },
-    // { key: 'members' as const, label: 'Members' },
+    { key: 'members' as const, label: 'Members' },
   ];
 }

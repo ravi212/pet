@@ -27,7 +27,6 @@ enum ProjectType {
 enum CollaboratorRole {
   owner
   editor
-  commenter
   viewer
 }
 

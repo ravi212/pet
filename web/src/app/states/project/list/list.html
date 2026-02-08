@@ -135,6 +135,12 @@
   </span>
 </ng-template>
 
+<ng-template #roleTpl let-project>
+  <span class="p-2 text-sm rounded-sm inline-block whitespace-nowrap">
+    <app-badge [variant]="project.userRole === 'owner' ? 'primary' : 'secondary'">{{ project.userRole }}</app-badge>
+  </span>
+</ng-template>
+
 <app-confirm-dialog
   [open]="confirmOpen"
   [title]="'Delete Project?'"

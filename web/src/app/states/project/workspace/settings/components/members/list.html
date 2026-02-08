@@ -1,0 +1,111 @@
+<div class="flex flex-col gap-4 sm:gap-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
+    <div>
+      <h2 class="text-base sm:text-lg font-semibold text-gray-600">Project Members</h2>
+      <p class="text-xs sm:text-sm text-gray-500">Manage who has access to this project</p>
+    </div>
+    <app-button variant="primary" size="sm" (click)="openAddModal()" class="w-full sm:w-auto">
+      + Add Member
+    </app-button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+  <div class="flex justify-center items-center py-8">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+  </div>
+  } @else {
+  <!-- Owner Card -->
+  @if (owner) {
+  <app-card class="overflow-x-auto">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
+      <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+        @if (owner.avatarUrl) {
+        <img
+          [src]="owner.avatarUrl"
+          alt="{{ owner.firstName }}"
+          class="w-10 h-10 flex-shrink-0 rounded-full object-cover"
+        />
+        } @else {
+        <div class="w-10 h-10 flex-shrink-0 rounded-full bg-primary-200 flex items-center justify-center text-primary font-semibold text-sm">
+          {{ owner.firstName?.charAt(0) }}{{ owner.lastName?.charAt(0) }}
+        </div>
+        }
+        <div class="min-w-0">
+          <p class="font-semibold text-gray-600 text-sm sm:text-base truncate">
+            {{ owner.firstName }} {{ owner.lastName }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-400 truncate">{{ owner.email }}</p>
+        </div>
+      </div>
+      <app-badge [variant]="'secondary'" >
+        Owner
+      </app-badge>
+    </div>
+  </app-card>
+  }
+
+  <!-- Collaborators List -->
+  @if (collaborators.length > 0) {
+  <div class="flex flex-col gap-2 sm:gap-3">
+    <p class="text-xs sm:text-sm font-semibold text-gray-600">Collaborators ({{ collaborators.length }})</p>
+    @for (member of collaborators; track member.id) {
+    <app-card class="overflow-x-auto">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+          @if (member.user.avatarUrl) {
+          <img
+            [src]="member.user.avatarUrl"
+            alt="{{ member.user.firstName }}"
+            class="w-10 h-10 flex-shrink-0 rounded-full object-cover"
+          />
+          } @else {
+          <div class="w-10 h-10 flex-shrink-0 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-semibold text-sm">
+            {{ member.user.firstName.charAt(0) }}{{ member.user.lastName.charAt(0) }}
+          </div>
+          }
+          <div class="min-w-0">
+            <p class="font-semibold text-gray-600 text-sm sm:text-base truncate">
+              {{ member.user.firstName }} {{ member.user.lastName }}
+            </p>
+            <p class="text-xs sm:text-sm text-gray-400 truncate">{{ member.user.email }}</p>
+          </div>
+        </div>
+
+        <div class="flex flex-row sm:items-center gap-3 sm:gap-4">
+          <app-badge [variant]="'primary'">
+            {{ member.role | titlecase }}
+          </app-badge>
+
+          <app-button variant="ghost" size="sm" (click)="openConfirm(member)" class="w-full sm:w-auto">
+            Remove
+          </app-button>
+        </div>
+      </div>
+    </app-card>
+    }
+  </div>
+  } @else {
+  <div class="text-center py-6 sm:py-8 bg-gray-50 rounded-lg px-4">
+    <p class="text-xs sm:text-sm text-gray-500">No collaborators yet. Add members to your project.</p>
+  </div>
+  }
+  }
+</div>
+
+<!-- Add Member Modal -->
+@if (isModalOpen) {
+<app-add-member-modal (close)="isModalOpen = false" (memberAdded)="onMemberAdded()">
+</app-add-member-modal>
+}
+
+<!-- Confirm Remove Dialog -->
+<app-confirm-dialog
+  [open]="confirmOpen"
+  title="Remove Member?"
+  [message]="selectedMember ? `Are you sure you want to remove ${selectedMember.user.email} from this project?` : ''"
+  (confirm)="confirmRemove()"
+  (cancel)="onConfirmCancel()"
+>
+</app-confirm-dialog>
