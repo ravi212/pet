@@ -60,13 +60,9 @@ export class CycleService {
         throw new BadRequestException('Project not found');
       }
 
-      const isOwner = project.ownerId === userId;
-      const isCollaborator = project.collaborators.some(
-        (c) => c.userId === userId,
-      );
-
-      if (!isOwner && !isCollaborator) {
-        throw new ForbiddenException('You do not have access to this project');
+      // Only project owner can create cycles
+      if (project.ownerId !== userId) {
+        throw new ForbiddenException('Only project owner can create cycles');
       }
 
       const startDate = new Date(cycleStart);

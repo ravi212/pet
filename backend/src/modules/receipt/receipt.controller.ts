@@ -19,6 +19,8 @@ import { ReceiptService } from './receipt.service';
 import { CreateReceiptDto } from './dto/create-receipt.dto';
 import { UpdateReceiptDto } from './dto/update-receipt.dto';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { ProjectAccessGuard } from '../../guards/project-access.guard';
+import { RbacGuard, RequirePermission, Permission } from '../../rbac';
 import { REQUEST_MODE } from 'src/enums/common.enum';
 
 @ApiTags('Receipts')
@@ -167,7 +169,7 @@ export class ReceiptController {
     schema: { example: { message: 'Receipt deleted successfully' } }
   })
   @Delete(':id')
-  async remove(@Param('id') id: string, @Request() req: any) {
+  async remove(@Param('id') id: string,@Request() req: any) {
     await this.receiptService.remove(id, req.user.id);
     return { message: 'Receipt deleted successfully' };
   }

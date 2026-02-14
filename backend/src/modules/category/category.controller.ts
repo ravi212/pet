@@ -123,7 +123,10 @@ export class CategoryController {
     required: true,
   })
   @Get(':id')
-  findOne(@Req() req, @Param('id') id: string) {
+  findOne(
+    @Req() req,
+    @Param('id') id: string,
+  ) {
     return this.categoryService.findOne(req.user.id, id);
   }
 
@@ -142,7 +145,11 @@ export class CategoryController {
     required: true,
   })
   @Patch(':id')
-  update(@Req() req, @Param('id') id: string, @Body() dto: UpdateCategoryDto) {
+  update(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() dto: UpdateCategoryDto,
+  ) {
     return this.categoryService.update(req.user.id, id, dto);
   }
 
@@ -159,7 +166,10 @@ export class CategoryController {
     required: true,
   })
   @Delete(':id')
-  remove(@Req() req, @Param('id') id: string) {
+  remove(
+    @Req() req,
+    @Param('id') id: string,
+  ) {
     return this.categoryService.remove(req.user.id, id);
   }
 }

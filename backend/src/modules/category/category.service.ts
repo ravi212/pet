@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -61,11 +62,25 @@ export class CategoryService {
     try {
       const skip = (page - 1) * limit;
 
+      // Allow any user with access to the project (owner or collaborator) to view categories
       const where: Prisma.CategoryWhereInput = {
-        project: {
-          ownerId: userId,
-        },
         projectId,
+        OR: [
+          {
+            project: {
+              ownerId: userId,
+            },
+          },
+          {
+            project: {
+              collaborators: {
+                some: {
+                  userId: userId,
+                },
+              },
+            },
+          },
+        ],
       };
 
       if (search) {
@@ -113,12 +128,26 @@ export class CategoryService {
 
   async findOne(userId: string, id: string) {
     try {
+      // Allow any user with access to the project (owner or collaborator) to view category
       const category = await this.prisma.category.findFirst({
         where: {
           id,
-          project: {
-            ownerId: userId,
-          },
+          OR: [
+            {
+              project: {
+                ownerId: userId,
+              },
+            },
+            {
+              project: {
+                collaborators: {
+                  some: {
+                    userId: userId,
+                  },
+                },
+              },
+            },
+          ],
         },
         include: {
           children: true,
@@ -145,12 +174,40 @@ export class CategoryService {
     dto: UpdateCategoryDto,
   ) {
     try {
-      const category = await this.prisma.category.update({
+      // Editors and owners can update; need to check user role via project access
+      const category = await this.prisma.category.findFirst({
         where: {
           id,
+        },
+        include: {
           project: {
-            ownerId: userId,
+            select: {
+              ownerId: true,
+              collaborators: {
+                where: { userId },
+                select: { role: true },
+              },
+            },
           },
+        },
+      });
+
+      if (!category) {
+        throw new NotFoundException('Category not found');
+      }
+
+      // Check authorization: owner or editor
+      const isOwner = category.project.ownerId === userId;
+      const collaboratorRole = category.project.collaborators[0]?.role;
+      const isEditor = collaboratorRole === 'editor' || collaboratorRole === 'owner';
+
+      if (!isOwner && !isEditor) {
+        throw new NotFoundException('Category not found');
+      }
+
+      const updated = await this.prisma.category.update({
+        where: {
+          id,
         },
         data: dto,
         select: {
@@ -161,7 +218,7 @@ export class CategoryService {
       });
 
       return {
-        data: category,
+        data: updated,
         message: 'Category updated successfully',
       };
     } catch (e) {
@@ -177,14 +234,28 @@ export class CategoryService {
        * - expenses.categoryId
        * - children.parentId
        * because of onDelete: SetNull
+       * 
+       * Only project owner can delete
        */
-      const category = await this.prisma.category.delete({
-        where: {
-          id,
+      const category = await this.prisma.category.findFirst({
+        where: { id },
+        include: {
           project: {
-            ownerId: userId,
+            select: { ownerId: true },
           },
         },
+      });
+
+      if (!category) {
+        throw new NotFoundException('Category not found');
+      }
+
+      if (category.project.ownerId !== userId) {
+        throw new ForbiddenException('Only project owner can delete categories');
+      }
+
+      const deleted = await this.prisma.category.delete({
+        where: { id },
         select: {
           id: true,
           name: true,
@@ -192,10 +263,13 @@ export class CategoryService {
       });
 
       return {
-        data: category,
+        data: deleted,
         message: 'Category deleted successfully',
       };
     } catch (e) {
+      if (e instanceof NotFoundException || e instanceof ForbiddenException) {
+        throw e;
+      }
       throw new InternalServerErrorException('Something went wrong');
     }
   }

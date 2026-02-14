@@ -130,7 +130,10 @@ export class TaskController {
     }
   })
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() req: any) {
+  findOne(
+    @Param('id') id: string,
+    @Request() req: any,
+  ) {
     return this.taskService.findOne(id, req.user.id);
   }
 

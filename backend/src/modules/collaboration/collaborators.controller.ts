@@ -22,15 +22,18 @@ import { AddCollaboratorDto } from './dto/add-collaborator.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { ProjectAccessGuard } from '../../guards/project-access.guard';
+import { RbacGuard, RequireRole, RequirePermission, Role, Permission } from '../../rbac';
 
 @ApiTags('Collaborators')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, ProjectAccessGuard)
+@UseGuards(JwtAuthGuard, ProjectAccessGuard, RbacGuard)
 @Controller('projects/:projectId/collaborators')
 export class CollaboratorsController {
   constructor(private readonly collaboratorsService: CollaboratorsService) {}
 
   @Post()
+  @RequireRole(Role.OWNER)
+  @RequirePermission(Permission.COLLABORATOR_ADD)
   @HttpCode(201)
   @ApiOperation({
     summary: 'Add a collaborator to a project',
@@ -125,6 +128,7 @@ export class CollaboratorsController {
   }
 
   @Get()
+  @RequirePermission(Permission.COLLABORATOR_READ)
   @HttpCode(200)
   @ApiOperation({
     summary: 'List all collaborators for a project',
@@ -196,6 +200,8 @@ export class CollaboratorsController {
   }
 
   @Patch(':userId')
+  @RequireRole(Role.OWNER)
+  @RequirePermission(Permission.COLLABORATOR_UPDATE)
   @HttpCode(200)
   @ApiOperation({
     summary: 'Update collaborator role',
@@ -273,6 +279,8 @@ export class CollaboratorsController {
   }
 
   @Delete(':userId')
+  @RequireRole(Role.OWNER)
+  @RequirePermission(Permission.COLLABORATOR_DELETE)
   @HttpCode(200)
   @ApiOperation({
     summary: 'Remove a collaborator from a project',

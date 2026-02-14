@@ -119,7 +119,10 @@ export class CycleController {
     }
   })
   @Get(':id')
-  findOne(@Param('id') id: string, @Req() req) {
+  findOne(
+    @Param('id') id: string,
+    @Req() req,
+  ) {
     return this.cycleService.findOne(id, req.user.id);
   }
 
@@ -145,7 +148,7 @@ export class CycleController {
   update(
     @Param('id') id: string,
     @Body() updateCycleDto: UpdateCycleDto,
-    @Req() req
+    @Req() req,
   ) {
     return this.cycleService.update(id, updateCycleDto, req.user.id);
   }
@@ -160,7 +163,10 @@ export class CycleController {
     schema: { example: { message: 'Cycle lock toggled' } }
   })
   @Patch(':id/toggle-lock')
-  toggleLock(@Param('id') id: string, @Req() req) {
+  toggleLock(
+    @Param('id') id: string,
+    @Req() req,
+  ) {
     return this.cycleService.toggleLock(id, req.user.id);
   }
 
@@ -174,7 +180,10 @@ export class CycleController {
     schema: { example: { message: 'Cycle deleted successfully' } }
   })
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() req) {
+  remove(
+    @Param('id') id: string,
+    @Req() req,
+  ) {
     return this.cycleService.remove(id, req.user.id);
   }
 }

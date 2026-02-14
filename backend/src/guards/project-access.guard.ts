@@ -11,6 +11,7 @@ import { PrismaService } from '../modules/prisma/prisma.service';
  * Guard that verifies:
  * 1. User is authenticated (handled by JwtAuthGuard)
  * 2. User is owner or collaborator of the project
+ * 3. Sets user role on request for downstream RBAC checks
  */
 @Injectable()
 export class ProjectAccessGuard implements CanActivate {

@@ -114,14 +114,9 @@ export class ReceiptService {
         throw new NotFoundException('Project not found');
       }
 
-      // Check access: user is owner or collaborator
-      const isOwner = project.ownerId === userId;
-      const isCollaborator = project.collaborators.some(
-        (collab) => collab.userId === userId,
-      );
-
-      if (!isOwner && !isCollaborator) {
-        throw new ForbiddenException('You do not have access to this project');
+      // Only project owner can upload receipts
+      if (project.ownerId !== userId) {
+        throw new ForbiddenException('Only project owner can upload receipts');
       }
 
       // Generate filename
